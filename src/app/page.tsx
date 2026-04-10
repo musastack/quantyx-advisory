@@ -186,7 +186,7 @@ export default function Home() {
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
             <a
               href="#services"
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-medium transition-colors text-sm"
@@ -200,40 +200,30 @@ export default function Home() {
               Book a free call
             </a>
           </div>
+
+          {/* Credentials */}
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/20">
+              Our background
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {[
+                { label: "Accountants",               color: "border-indigo-500/25 bg-indigo-500/8  text-indigo-300"  },
+                { label: "SME Specialists",            color: "border-violet-500/25 bg-violet-500/8  text-violet-300"  },
+                { label: "Ex-Audit",                  color: "border-sky-500/25    bg-sky-500/8     text-sky-300"     },
+                { label: "Data Analytics Specialists", color: "border-emerald-500/25 bg-emerald-500/8 text-emerald-300" },
+              ].map((c) => (
+                <span
+                  key={c.label}
+                  className={`text-xs font-semibold px-4 py-1.5 rounded-full border ${c.color}`}
+                >
+                  {c.label}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════
-          WHO WE ARE — credentials strip
-      ══════════════════════════════════════ */}
-      <div className="border-y border-white/[0.06] bg-white/[0.02]">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-12">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 shrink-0">
-            Our background
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { label: "SME Specialists",              sub: "Built for small & growing businesses" },
-              { label: "Data Analytics Specialists",   sub: "Reporting, pipelines & insight" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03]"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-white/80 leading-none">{item.label}</p>
-                  <p className="text-[11px] text-white/30 mt-0.5">{item.sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-white/30 sm:ml-auto sm:text-right max-w-xs leading-relaxed hidden lg:block">
-            We specialise in SMEs — practical solutions<br />
-            built by data analysts who understand your scale.
-          </p>
-        </div>
-      </div>
 
       {/* ══════════════════════════════════════
           SERVICES
