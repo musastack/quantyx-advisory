@@ -59,14 +59,15 @@ const stats = [
 
 const caseStudies = [
   {
-    client: "Retail Chain Co.",
-    industry: "Retail",
-    tag: "Dashboard + Automation",
+    client: "InventoryCo Ltd",
+    industry: "Wholesale Distribution",
+    tag: "Data Centralisation",
     tagColor: "text-indigo-300 bg-indigo-500/10 border-indigo-500/20",
-    headline: "Cut reporting time by 80%",
+    headline: "From disconnected systems to real-time insight",
     description:
-      "Built a real-time sales dashboard pulling data from 12 store locations, replacing 4 hours of weekly manual spreadsheet work with a live overview updated every 5 minutes.",
-    results: ["80% reduction in reporting time", "12 locations unified in one view", "Automated weekly email digest"],
+      "Unified Xero, Cin7, and Excel into a single centralised data model with automated pipelines — eliminating 6 hours of weekly manual reporting and giving leadership live visibility.",
+    results: ["Reporting fully automated", "3 systems unified in one model", "Live inventory alerts deployed"],
+    href: "/case-studies/inventoryco",
   },
   {
     client: "Logistics SME",
@@ -77,6 +78,7 @@ const caseStudies = [
     description:
       "Designed an end-to-end automation that matched purchase orders, invoices, and delivery confirmations — eliminating manual data entry and catching errors before they reached clients.",
     results: ["Zero manual invoice matching", "Error rate dropped from 6% to 0.3%", "3 staff hours saved per day"],
+    href: null,
   },
   {
     client: "Digital Marketing Agency",
@@ -87,6 +89,7 @@ const caseStudies = [
     description:
       "Created branded, auto-updating dashboards for 20+ agency clients pulling from Google Ads, Meta, and GA4 — replacing PDF reports with live portals each client could access anytime.",
     results: ["20+ client portals deployed", "Reports go live in <2 hrs", "Client retention up 25%"],
+    href: null,
   },
 ];
 
@@ -259,7 +262,7 @@ export default function Home() {
             {caseStudies.map((cs) => (
               <div
                 key={cs.client}
-                className="p-7 rounded-2xl border border-white/8 bg-white/3 hover:border-indigo-500/30 transition-all flex flex-col"
+                className="p-7 rounded-2xl border border-white/8 bg-white/3 hover:border-indigo-500/30 transition-all flex flex-col group"
               >
                 <div className="flex items-center justify-between mb-5">
                   <div>
@@ -272,7 +275,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-3 gradient-text">{cs.headline}</h3>
                 <p className="text-white/50 text-sm leading-relaxed mb-6 flex-1">{cs.description}</p>
-                <ul className="space-y-2">
+                <ul className="space-y-2 mb-6">
                   {cs.results.map((r) => (
                     <li key={r} className="flex items-center gap-2 text-sm text-white/70">
                       <CheckCircle size={14} className="text-indigo-400 shrink-0" />
@@ -280,6 +283,16 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
+                {cs.href ? (
+                  <Link
+                    href={cs.href}
+                    className="flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 transition-colors font-medium mt-auto"
+                  >
+                    Read full case study <ArrowRight size={14} />
+                  </Link>
+                ) : (
+                  <p className="text-xs text-white/20 mt-auto">Full case study coming soon</p>
+                )}
               </div>
             ))}
           </div>
