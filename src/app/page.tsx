@@ -204,29 +204,35 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════
-          WHO WE HELP — context strip
+          WHO WE ARE — credentials strip
       ══════════════════════════════════════ */}
       <div className="border-y border-white/[0.06] bg-white/[0.02]">
-        <div className="max-w-6xl mx-auto px-6 py-8 grid sm:grid-cols-3 gap-6 text-center sm:text-left">
-          {[
-            {
-              who: "Founder-led businesses",
-              desc: "You're growing but your reporting hasn't kept up. You're still pulling numbers together manually each week.",
-            },
-            {
-              who: "Lean finance teams",
-              desc: "Small team, big workload. Too much time goes on data prep and manual reports rather than analysis.",
-            },
-            {
-              who: "Ops and commercial teams",
-              desc: "You need visibility across inventory, sales, or operations — but the data lives across too many systems.",
-            },
-          ].map((item) => (
-            <div key={item.who} className="flex flex-col gap-2">
-              <p className="text-sm font-semibold text-white/80">{item.who}</p>
-              <p className="text-xs text-white/35 leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-12">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 shrink-0">
+            Our background
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: "Qualified Accountants", sub: "ACA / ACCA trained" },
+              { label: "Ex-Audit",              sub: "Big Four & mid-tier experience" },
+              { label: "Software Developers",   sub: "Full-stack & data engineering" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03]"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-white/80 leading-none">{item.label}</p>
+                  <p className="text-[11px] text-white/30 mt-0.5">{item.sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-white/30 sm:ml-auto sm:text-right max-w-xs leading-relaxed hidden lg:block">
+            We understand the numbers <em>and</em> we build the systems.<br />
+            Most firms offer one or the other.
+          </p>
         </div>
       </div>
 
