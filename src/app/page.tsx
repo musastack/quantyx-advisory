@@ -135,9 +135,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-xl font-bold gradient-text">Quantyx Advisory</span>
           <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
-            <a href="#services"     className="hover:text-white transition-colors">Services</a>
-            <a href="#case-studies" className="hover:text-white transition-colors">Case Studies</a>
-            <a href="#contact"      className="hover:text-white transition-colors">Contact</a>
+            <a href="#custom-builds" className="hover:text-white transition-colors">Custom Builds</a>
+            <a href="#services"      className="hover:text-white transition-colors">Services</a>
+            <a href="#case-studies"  className="hover:text-white transition-colors">Case Studies</a>
+            <a href="#contact"       className="hover:text-white transition-colors">Contact</a>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -226,6 +227,108 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════
+          CUSTOM BUILDS
+      ══════════════════════════════════════ */}
+      <section id="custom-builds" className="py-20 px-6 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(99,102,241,0.12),transparent_65%)]" />
+        <div className="absolute inset-0 border-y border-indigo-500/10" />
+
+        <div className="max-w-6xl mx-auto relative">
+          <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
+
+            {/* Left — copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 border border-indigo-500/30 bg-indigo-500/10 rounded-full px-4 py-1.5 text-xs font-semibold text-indigo-300 mb-7 uppercase tracking-widest">
+                Custom builds
+              </div>
+              <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.07] tracking-tight mb-6">
+                Your software<br />
+                can&apos;t do it?<br />
+                <span className="gradient-text">We&apos;ll build it for you.</span>
+              </h2>
+              <p className="text-white/50 text-lg leading-relaxed mb-8 max-w-xl">
+                Off-the-shelf tools have limits. When your business hits those limits —
+                we step in and build exactly what you need from scratch. Bespoke
+                dashboards, custom automations, internal tools, data pipelines. If it
+                can be built, we&apos;ll build it.
+              </p>
+
+              {/* Example tags */}
+              <div className="flex flex-wrap gap-2 mb-10">
+                {[
+                  "Custom dashboards",
+                  "Internal tools",
+                  "Data pipelines",
+                  "API integrations",
+                  "Bespoke automations",
+                  "White-label portals",
+                ].map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs font-medium px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-white/50"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-semibold transition-colors text-sm"
+              >
+                Tell us what you need <ArrowRight size={15} />
+              </a>
+            </div>
+
+            {/* Right — visual card stack */}
+            <div className="hidden lg:flex flex-col gap-4">
+              {[
+                {
+                  icon: "⚡",
+                  title: "Software restriction",
+                  body: "Your current tools don't support the workflow you need.",
+                  color: "border-rose-500/20 bg-rose-500/[0.06]",
+                  label: "The problem",
+                  labelColor: "text-rose-400 border-rose-500/25 bg-rose-500/10",
+                },
+                {
+                  icon: "→",
+                  title: "Custom-built solution",
+                  body: "We design and build exactly what's needed — no compromises.",
+                  color: "border-indigo-500/25 bg-indigo-500/[0.07]",
+                  label: "Our answer",
+                  labelColor: "text-indigo-300 border-indigo-500/25 bg-indigo-500/10",
+                },
+                {
+                  icon: "✓",
+                  title: "You own it, forever",
+                  body: "No vendor lock-in. Full handover, full documentation, yours to keep.",
+                  color: "border-emerald-500/20 bg-emerald-500/[0.06]",
+                  label: "The outcome",
+                  labelColor: "text-emerald-400 border-emerald-500/25 bg-emerald-500/10",
+                },
+              ].map((card) => (
+                <div key={card.title} className={`p-5 rounded-2xl border ${card.color} flex items-start gap-4`}>
+                  <span className="text-2xl leading-none mt-0.5">{card.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <p className="text-sm font-semibold">{card.title}</p>
+                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${card.labelColor}`}>
+                        {card.label}
+                      </span>
+                    </div>
+                    <p className="text-xs text-white/40 leading-relaxed">{card.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
           SERVICES
       ══════════════════════════════════════ */}
       <section id="services" className="py-24 px-6">
@@ -291,7 +394,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Bottom prompt */}
           <div className="mt-5 p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p className="text-sm text-white/50 max-w-lg leading-relaxed">
               Most projects combine elements of two or three of these. We scope
@@ -303,49 +405,6 @@ export default function Home() {
             >
               Discuss your project <ArrowUpRight size={14} />
             </a>
-          </div>
-
-          {/* Custom builds callout */}
-          <div className="mt-5 relative overflow-hidden rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.07] p-8 md:p-10">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_50%,rgba(99,102,241,0.12),transparent_60%)]" />
-            <div className="relative grid md:grid-cols-[1fr_auto] gap-8 items-center">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-indigo-400/70 mb-3">
-                  Custom builds
-                </p>
-                <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3 leading-snug">
-                  Your software can&apos;t do it?<br className="hidden sm:block" /> We&apos;ll build it for you.
-                </h3>
-                <p className="text-white/50 text-sm leading-relaxed max-w-xl">
-                  If there&apos;s something specific your business needs — a report, a tool,
-                  an integration, a workflow — but your current software won&apos;t allow it,
-                  we can build it from scratch. Custom solutions designed exactly around
-                  how your business works, not a generic template.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-5">
-                  {[
-                    "Custom reporting tools",
-                    "Bespoke integrations",
-                    "Automated workflows",
-                    "Internal dashboards",
-                    "One-off data builds",
-                  ].map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[11px] text-indigo-300/80 border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <a
-                href="#contact"
-                className="shrink-0 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-3.5 rounded-xl transition-colors whitespace-nowrap"
-              >
-                Tell us what you need <ArrowRight size={15} />
-              </a>
-            </div>
           </div>
         </div>
       </section>
