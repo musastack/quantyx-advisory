@@ -213,9 +213,8 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap gap-3">
             {[
-              { label: "Qualified Accountants", sub: "ACA / ACCA trained" },
-              { label: "Ex-Audit",              sub: "Big Four & mid-tier experience" },
-              { label: "Software Developers",   sub: "Full-stack & data engineering" },
+              { label: "SME Specialists",              sub: "Built for small & growing businesses" },
+              { label: "Data Analytics Specialists",   sub: "Reporting, pipelines & insight" },
             ].map((item) => (
               <div
                 key={item.label}
@@ -230,8 +229,8 @@ export default function Home() {
             ))}
           </div>
           <p className="text-xs text-white/30 sm:ml-auto sm:text-right max-w-xs leading-relaxed hidden lg:block">
-            We understand the numbers <em>and</em> we build the systems.<br />
-            Most firms offer one or the other.
+            We specialise in SMEs — practical solutions<br />
+            built by data analysts who understand your scale.
           </p>
         </div>
       </div>
