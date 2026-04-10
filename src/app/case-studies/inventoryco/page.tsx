@@ -1,10 +1,24 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, TrendingUp, AlertTriangle, CheckCircle, ArrowDown, Minus } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowDown,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Minus,
+  Database,
+  GitMerge,
+  Layers,
+  BarChart3,
+  Plug,
+  RefreshCw,
+} from "lucide-react";
 
 export const metadata = {
   title: "InventoryCo Ltd — Quantyx Advisory",
   description:
-    "How Quantyx Advisory helped InventoryCo centralise three disconnected systems into a single automated reporting layer.",
+    "Sample case study: how disconnected operational data across Xero, Cin7, and Excel can be centralised into a structured, automated reporting layer.",
 };
 
 /* ─────────────────────────────────────────────
@@ -12,112 +26,70 @@ export const metadata = {
 ───────────────────────────────────────────── */
 
 const kpis = [
-  {
-    label: "Monthly Revenue",
-    value: "£487,000",
-    delta: "+12%",
-    note: "vs last month",
-    positive: true,
-  },
-  {
-    label: "Gross Profit",
-    value: "£138,000",
-    delta: "28%",
-    note: "margin",
-    positive: true,
-  },
-  {
-    label: "Inventory Value",
-    value: "£210,000",
-    delta: null,
-    note: "across all SKUs",
-    positive: null,
-  },
-  {
-    label: "Low Stock Alerts",
-    value: "3 SKUs",
-    delta: "flagged",
-    note: "below reorder level",
-    positive: false,
-  },
+  { label: "Monthly Revenue",    value: "£487,000", delta: "+12%",    note: "vs last month",       positive: true  },
+  { label: "Gross Profit",       value: "£138,000", delta: "28%",     note: "margin",              positive: true  },
+  { label: "Inventory Value",    value: "£210,000", delta: null,      note: "across all SKUs",     positive: null  },
+  { label: "Low Stock Alerts",   value: "3 SKUs",   delta: "flagged", note: "below reorder level", positive: false },
 ];
 
 const insights = [
   {
-    tag: "Revenue",
-    color: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-    dot: "bg-violet-400",
+    tag: "Revenue", color: "bg-violet-500/10 text-violet-400 border-violet-500/20", dot: "bg-violet-400",
     heading: "Growth is consistent but concentrated",
-    body: "Revenue has grown steadily over the last 6 months. The majority is driven by the lighting product category — creating concentration risk that wasn't previously visible.",
+    body: "Revenue has grown steadily over recent months, primarily driven by the lighting category. That concentration was only visible once financial and product data were combined in a single model.",
   },
   {
-    tag: "Margin",
-    color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    dot: "bg-emerald-400",
+    tag: "Margin", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", dot: "bg-emerald-400",
     heading: "High-revenue ≠ high-margin",
-    body: "LED panels generate the strongest gross margins at 34%, despite not being the highest-revenue product. Without product-level data, this was invisible to leadership.",
+    body: "LED panels carry the strongest gross margins at 34%, despite not being the top revenue product. This distinction was invisible without product-level data joined to sales figures.",
   },
   {
-    tag: "Stock",
-    color: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    dot: "bg-amber-400",
+    tag: "Stock", color: "bg-amber-500/10 text-amber-400 border-amber-500/20", dot: "bg-amber-400",
     heading: "3 SKUs are a fulfilment risk right now",
-    body: "Three SKUs have dropped below their reorder thresholds. Previously this would only surface during a manual stock review — now it's flagged automatically.",
+    body: "Three SKUs sit below their reorder thresholds. Previously this only surfaced in a weekly manual review. The centralised model flags it automatically as soon as inventory levels fall.",
   },
 ];
 
 const products = [
-  { name: "LED Panels", profit: "£42,000", bar: 100 },
-  { name: "Strip Lighting", profit: "£31,000", bar: 74 },
-  { name: "Outdoor Units", profit: "£18,000", bar: 43 },
+  { name: "LED Panels",     profit: "£42,000", margin: "34%", bar: 100 },
+  { name: "Strip Lighting", profit: "£31,000", margin: "27%", bar: 74  },
+  { name: "Outdoor Units",  profit: "£18,000", margin: "19%", bar: 43  },
 ];
 
 const stockAlerts = [
-  { sku: "LED Panel X200", status: "Below reorder", level: "warn" },
+  { sku: "LED Panel X200",  status: "Below reorder",       level: "warn"     },
   { sku: "Outdoor Unit A4", status: "Critical — reorder now", level: "critical" },
-  { sku: "Strip Light B12", status: "Low stock", level: "warn" },
+  { sku: "Strip Light B12", status: "Low stock",            level: "warn"     },
 ];
 
 const deliverables = [
   {
-    title: "Centralised data layer",
-    body: "All data from Xero, Cin7, and Excel now flows into a single structured model. One source of truth, consistently maintained.",
+    icon: Plug,
+    title: "API-connected data extraction",
+    body: "Xero and Cin7 data is pulled on a scheduled basis via their respective APIs. Structured Excel uploads handle any data that doesn't have an API endpoint. All ingestion is logged and auditable.",
   },
   {
-    title: "Automated pipelines",
-    body: "Scheduled extractions via Power Query replaced all manual CSV exports. Data refreshes without human input.",
+    icon: Database,
+    title: "Centralised Postgres database",
+    body: "All extracted data lands in a structured Postgres database (Supabase-hosted). Tables are designed around business entities — orders, products, inventory positions — with foreign key relationships defined.",
   },
   {
-    title: "Clean data model",
-    body: "Relationships between sales, inventory, and product data were formally defined — enabling cross-source analysis for the first time.",
+    icon: GitMerge,
+    title: "Transformation & data modelling layer",
+    body: "Raw ingested data is cleaned, deduplicated, and standardised. Calculated fields — margins, inventory cover days, reorder flags — are computed and stored as structured views, ready for reporting.",
   },
   {
-    title: "Reporting layer",
-    body: "A structured reporting layer sits on top of the data model, serving clean outputs to dashboards and scheduled summaries.",
+    icon: BarChart3,
+    title: "Reporting & insight layer",
+    body: "The reporting layer queries the transformed data model directly. Outputs include KPI views, product-level margin breakdowns, and inventory alert logic — all served from a single consistent source.",
   },
 ];
 
 const outcomes = [
-  {
-    stat: "< 30 min",
-    label: "Weekly reporting",
-    was: "Was ~5 hours manual",
-  },
-  {
-    stat: "100%",
-    label: "Product margin visibility",
-    was: "Previously none",
-  },
-  {
-    stat: "3 days",
-    label: "Earlier stock alerts",
-    was: "Vs end-of-week review",
-  },
-  {
-    stat: "1",
-    label: "Source of truth",
-    was: "Was 3 disconnected systems",
-  },
+  { stat: "< 30 min", label: "Weekly reporting time",     was: "Was ~5 hours manual"        },
+  { stat: "100%",     label: "Product margin visibility", was: "Previously unavailable"     },
+  { stat: "3 days",   label: "Earlier stock alerts",      was: "Vs end-of-week batch review" },
+  { stat: "1",        label: "Source of truth",           was: "Was 3 disconnected systems" },
 ];
 
 /* ─────────────────────────────────────────────
@@ -134,12 +106,8 @@ export default function InventoryCo() {
           <Link href="/" className="font-semibold text-sm text-white/80 hover:text-white transition-colors">
             Quantyx Advisory
           </Link>
-          <Link
-            href="/#case-studies"
-            className="flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors"
-          >
-            <ArrowLeft size={13} />
-            Case Studies
+          <Link href="/#case-studies" className="flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors">
+            <ArrowLeft size={13} /> Case Studies
           </Link>
         </div>
       </nav>
@@ -150,14 +118,16 @@ export default function InventoryCo() {
             1. HERO
         ══════════════════════════════════════ */}
         <section className="relative overflow-hidden border-b border-white/[0.06]">
-          {/* Subtle radial glow */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(139,92,246,0.12),transparent)]" />
-
           <div className="relative max-w-5xl mx-auto px-6 py-28 md:py-36">
-            {/* Meta row */}
+
+            {/* Tags */}
             <div className="flex flex-wrap items-center gap-2 mb-10">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-violet-400 border border-violet-500/25 bg-violet-500/8 px-3 py-1 rounded-full">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-violet-400 border border-violet-500/25 bg-violet-500/8 px-3 py-1 rounded-full">
                 Case Study
+              </span>
+              <span className="text-[11px] font-medium uppercase tracking-widest text-sky-400/80 border border-sky-500/20 bg-sky-500/8 px-3 py-1 rounded-full">
+                Sample / Illustrative
               </span>
               <span className="text-[11px] font-medium uppercase tracking-widest text-white/25 border border-white/8 px-3 py-1 rounded-full">
                 Wholesale Distribution
@@ -167,30 +137,35 @@ export default function InventoryCo() {
               </span>
             </div>
 
-            {/* Title */}
             <h1 className="text-5xl md:text-[4rem] font-bold leading-[1.08] tracking-tight mb-7 max-w-3xl">
-              From Disconnected Systems<br className="hidden md:block" /> to{" "}
+              From Disconnected Systems<br className="hidden md:block" /> to a{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                Real-Time Insight
+                Centralised Data Layer
               </span>
             </h1>
 
-            {/* Subtitle */}
-            <p className="text-lg md:text-xl text-white/45 leading-relaxed max-w-2xl mb-14">
-              InventoryCo Ltd were running their business across three separate platforms
-              with no way to connect them. We built a centralised data model and
-              automated reporting layer — turning hours of manual work into live,
-              always-accurate visibility.
+            <p className="text-lg md:text-xl text-white/45 leading-relaxed max-w-2xl mb-5">
+              This sample engagement illustrates how a product business running sales,
+              inventory, and reporting across three disconnected platforms can be unified
+              into a single structured database — with automated pipelines and a clean
+              reporting layer on top.
+            </p>
+
+            {/* Sample disclaimer */}
+            <p className="text-sm text-white/25 mb-14 max-w-xl">
+              <span className="text-white/40 font-medium">Note:</span> InventoryCo Ltd is a
+              fictionalised example. All figures are illustrative. This case study
+              demonstrates a realistic project architecture and approach.
             </p>
 
             {/* Client strip */}
             <div className="flex flex-wrap gap-x-10 gap-y-4">
               {[
-                ["Client", "InventoryCo Ltd"],
-                ["Revenue", "~£3–5m / year"],
-                ["Sector", "Wholesale / Distribution"],
-                ["Stack", "Xero · Cin7 · Power Query"],
-                ["Delivered", "Q1 2026"],
+                ["Client",     "InventoryCo Ltd (sample)"],
+                ["Revenue",    "~£3–5m / year"],
+                ["Sector",     "Wholesale / Distribution"],
+                ["Tech stack", "Xero · Cin7 · Postgres · Supabase"],
+                ["Approach",   "API extraction · SQL modelling · reporting layer"],
               ].map(([label, value]) => (
                 <div key={label}>
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1">{label}</p>
@@ -206,33 +181,31 @@ export default function InventoryCo() {
         ══════════════════════════════════════ */}
         <section className="border-b border-white/[0.06]">
           <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
-
             <div className="grid md:grid-cols-[1fr_1.4fr] gap-16 items-start">
-              {/* Left — narrative */}
+
+              {/* Left */}
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">
-                  The Problem
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">The Problem</p>
                 <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-6 tracking-tight">
-                  Three systems.<br />No visibility.
+                  Three systems.<br />No central database.
                 </h2>
                 <p className="text-white/45 leading-relaxed mb-8">
-                  Before this engagement, InventoryCo&apos;s reporting relied on manual effort
-                  every single week. A team member would export data from Xero and Cin7,
-                  paste it into Excel, and build a report by hand. By the time it reached
-                  leadership, the numbers were already days old.
+                  InventoryCo&apos;s reporting relied entirely on manual effort. Each week,
+                  someone would export data from Xero and Cin7, paste it into Excel, and
+                  build a report by hand. By the time it reached leadership, the data was
+                  already days old — and reconciling it across systems introduced
+                  consistent errors.
                 </p>
-
-                {/* Issue list */}
                 <div className="space-y-3">
                   {[
-                    "No single source of truth across systems",
-                    "Manual reconciliation introduced errors",
-                    "No product-level profitability data",
-                    "Stock issues only visible in end-of-week reviews",
+                    "No single source of truth — each system told a different story",
+                    "Manual reconciliation between sales and inventory data",
+                    "No product-level margin visibility — revenue and cost lived in separate systems",
+                    "Stock issues only surfaced during end-of-week manual reviews",
+                    "Report quality depended entirely on who built it and when",
                   ].map((issue) => (
                     <div key={issue} className="flex items-start gap-3 text-sm text-white/50">
-                      <div className="mt-1.5 w-1 h-1 rounded-full bg-white/20 shrink-0" />
+                      <div className="mt-2 w-1 h-1 rounded-full bg-white/20 shrink-0" />
                       {issue}
                     </div>
                   ))}
@@ -244,124 +217,158 @@ export default function InventoryCo() {
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-4">
                   Systems in use — before
                 </p>
-
                 {[
                   {
                     name: "Xero",
-                    role: "Sales & financial data",
-                    issue: "Manual CSV exports only — no live sync",
-                    color: "border-l-blue-500/40",
+                    badge: "Financial / Sales",
+                    detail: "Invoice and revenue data. Accessible via API — but only exported as CSVs in practice.",
+                    issue: "No live integration — exports triggered manually",
+                    accentBorder: "border-l-blue-500/50",
+                    accentBg: "bg-blue-500/[0.04]",
                   },
                   {
                     name: "Cin7",
-                    role: "Inventory & stock levels",
-                    issue: "Completely siloed — no connection to financials",
-                    color: "border-l-orange-500/40",
+                    badge: "Inventory / Stock",
+                    detail: "Product catalogue, SKU-level stock positions, purchase orders, and warehouse data.",
+                    issue: "Completely siloed — no linkage to sales or financials",
+                    accentBorder: "border-l-orange-500/50",
+                    accentBg: "bg-orange-500/[0.04]",
                   },
                   {
                     name: "Excel",
-                    role: "Reporting layer",
-                    issue: "Rebuilt manually each week — error-prone and slow",
-                    color: "border-l-green-500/40",
+                    badge: "Reporting",
+                    detail: "Weekly reports built by copy-pasting from Xero exports and Cin7 data dumps.",
+                    issue: "Rebuilt from scratch each week — inconsistent and error-prone",
+                    accentBorder: "border-l-emerald-500/50",
+                    accentBg: "bg-emerald-500/[0.04]",
                   },
                 ].map((s) => (
-                  <div
-                    key={s.name}
-                    className={`border-l-2 ${s.color} bg-white/[0.03] border border-l-2 border-white/[0.06] rounded-xl p-5 flex flex-col gap-1.5`}
-                  >
+                  <div key={s.name} className={`border-l-2 ${s.accentBorder} ${s.accentBg} border border-white/[0.06] rounded-xl p-5 space-y-2`}>
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-sm">{s.name}</span>
-                      <span className="text-xs text-white/35">{s.role}</span>
+                      <span className="text-[10px] text-white/35 font-medium border border-white/10 px-2 py-0.5 rounded-full">{s.badge}</span>
                     </div>
-                    <p className="text-xs text-amber-400/70 flex items-center gap-1.5">
+                    <p className="text-xs text-white/40 leading-relaxed">{s.detail}</p>
+                    <p className="text-xs text-amber-400/70 flex items-center gap-1.5 pt-1">
                       <AlertTriangle size={11} className="shrink-0" />
                       {s.issue}
                     </p>
                   </div>
                 ))}
 
-                {/* Time cost callout */}
-                <div className="mt-4 rounded-xl border border-rose-500/15 bg-rose-500/[0.06] p-5">
-                  <p className="text-sm font-semibold text-rose-300 mb-1">~5 hours</p>
+                <div className="mt-2 rounded-xl border border-rose-500/15 bg-rose-500/[0.06] p-5">
+                  <p className="text-sm font-semibold text-rose-300 mb-1.5">~5 hours per week</p>
                   <p className="text-xs text-white/40 leading-relaxed">
-                    spent on manual reporting every week — pulling, cleaning, and formatting
-                    data across three platforms before a single insight could be read.
+                    consumed by manual reporting — pulling exports, cleaning data,
+                    reconciling figures, and formatting before a single insight could be read.
+                    Any error in the process meant starting again.
                   </p>
                 </div>
               </div>
+
             </div>
           </div>
         </section>
 
         {/* ══════════════════════════════════════
-            3. DATA FLOW
+            3. DATA ARCHITECTURE
         ══════════════════════════════════════ */}
         <section className="border-b border-white/[0.06] bg-white/[0.015]">
           <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
             <div className="text-center mb-16">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
-                The Approach
-              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">Architecture</p>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-                Building the data foundation
+                The data architecture
               </h2>
               <p className="text-white/40 max-w-xl mx-auto text-base leading-relaxed">
-                We mapped every data source, identified the critical fields, and designed
-                a pipeline that handles everything automatically.
+                A structured pipeline connects every source system to a centralised
+                Postgres database — with a clean transformation layer producing the
+                reporting outputs.
               </p>
             </div>
 
-            {/* Flow */}
-            <div className="max-w-lg mx-auto space-y-2">
+            {/* Architecture diagram — horizontal layers */}
+            <div className="max-w-2xl mx-auto space-y-3">
 
-              {/* Sources */}
-              <div className="grid grid-cols-3 gap-2">
-                {["Xero", "Cin7", "Excel"].map((s) => (
-                  <div
-                    key={s}
-                    className="text-center py-3.5 px-3 rounded-xl border border-white/10 bg-white/[0.04] text-sm font-medium text-white/70"
-                  >
-                    {s}
-                  </div>
-                ))}
+              {/* Layer 0 — Sources */}
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-white/20 text-center mb-2">
+                  Source systems
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: "Xero",  sub: "API / OAuth",      color: "border-blue-500/25 bg-blue-500/[0.06] text-blue-300"   },
+                    { label: "Cin7",  sub: "REST API",          color: "border-orange-500/25 bg-orange-500/[0.06] text-orange-300" },
+                    { label: "Excel", sub: "Structured upload", color: "border-emerald-500/25 bg-emerald-500/[0.06] text-emerald-300" },
+                  ].map((s) => (
+                    <div key={s.label} className={`border ${s.color} rounded-xl px-3 py-3.5 text-center`}>
+                      <p className="text-sm font-semibold">{s.label}</p>
+                      <p className="text-[10px] text-white/30 mt-0.5">{s.sub}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Arrow */}
-              <FlowArrow label="extract" />
+              <ArchArrow label="scheduled extraction" icon={<RefreshCw size={12} className="text-white/20" />} />
 
-              {/* Step */}
-              <FlowStep
-                color="border-blue-500/25 bg-blue-500/[0.07]"
-                textColor="text-blue-300"
-                label="Data Extraction"
-                sub="Scheduled pulls via API connections and Power Query"
+              {/* Layer 1 — Ingestion */}
+              <ArchLayer
+                icon={<Plug size={14} />}
+                color="border-sky-500/25 bg-sky-500/[0.07] text-sky-300"
+                label="Ingestion Layer"
+                pills={["Scheduled jobs", "Error logging", "Incremental loads", "Raw data staging"]}
+                body="Each source system is polled on a defined schedule. Raw data lands in staging tables before any transformation is applied — preserving a full audit trail of every ingestion run."
               />
 
-              <FlowArrow label="transform" />
+              <ArchArrow label="load to database" />
 
-              <FlowStep
-                color="border-violet-500/25 bg-violet-500/[0.07]"
-                textColor="text-violet-300"
-                label="Cleaning & Normalisation"
-                sub="Type standardisation · deduplication · relationship mapping"
+              {/* Layer 2 — Database — HIGHLIGHTED */}
+              <div className="border-2 border-violet-500/40 bg-violet-500/[0.08] rounded-2xl px-5 py-5">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <Database size={16} className="text-violet-300" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <p className="text-sm font-semibold text-violet-200">Centralised Database</p>
+                      <span className="text-[10px] text-violet-400/70 border border-violet-500/25 px-2 py-0.5 rounded-full">Postgres · Supabase</span>
+                    </div>
+                    <p className="text-xs text-white/40 leading-relaxed mb-3">
+                      The single source of truth. All source data is stored here in a
+                      structured relational schema — orders, products, inventory positions,
+                      and cost data joined by consistent keys.
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {["orders", "products", "inventory", "costs"].map((t) => (
+                        <div key={t} className="text-center py-2 rounded-lg bg-white/[0.04] border border-white/[0.07]">
+                          <p className="text-[10px] text-white/35 font-mono">{t}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <ArchArrow label="transform & model" icon={<GitMerge size={12} className="text-white/20" />} />
+
+              {/* Layer 3 — Transformation */}
+              <ArchLayer
+                icon={<GitMerge size={14} />}
+                color="border-indigo-500/25 bg-indigo-500/[0.07] text-indigo-300"
+                label="Transformation Layer"
+                pills={["Type normalisation", "Deduplication", "Margin calculations", "Reorder flag logic"]}
+                body="Raw tables are transformed into clean, analysis-ready views. Calculated fields — gross margin per SKU, inventory cover days, reorder alerts — are computed here and surfaced as SQL views."
               />
 
-              <FlowArrow label="load" />
+              <ArchArrow label="serve to reporting" icon={<BarChart3 size={12} className="text-white/20" />} />
 
-              <FlowStep
-                color="border-indigo-500/25 bg-indigo-500/[0.07]"
-                textColor="text-indigo-300"
-                label="Centralised Data Model"
-                sub="Single source of truth · all entities linked · version controlled"
-              />
-
-              <FlowArrow label="serve" />
-
-              <FlowStep
-                color="border-emerald-500/25 bg-emerald-500/[0.07]"
-                textColor="text-emerald-300"
-                label="Reporting Layer"
-                sub="Live dashboards · scheduled summaries · alert logic"
+              {/* Layer 4 — Reporting */}
+              <ArchLayer
+                icon={<Layers size={14} />}
+                color="border-emerald-500/25 bg-emerald-500/[0.07] text-emerald-300"
+                label="Reporting & Insight Layer"
+                pills={["KPI views", "Product margin breakdowns", "Stock alert logic", "Scheduled summaries"]}
+                body="The reporting layer reads directly from transformed views. Outputs are consistent, always current, and require no manual input — every number traces back to the same underlying model."
               />
 
             </div>
@@ -369,21 +376,57 @@ export default function InventoryCo() {
         </section>
 
         {/* ══════════════════════════════════════
-            4. INSIGHT LAYER
+            4. WHAT WAS BUILT
         ══════════════════════════════════════ */}
         <section className="border-b border-white/[0.06]">
           <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
+            <div className="grid md:grid-cols-[1fr_1.6fr] gap-16 items-start">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">Deliverables</p>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-5">
+                  What was built
+                </h2>
+                <p className="text-white/40 leading-relaxed text-sm">
+                  Four components — each removing a specific layer of manual dependency
+                  from the business and replacing it with an automated, reliable process.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {deliverables.map((d) => (
+                  <div
+                    key={d.title}
+                    className="flex gap-4 p-5 rounded-xl border border-white/[0.07] bg-white/[0.025] hover:border-white/[0.12] transition-colors"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-violet-500/15 flex items-center justify-center shrink-0 mt-0.5">
+                      <d.icon size={14} className="text-violet-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold mb-1">{d.title}</p>
+                      <p className="text-xs text-white/40 leading-relaxed">{d.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════
+            5. INSIGHT LAYER
+        ══════════════════════════════════════ */}
+        <section className="border-b border-white/[0.06] bg-white/[0.015]">
+          <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
 
             <div className="mb-16">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
-                Insight Layer
-              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">Insight Layer</p>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
                 What the business can now see
               </h2>
               <p className="text-white/40 text-base max-w-xl leading-relaxed">
-                These are the outputs InventoryCo reviews each Monday morning. Every
-                number is live. Nothing is manually compiled.
+                These outputs are served from the centralised data model. Every figure
+                is computed from the same underlying source — no manual assembly, no
+                version conflicts.
               </p>
             </div>
 
@@ -392,25 +435,17 @@ export default function InventoryCo() {
               {kpis.map((k) => (
                 <div
                   key={k.label}
-                  className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.05] transition-colors flex flex-col gap-4"
+                  className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e] hover:bg-white/[0.03] transition-colors flex flex-col gap-4"
                 >
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
-                    {k.label}
-                  </p>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">{k.label}</p>
                   <p className="text-3xl font-bold tracking-tight leading-none">{k.value}</p>
                   <div className="flex items-center gap-1.5 mt-auto">
-                    {k.positive === true && (
-                      <TrendingUp size={12} className="text-emerald-400 shrink-0" />
-                    )}
-                    {k.positive === false && (
-                      <AlertTriangle size={12} className="text-amber-400 shrink-0" />
-                    )}
-                    {k.positive === null && (
-                      <Minus size={12} className="text-white/20 shrink-0" />
-                    )}
+                    {k.positive === true  && <TrendingUp  size={12} className="text-emerald-400 shrink-0" />}
+                    {k.positive === false && <AlertTriangle size={12} className="text-amber-400  shrink-0" />}
+                    {k.positive === null  && <Minus         size={12} className="text-white/20   shrink-0" />}
                     <span className={`text-xs font-semibold ${
-                      k.positive === true ? "text-emerald-400" :
-                      k.positive === false ? "text-amber-400" :
+                      k.positive === true  ? "text-emerald-400" :
+                      k.positive === false ? "text-amber-400"  :
                       "text-white/30"
                     }`}>
                       {k.delta}
@@ -440,24 +475,26 @@ export default function InventoryCo() {
               ))}
             </div>
 
-            {/* Bottom row — product performance + stock alerts */}
+            {/* Product performance + Stock alerts */}
             <div className="grid md:grid-cols-2 gap-4">
 
-              {/* Product performance */}
-              <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.03]">
+              <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e]">
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-6">
-                  Top products by gross profit
+                  Top products — gross profit
                 </p>
-                <div className="space-y-5">
+                <div className="space-y-6">
                   {products.map((p) => (
                     <div key={p.name}>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1.5">
                         <span className="text-sm font-medium">{p.name}</span>
-                        <span className="text-sm font-semibold text-white/70">{p.profit}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-white/30">{p.margin} margin</span>
+                          <span className="text-sm font-semibold text-white/70">{p.profit}</span>
+                        </div>
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-white/[0.06]">
                         <div
-                          className="h-1.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+                          className="h-1.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400"
                           style={{ width: `${p.bar}%` }}
                         />
                       </div>
@@ -466,10 +503,9 @@ export default function InventoryCo() {
                 </div>
               </div>
 
-              {/* Inventory alerts */}
-              <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.03]">
+              <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e]">
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-6">
-                  Inventory alerts
+                  Inventory alerts — auto-generated
                 </p>
                 <div className="space-y-3">
                   {stockAlerts.map((a) => (
@@ -481,7 +517,13 @@ export default function InventoryCo() {
                           : "border-amber-500/20 bg-amber-500/[0.07]"
                       }`}
                     >
-                      <span className="text-sm font-medium">{a.sku}</span>
+                      <div className="flex items-center gap-2.5">
+                        <AlertTriangle
+                          size={13}
+                          className={a.level === "critical" ? "text-rose-400" : "text-amber-400"}
+                        />
+                        <span className="text-sm font-medium">{a.sku}</span>
+                      </div>
                       <span className={`text-xs font-semibold ${
                         a.level === "critical" ? "text-rose-400" : "text-amber-400"
                       }`}>
@@ -490,48 +532,12 @@ export default function InventoryCo() {
                     </div>
                   ))}
                 </div>
-                <p className="text-[11px] text-white/20 mt-5">
-                  Alerts fire automatically — no manual stock review required.
+                <p className="text-[11px] text-white/20 mt-5 leading-relaxed">
+                  Generated from the transformation layer when inventory.quantity &lt; products.reorder_level.
+                  No manual review required.
                 </p>
               </div>
 
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════════════════════════
-            5. WHAT WE BUILT
-        ══════════════════════════════════════ */}
-        <section className="border-b border-white/[0.06] bg-white/[0.015]">
-          <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
-            <div className="grid md:grid-cols-[1fr_1.6fr] gap-16 items-start">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">
-                  Deliverables
-                </p>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-5">
-                  What we built
-                </h2>
-                <p className="text-white/40 leading-relaxed text-sm">
-                  Four core components were designed, built, and handed over — each one
-                  removing a layer of manual dependency from the business.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                {deliverables.map((d, i) => (
-                  <div
-                    key={i}
-                    className="flex gap-4 p-5 rounded-xl border border-white/[0.07] bg-white/[0.025] hover:border-white/[0.12] transition-colors"
-                  >
-                    <CheckCircle size={16} className="text-violet-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-semibold mb-1">{d.title}</p>
-                      <p className="text-xs text-white/40 leading-relaxed">{d.body}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </section>
@@ -554,26 +560,23 @@ export default function InventoryCo() {
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
                   {
-                    heading: "Centralised data",
-                    body: "Xero, Cin7, and Excel data feeds into one model. All reporting draws from the same source.",
+                    heading: "Centralised data layer",
+                    body: "Xero, Cin7, and Excel all feed into one Postgres database. Every report, view, and alert draws from the same underlying source.",
                   },
                   {
                     heading: "Automated pipelines",
-                    body: "Data refreshes on schedule. No manual exports, no copy-pasting, no version conflicts.",
+                    body: "Scheduled API pulls replace all manual exports. Data arrives, is staged, cleaned, and loaded — without anyone needing to trigger it.",
                   },
                   {
-                    heading: "Real-time visibility",
-                    body: "Leadership can check revenue, margin, and stock levels at any point — not just after a manual report is built.",
+                    heading: "Near real-time visibility",
+                    body: "Revenue, margin, and stock data is current within the refresh cycle. Leadership no longer waits for a manually compiled weekly report.",
                   },
                   {
-                    heading: "Scalable foundation",
-                    body: "The data model is designed to accommodate new products, channels, and reporting requirements without rebuild.",
+                    heading: "Scalable architecture",
+                    body: "The schema is designed to accommodate additional products, sales channels, or reporting requirements without structural rebuild.",
                   },
                 ].map((item) => (
-                  <div
-                    key={item.heading}
-                    className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]"
-                  >
+                  <div key={item.heading} className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
                     <p className="text-sm font-semibold mb-2">{item.heading}</p>
                     <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
                   </div>
@@ -589,20 +592,14 @@ export default function InventoryCo() {
         <section className="border-b border-white/[0.06] bg-white/[0.015]">
           <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
             <div className="text-center mb-16">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
-                Results
-              </p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-                Measured outcomes
-              </h2>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">Results</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Indicative outcomes</h2>
+              <p className="text-white/30 text-sm mt-3">Based on typical engagements of this type. Figures are illustrative.</p>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
               {outcomes.map((o) => (
-                <div
-                  key={o.label}
-                  className="bg-[#07070e] p-8 flex flex-col gap-2 hover:bg-white/[0.03] transition-colors"
-                >
+                <div key={o.label} className="bg-[#07070e] p-8 flex flex-col gap-2 hover:bg-white/[0.03] transition-colors">
                   <p className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
                     {o.stat}
                   </p>
@@ -612,13 +609,12 @@ export default function InventoryCo() {
               ))}
             </div>
 
-            {/* Bullet outcomes */}
             <div className="mt-10 grid sm:grid-cols-2 gap-3">
               {[
-                "Reporting time reduced from ~5 hours to under 30 minutes per week",
-                "Clear, product-level margin visibility for the first time",
-                "Inventory issues flagged automatically — days before they become problems",
-                "Leadership makes decisions on live data, not week-old spreadsheets",
+                "Reporting time reduced significantly — from ~5 hours to under 30 minutes per week",
+                "Clear visibility on product-level margins for the first time",
+                "Inventory issues surfaced automatically, before they become fulfilment problems",
+                "A consistent, reliable reporting process that doesn't depend on one person",
               ].map((item) => (
                 <div key={item} className="flex items-start gap-3 text-sm text-white/50 p-4 rounded-xl border border-white/[0.06]">
                   <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
@@ -630,20 +626,22 @@ export default function InventoryCo() {
         </section>
 
         {/* ══════════════════════════════════════
-            8. CLOSING
+            8. CLOSING STATEMENT
         ══════════════════════════════════════ */}
         <section className="border-b border-white/[0.06]">
           <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
             <div className="max-w-3xl">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-8">
-                Summary
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-8">Summary</p>
+              <p className="text-2xl md:text-3xl font-medium leading-snug text-white/80 mb-8 tracking-tight">
+                &ldquo;This example demonstrates how disconnected operational and financial
+                data can be centralised into a structured reporting layer, enabling faster
+                and more reliable decision-making.&rdquo;
               </p>
-              <blockquote className="text-2xl md:text-3xl font-medium leading-snug text-white/80 mb-8 tracking-tight">
-                &ldquo;This project transformed how the business understands its data —
-                moving from manual reporting to a scalable, automated insight layer that
-                gives leadership confidence in every number they see.&rdquo;
-              </blockquote>
-              <p className="text-sm text-white/30">Quantyx Advisory · InventoryCo Ltd engagement · Q1 2026</p>
+              <div className="flex items-center gap-4">
+                <div className="h-px flex-1 bg-white/[0.06]" />
+                <p className="text-xs text-white/25 shrink-0">Quantyx Advisory · Sample engagement · Illustrative</p>
+                <div className="h-px flex-1 bg-white/[0.06]" />
+              </div>
             </div>
           </div>
         </section>
@@ -657,9 +655,9 @@ export default function InventoryCo() {
                   Dealing with the same problem?
                 </h3>
                 <p className="text-white/40 text-sm leading-relaxed">
-                  If your team is stitching together reports from multiple systems, we
-                  can map your data landscape and show you what&apos;s possible — in a
-                  free 30-minute call.
+                  If your business runs across multiple systems with no central data
+                  layer, we can map your architecture and show you what a clean,
+                  automated solution looks like — in a free 30-minute call.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 shrink-0">
@@ -698,30 +696,44 @@ export default function InventoryCo() {
    SUB-COMPONENTS
 ───────────────────────────────────────────── */
 
-function FlowArrow({ label }: { label: string }) {
+function ArchArrow({ label, icon }: { label: string; icon?: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-1 py-1">
       <ArrowDown size={14} className="text-white/15" />
-      <span className="text-[10px] font-medium uppercase tracking-widest text-white/20">{label}</span>
+      <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest text-white/20">
+        {icon}{label}
+      </span>
     </div>
   );
 }
 
-function FlowStep({
+function ArchLayer({
+  icon,
   color,
-  textColor,
   label,
-  sub,
+  pills,
+  body,
 }: {
+  icon: React.ReactNode;
   color: string;
-  textColor: string;
   label: string;
-  sub: string;
+  pills: string[];
+  body: string;
 }) {
   return (
-    <div className={`border ${color} rounded-xl px-5 py-4 text-center`}>
-      <p className={`text-sm font-semibold mb-1 ${textColor}`}>{label}</p>
-      <p className="text-xs text-white/30">{sub}</p>
+    <div className={`border ${color} rounded-xl px-5 py-4`}>
+      <div className="flex items-center gap-2 mb-2">
+        <span className="opacity-80">{icon}</span>
+        <p className="text-sm font-semibold">{label}</p>
+      </div>
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {pills.map((p) => (
+          <span key={p} className="text-[10px] text-white/35 bg-white/[0.04] border border-white/[0.07] px-2 py-0.5 rounded-full">
+            {p}
+          </span>
+        ))}
+      </div>
+      <p className="text-xs text-white/35 leading-relaxed">{body}</p>
     </div>
   );
 }
