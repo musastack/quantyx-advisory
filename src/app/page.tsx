@@ -292,7 +292,7 @@ export default function Home() {
           </div>
 
           {/* Bottom prompt */}
-          <div className="mt-10 p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="mt-5 p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p className="text-sm text-white/50 max-w-lg leading-relaxed">
               Most projects combine elements of two or three of these. We scope
               every engagement individually — no fixed packages, no off-the-shelf solutions.
@@ -303,6 +303,49 @@ export default function Home() {
             >
               Discuss your project <ArrowUpRight size={14} />
             </a>
+          </div>
+
+          {/* Custom builds callout */}
+          <div className="mt-5 relative overflow-hidden rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.07] p-8 md:p-10">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_50%,rgba(99,102,241,0.12),transparent_60%)]" />
+            <div className="relative grid md:grid-cols-[1fr_auto] gap-8 items-center">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-indigo-400/70 mb-3">
+                  Custom builds
+                </p>
+                <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3 leading-snug">
+                  Your software can&apos;t do it?<br className="hidden sm:block" /> We&apos;ll build it for you.
+                </h3>
+                <p className="text-white/50 text-sm leading-relaxed max-w-xl">
+                  If there&apos;s something specific your business needs — a report, a tool,
+                  an integration, a workflow — but your current software won&apos;t allow it,
+                  we can build it from scratch. Custom solutions designed exactly around
+                  how your business works, not a generic template.
+                </p>
+                <div className="flex flex-wrap gap-2 mt-5">
+                  {[
+                    "Custom reporting tools",
+                    "Bespoke integrations",
+                    "Automated workflows",
+                    "Internal dashboards",
+                    "One-off data builds",
+                  ].map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] text-indigo-300/80 border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <a
+                href="#contact"
+                className="shrink-0 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-3.5 rounded-xl transition-colors whitespace-nowrap"
+              >
+                Tell us what you need <ArrowRight size={15} />
+              </a>
+            </div>
           </div>
         </div>
       </section>
