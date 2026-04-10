@@ -8,6 +8,7 @@ import {
   CheckCircle,
   Users,
   Globe,
+  ExternalLink,
 } from "lucide-react";
 
 const features = [
@@ -54,6 +55,39 @@ const stats = [
   { label: "Hours Saved / Month", value: "40k+" },
   { label: "Dashboards Deployed", value: "500+" },
   { label: "Uptime SLA", value: "99.9%" },
+];
+
+const caseStudies = [
+  {
+    client: "Retail Chain Co.",
+    industry: "Retail",
+    tag: "Dashboard + Automation",
+    tagColor: "text-indigo-300 bg-indigo-500/10 border-indigo-500/20",
+    headline: "Cut reporting time by 80%",
+    description:
+      "Built a real-time sales dashboard pulling data from 12 store locations, replacing 4 hours of weekly manual spreadsheet work with a live overview updated every 5 minutes.",
+    results: ["80% reduction in reporting time", "12 locations unified in one view", "Automated weekly email digest"],
+  },
+  {
+    client: "Logistics SME",
+    industry: "Logistics",
+    tag: "Process Automation",
+    tagColor: "text-purple-300 bg-purple-500/10 border-purple-500/20",
+    headline: "Automated invoice & delivery tracking",
+    description:
+      "Designed an end-to-end automation that matched purchase orders, invoices, and delivery confirmations — eliminating manual data entry and catching errors before they reached clients.",
+    results: ["Zero manual invoice matching", "Error rate dropped from 6% to 0.3%", "3 staff hours saved per day"],
+  },
+  {
+    client: "Digital Marketing Agency",
+    industry: "Marketing",
+    tag: "Client Reporting",
+    tagColor: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
+    headline: "White-label client dashboards",
+    description:
+      "Created branded, auto-updating dashboards for 20+ agency clients pulling from Google Ads, Meta, and GA4 — replacing PDF reports with live portals each client could access anytime.",
+    results: ["20+ client portals deployed", "Reports go live in <2 hrs", "Client retention up 25%"],
+  },
 ];
 
 const plans = [
@@ -115,6 +149,7 @@ export default function Home() {
           <span className="text-xl font-bold gradient-text">Quantyx Advisory</span>
           <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#case-studies" className="hover:text-white transition-colors">Case Studies</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             <a href="#contact" className="hover:text-white transition-colors">Contact</a>
           </div>
@@ -204,6 +239,57 @@ export default function Home() {
                 <p className="text-white/50 text-sm leading-relaxed">{f.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Case Studies */}
+      <section id="case-studies" className="py-24 px-6 bg-white/[0.02]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 border border-indigo-500/30 bg-indigo-500/10 rounded-full px-4 py-1.5 text-sm text-indigo-300 mb-4">
+              Real results, real clients
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Case Studies</h2>
+            <p className="text-white/50 text-lg max-w-2xl mx-auto">
+              Here&apos;s a sample of the work we&apos;ve delivered for businesses across different industries.
+            </p>
+          </div>
+          <div className="grid lg:grid-cols-3 gap-6">
+            {caseStudies.map((cs) => (
+              <div
+                key={cs.client}
+                className="p-7 rounded-2xl border border-white/8 bg-white/3 hover:border-indigo-500/30 transition-all flex flex-col"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <p className="font-semibold">{cs.client}</p>
+                    <p className="text-xs text-white/40 mt-0.5">{cs.industry}</p>
+                  </div>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${cs.tagColor}`}>
+                    {cs.tag}
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold mb-3 gradient-text">{cs.headline}</h3>
+                <p className="text-white/50 text-sm leading-relaxed mb-6 flex-1">{cs.description}</p>
+                <ul className="space-y-2">
+                  {cs.results.map((r) => (
+                    <li key={r} className="flex items-center gap-2 text-sm text-white/70">
+                      <CheckCircle size={14} className="text-indigo-400 shrink-0" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-10">
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 text-sm text-indigo-300 hover:text-indigo-200 transition-colors"
+            >
+              Want results like these? Let&apos;s talk <ExternalLink size={14} />
+            </a>
           </div>
         </div>
       </section>
