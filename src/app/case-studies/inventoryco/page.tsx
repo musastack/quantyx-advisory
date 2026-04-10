@@ -139,6 +139,42 @@ export default async function InventoryCo() {
         </section>
 
         {/* ══════════════════════════════════════
+            1b. BESPOKE CALLOUT
+        ══════════════════════════════════════ */}
+        <section className="border-b border-white/[0.06] bg-white/[0.01]">
+          <div className="max-w-5xl mx-auto px-6 py-10">
+            <div className="grid sm:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
+              {[
+                {
+                  icon: "⚙",
+                  label: "100% custom-built",
+                  body: "No templates, no off-the-shelf tools. Every pipeline, schema, and view was designed around InventoryCo's specific systems and workflows.",
+                  color: "text-violet-400",
+                },
+                {
+                  icon: "🔗",
+                  label: "Specific integrations",
+                  body: "Xero and Cin7 APIs connected using InventoryCo's exact data models — product IDs, invoice structures, and inventory schema mapped precisely.",
+                  color: "text-indigo-400",
+                },
+                {
+                  icon: "📐",
+                  label: "Logic built to their rules",
+                  body: "Reorder thresholds, margin calculations, and alert triggers were defined by the client — then automated. Their rules, running automatically.",
+                  color: "text-sky-400",
+                },
+              ].map((item) => (
+                <div key={item.label} className="bg-[#07070e] hover:bg-white/[0.025] transition-colors p-7 flex flex-col gap-3">
+                  <span className="text-xl">{item.icon}</span>
+                  <p className={`text-sm font-bold ${item.color}`}>{item.label}</p>
+                  <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════
             2. BEFORE
         ══════════════════════════════════════ */}
         <section className="border-b border-white/[0.06]">
@@ -445,10 +481,22 @@ export default async function InventoryCo() {
             <div className="max-w-3xl">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-8">Summary</p>
               <p className="text-2xl md:text-3xl font-medium leading-snug text-white/80 mb-8 tracking-tight">
-                &ldquo;This example demonstrates how disconnected operational and financial
-                data can be centralised into a structured reporting layer, enabling faster
-                and more reliable decision-making.&rdquo;
+                &ldquo;Every business has different systems, different data, and different
+                decisions to make. That&rsquo;s why nothing here was adapted from a template
+                — it was designed specifically for how InventoryCo operates.&rdquo;
               </p>
+              <div className="flex flex-wrap gap-3 mb-8">
+                {[
+                  "Schema designed around their exact SKU structure",
+                  "Alert thresholds set by the client, automated by us",
+                  "Margin logic built to match their cost model",
+                  "Reporting cadence matched to their management rhythm",
+                ].map((point) => (
+                  <span key={point} className="text-xs font-medium text-white/40 border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 rounded-full">
+                    {point}
+                  </span>
+                ))}
+              </div>
               <div className="flex items-center gap-4">
                 <div className="h-px flex-1 bg-white/[0.06]" />
                 <p className="text-xs text-white/25 shrink-0">Quantyx Advisory · Sample engagement · Illustrative</p>
@@ -463,11 +511,14 @@ export default async function InventoryCo() {
           <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-10 md:p-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="max-w-xl">
-                <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Dealing with the same problem?</h3>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-400/70 mb-3">Custom build</p>
+                <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
+                  We&apos;ll build something this specific for you.
+                </h3>
                 <p className="text-white/40 text-sm leading-relaxed">
-                  If your business runs across multiple systems with no central data layer,
-                  we can map your architecture and show you what a clean, automated
-                  solution looks like — in a free 30-minute call.
+                  Every engagement starts from scratch — your systems, your data, your rules.
+                  In a free 30-minute call we&apos;ll map your setup and show you exactly
+                  what a bespoke solution would look like.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 shrink-0">
