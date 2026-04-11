@@ -11,39 +11,29 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  TrendingUp,
   AlertTriangle,
-  Minus,
-  Package,
-  Database,
-  Users,
-  Clock,
-  Briefcase,
   CheckCircle,
-  AlertCircle,
   ArrowUpRight,
   ArrowDownRight,
-  Zap,
   ChevronDown,
   ChevronRight,
   Activity,
-  DollarSign,
   BarChart2,
-  Layers,
+  Briefcase,
+  Package,
+  Database,
   X,
 } from "lucide-react";
 import type {
   InventoryCoDashboard,
   ActiveJob,
-  CrewStatus,
-  MaterialAlert,
 } from "@/lib/inventoryco";
 
 /* ─────────────────────────────────────────────
    TYPES
 ───────────────────────────────────────────── */
 
-type Tab = "overview" | "jobs" | "labour" | "finance";
+type Tab = "financial" | "products" | "jobs" | "inventory";
 type TimePeriod = "week" | "month" | "last";
 
 /* ─────────────────────────────────────────────
@@ -64,24 +54,59 @@ function pct(n: number) {
    SECTION LABEL
 ───────────────────────────────────────────── */
 
-function SectionLabel({ label, count }: { label: string; count?: number }) {
+function SectionLabel({ label, sub }: { label: string; sub?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 shrink-0">
-        {label}
-      </p>
-      {count !== undefined && (
-        <span className="text-[10px] font-bold text-slate-400 dark:text-white/25 shrink-0">
-          {count}
-        </span>
-      )}
+      <div className="shrink-0">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">
+          {label}
+        </p>
+        {sub && (
+          <p className="text-[10px] text-slate-300 dark:text-white/20 mt-0.5">{sub}</p>
+        )}
+      </div>
       <div className="h-px flex-1 bg-slate-200 dark:bg-white/[0.06]" />
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────
-   REVENUE TOOLTIP
+   INSIGHT CARD
+───────────────────────────────────────────── */
+
+function InsightCard({
+  text,
+  action,
+  severity,
+  index,
+}: {
+  text: string;
+  action: string;
+  severity: "warn" | "alert" | "info";
+  index: number;
+}) {
+  const map = {
+    warn:  { bar: "bg-amber-500", bg: "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.05]",   num: "text-amber-600 dark:text-amber-400" },
+    alert: { bar: "bg-rose-500",  bg: "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.05]",       num: "text-rose-600 dark:text-rose-400" },
+    info:  { bar: "bg-indigo-500",bg: "border-slate-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.025]",         num: "text-indigo-600 dark:text-indigo-400" },
+  };
+  const m = map[severity];
+  return (
+    <div className={`p-4 rounded-xl border ${m.bg} flex items-start gap-3`}>
+      <div className="shrink-0 flex flex-col items-center gap-1.5 pt-0.5">
+        <span className={`text-[10px] font-bold ${m.num} w-4 text-center`}>{index}</span>
+        <div className={`w-0.5 flex-1 rounded-full ${m.bar} min-h-[20px]`} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-slate-800 dark:text-white/90 leading-snug mb-1.5">{text}</p>
+        <p className="text-xs text-slate-500 dark:text-white/40 leading-relaxed">{action}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   CHART TOOLTIP
 ───────────────────────────────────────────── */
 
 function RevenueTooltip({
@@ -110,86 +135,6 @@ function RevenueTooltip({
         <p className="text-white/60">
           Profit: <span className="text-emerald-400">{fmt(payload[1]?.value ?? 0)}</span>
         </p>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   TOP KPI CARD
-───────────────────────────────────────────── */
-
-function TopKPI({
-  label,
-  value,
-  delta,
-  deltaPositive,
-  sub,
-}: {
-  label: string;
-  value: string;
-  delta?: string;
-  deltaPositive?: boolean;
-  sub: string;
-}) {
-  return (
-    <div className="p-5 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none flex flex-col gap-2">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">
-        {label}
-      </p>
-      <div className="flex items-end gap-2 mt-1">
-        <p className="text-2xl font-bold tracking-tight leading-none text-slate-900 dark:text-white">
-          {value}
-        </p>
-        {delta && (
-          <span
-            className={`text-xs font-semibold mb-0.5 flex items-center gap-0.5 ${
-              deltaPositive !== false
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-rose-600 dark:text-rose-400"
-            }`}
-          >
-            {deltaPositive !== false ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-            {delta}
-          </span>
-        )}
-      </div>
-      <p className="text-[11px] text-slate-400 dark:text-white/35">{sub}</p>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   INSIGHT CARD
-───────────────────────────────────────────── */
-
-function InsightCard({
-  text,
-  action,
-  severity,
-  index,
-}: {
-  text: string;
-  action: string;
-  severity: "warn" | "alert" | "info";
-  index: number;
-}) {
-  const map = {
-    warn:  { bar: "bg-amber-500", bg: "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.05]",   num: "text-amber-600 dark:text-amber-400" },
-    alert: { bar: "bg-rose-500",  bg: "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.05]",       num: "text-rose-600 dark:text-rose-400" },
-    info:  { bar: "bg-indigo-500",bg: "border-slate-200 bg-white dark:border-white/[0.08] dark:bg-white/[0.025]",         num: "text-indigo-600 dark:text-indigo-400" },
-  };
-  const m = map[severity];
-
-  return (
-    <div className={`p-4 rounded-xl border ${m.bg} flex items-start gap-3`}>
-      <div className="shrink-0 flex flex-col items-center gap-1.5 pt-0.5">
-        <span className={`text-[10px] font-bold ${m.num} w-4 text-center`}>{index}</span>
-        <div className={`w-0.5 flex-1 rounded-full ${m.bar} min-h-[20px]`} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-slate-800 dark:text-white/90 leading-snug mb-1.5">{text}</p>
-        <p className="text-xs text-slate-500 dark:text-white/40 leading-relaxed">{action}</p>
       </div>
     </div>
   );
@@ -256,51 +201,25 @@ function JobDetailPanel({ job, onClose }: { job: ActiveJob; onClose: () => void 
   const matPct = 100 - labourPct;
   const marginPct = job.margin_pct ?? Math.round(((job.budget_gbp - job.actual_cost_gbp) / job.budget_gbp) * 100 * 10) / 10;
   const labourHours = job.labour_hours ?? Math.round(labourCost / 110);
+  const profitAtBudget = job.budget_gbp * marginPct / 100;
 
   return (
     <div className="mt-2 mb-1 rounded-2xl border-2 border-indigo-300 dark:border-indigo-500/40 bg-white dark:bg-[#0c0c18] shadow-lg dark:shadow-none overflow-hidden">
-
-      {/* Panel header */}
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className={`w-2 h-2 rounded-full ${s.dot}`} />
           <span className="text-xs font-mono font-bold text-slate-500 dark:text-white/40">{job.job_id}</span>
           <span className="text-sm font-bold text-slate-900 dark:text-white">{job.name}</span>
-          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${s.pill}`}>
-            {s.label}
-          </span>
+          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${s.pill}`}>{s.label}</span>
         </div>
-        <button
-          onClick={onClose}
-          className="p-1 text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white/70 transition-colors"
-        >
+        <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white/70 transition-colors">
           <X size={14} />
         </button>
       </div>
 
       <div className="p-5 grid md:grid-cols-2 gap-5">
-
-        {/* Left: progress + cost breakdown */}
+        {/* Left: financials */}
         <div className="space-y-5">
-
-          {/* Overall progress */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-600 dark:text-white/60">Completion</span>
-              <span className="text-sm font-bold text-slate-900 dark:text-white">{job.pct_complete}%</span>
-            </div>
-            <div className="h-2.5 rounded-full bg-slate-100 dark:bg-white/[0.07] overflow-hidden">
-              <div
-                className={`h-2.5 rounded-full ${s.bar} transition-all`}
-                style={{ width: `${job.pct_complete}%` }}
-              />
-            </div>
-            <div className="flex justify-between mt-1">
-              <span className="text-[10px] text-slate-400 dark:text-white/25">Start: {job.start_date}</span>
-              <span className="text-[10px] text-slate-400 dark:text-white/25">Due: {job.due_date}</span>
-            </div>
-          </div>
-
           {/* Budget vs actual */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -309,11 +228,8 @@ function JobDetailPanel({ job, onClose }: { job: ActiveJob; onClose: () => void 
                 {budgetUsedPct.toFixed(0)}% of {fmtk(job.budget_gbp)}
               </span>
             </div>
-            <div className="h-2 rounded-full bg-slate-100 dark:bg-white/[0.07] overflow-hidden">
-              <div
-                className={`h-2 rounded-full transition-all ${overBudget ? "bg-rose-500" : "bg-indigo-500 dark:bg-indigo-400"}`}
-                style={{ width: `${budgetUsedPct}%` }}
-              />
+            <div className="h-2.5 rounded-full bg-slate-100 dark:bg-white/[0.07] overflow-hidden">
+              <div className={`h-2.5 rounded-full transition-all ${overBudget ? "bg-rose-500" : "bg-indigo-500 dark:bg-indigo-400"}`} style={{ width: `${budgetUsedPct}%` }} />
             </div>
             <div className="flex justify-between mt-1">
               <span className="text-[10px] text-slate-400 dark:text-white/25">Actual: {fmtk(job.actual_cost_gbp)}</span>
@@ -345,23 +261,26 @@ function JobDetailPanel({ job, onClose }: { job: ActiveJob; onClose: () => void 
               </div>
             </div>
           </div>
+
+          {/* Completion */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-slate-600 dark:text-white/60">Completion</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">{job.pct_complete}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-slate-100 dark:bg-white/[0.07] overflow-hidden">
+              <div className={`h-2 rounded-full ${s.bar} transition-all`} style={{ width: `${job.pct_complete}%` }} />
+            </div>
+            <div className="flex justify-between mt-1">
+              <span className="text-[10px] text-slate-400 dark:text-white/25">Start: {job.start_date}</span>
+              <span className="text-[10px] text-slate-400 dark:text-white/25">Due: {job.due_date}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Right: key metrics + flags */}
+        {/* Right: key metrics + risk */}
         <div className="space-y-4">
-
-          {/* Metric grid */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3.5 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-              <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Labour hrs</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">{labourHours}</p>
-              <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">hrs logged to date</p>
-            </div>
-            <div className="p-3.5 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-              <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Crew</p>
-              <p className="text-sm font-bold text-slate-900 dark:text-white">{job.crew}</p>
-              <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">{job.client}</p>
-            </div>
             <div className={`p-3.5 rounded-xl border ${marginPct >= 15 ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/[0.04]" : marginPct >= 5 ? "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.04]" : "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.04]"}`}>
               <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Est. Margin</p>
               <p className={`text-xl font-bold ${marginPct >= 15 ? "text-emerald-700 dark:text-emerald-300" : marginPct >= 5 ? "text-amber-700 dark:text-amber-300" : "text-rose-700 dark:text-rose-300"}`}>
@@ -370,13 +289,22 @@ function JobDetailPanel({ job, onClose }: { job: ActiveJob; onClose: () => void 
               <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">on budget</p>
             </div>
             <div className="p-3.5 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-              <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Materials</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">{fmtk(materialsCost)}</p>
-              <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">committed to date</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Profit (est.)</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{fmtk(profitAtBudget)}</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">at budget margin</p>
+            </div>
+            <div className="p-3.5 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
+              <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Labour hrs</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{labourHours}</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">logged to date</p>
+            </div>
+            <div className="p-3.5 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
+              <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Crew</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white">{job.crew}</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">{job.client}</p>
             </div>
           </div>
 
-          {/* Risk flags */}
           {job.risk_flag ? (
             <div className="p-3.5 rounded-xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/[0.06]">
               <div className="flex items-start gap-2">
@@ -384,9 +312,6 @@ function JobDetailPanel({ job, onClose }: { job: ActiveJob; onClose: () => void 
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-1">Risk flag</p>
                   <p className="text-xs text-amber-700 dark:text-amber-300 font-medium">{job.risk_flag}</p>
-                  <p className="text-[11px] text-slate-500 dark:text-white/35 mt-1 leading-relaxed">
-                    Identify margin issues before they impact profitability — flagged automatically from job data.
-                  </p>
                 </div>
               </div>
             </div>
@@ -405,278 +330,95 @@ function JobDetailPanel({ job, onClose }: { job: ActiveJob; onClose: () => void 
 }
 
 /* ─────────────────────────────────────────────
-   JOB CARD (clickable)
+   JOB CARD
 ───────────────────────────────────────────── */
 
-function JobCard({
-  job,
-  selected,
-  onSelect,
-}: {
-  job: ActiveJob;
-  selected: boolean;
-  onSelect: (id: string | null) => void;
-}) {
+function JobCard({ job, selected, onSelect }: { job: ActiveJob; selected: boolean; onSelect: (id: string | null) => void }) {
   const s = JOB_STATUS[job.status];
   const overBudget = job.actual_cost_gbp > job.budget_gbp;
   const marginPct = job.margin_pct ?? Math.round(((job.budget_gbp - job.actual_cost_gbp) / job.budget_gbp) * 100 * 10) / 10;
+  const marginColor = marginPct >= 15 ? "text-emerald-600 dark:text-emerald-400" : marginPct >= 5 ? "text-amber-600 dark:text-amber-400" : "text-rose-600 dark:text-rose-400";
 
   return (
     <div>
       <div
         onClick={() => onSelect(selected ? null : job.job_id)}
-        className={`p-5 rounded-xl border shadow-sm dark:shadow-none cursor-pointer transition-all hover:shadow-md dark:hover:border-white/15 ${
-          selected ? s.selectedRow : s.row
-        }`}
+        className={`p-4 rounded-xl border shadow-sm dark:shadow-none cursor-pointer transition-all hover:shadow-md dark:hover:border-white/15 ${selected ? s.selectedRow : s.row}`}
       >
         <div className="flex items-start gap-3">
-          {/* Status dot */}
           <div className="mt-1.5 shrink-0">
             <div className={`w-2 h-2 rounded-full ${s.dot}`} />
           </div>
-
           <div className="flex-1 min-w-0">
-            {/* Top row */}
-            <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                   <span className="text-[10px] font-mono font-semibold text-slate-400 dark:text-white/30">{job.job_id}</span>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${s.pill}`}>
-                    {s.label}
-                  </span>
-                  {job.risk_flag && (
-                    <span className="text-[10px] font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/10 border border-amber-300/60 dark:border-amber-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <AlertTriangle size={8} className="shrink-0" />
-                      {job.risk_flag}
-                    </span>
-                  )}
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${s.pill}`}>{s.label}</span>
                 </div>
-                <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{job.name}</p>
-                <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">{job.client}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">{job.name}</p>
+                <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">{job.client} · {job.crew}</p>
               </div>
-              <div className="text-right shrink-0 flex flex-col items-end gap-1">
-                <p className="text-xs font-semibold text-slate-600 dark:text-white/60">{job.crew}</p>
-                <p className="text-xs text-slate-400 dark:text-white/25">Due {job.due_date}</p>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                  marginPct >= 15
-                    ? "text-emerald-700 dark:text-emerald-400"
-                    : marginPct >= 5
-                    ? "text-amber-700 dark:text-amber-400"
-                    : "text-rose-700 dark:text-rose-400"
-                }`}>
-                  {marginPct.toFixed(0)}% margin
-                </span>
+              <div className="text-right shrink-0">
+                <p className={`text-sm font-bold ${marginColor}`}>{marginPct.toFixed(0)}%</p>
+                <p className="text-[9px] text-slate-400 dark:text-white/25 uppercase tracking-wider">Margin</p>
               </div>
             </div>
-
-            {/* Bottom: progress + budget */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex gap-4 mt-3 pt-2.5 border-t border-slate-100 dark:border-white/[0.05]">
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-medium text-slate-400 dark:text-white/30">Progress</span>
-                  <span className="text-[10px] font-bold text-slate-600 dark:text-white/60">{job.pct_complete}%</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-slate-200 dark:bg-white/[0.07]">
-                  <div className={`h-1.5 rounded-full ${s.bar} transition-all`} style={{ width: `${job.pct_complete}%` }} />
-                </div>
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/25 mb-0.5">Budget</p>
+                <p className="text-xs font-bold text-slate-600 dark:text-white/60">{fmtk(job.budget_gbp)}</p>
               </div>
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-medium text-slate-400 dark:text-white/30">Budget vs actual</span>
-                  {overBudget && <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400">Over</span>}
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/25 mb-0.5">Actual cost</p>
+                <p className={`text-xs font-bold ${overBudget ? "text-rose-600 dark:text-rose-400" : "text-slate-600 dark:text-white/60"}`}>{fmtk(job.actual_cost_gbp)}</p>
+              </div>
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/25 mb-0.5">Complete</p>
+                <p className="text-xs font-bold text-slate-600 dark:text-white/60">{job.pct_complete}%</p>
+              </div>
+              {job.risk_flag && (
+                <div className="ml-auto flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                  <AlertTriangle size={11} />
+                  <span className="text-[10px] font-semibold">{job.risk_flag}</span>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-xs font-bold ${overBudget ? "text-rose-600 dark:text-rose-400" : "text-slate-700 dark:text-white/70"}`}>
-                    {fmtk(job.actual_cost_gbp)}
-                  </span>
-                  <span className="text-xs text-slate-400 dark:text-white/30">/ {fmtk(job.budget_gbp)}</span>
-                </div>
+              )}
+              <div className="ml-auto shrink-0">
+                {selected ? <ChevronDown size={14} className="text-indigo-500 dark:text-indigo-400" /> : <ChevronRight size={14} className="text-slate-300 dark:text-white/20" />}
               </div>
             </div>
-          </div>
-
-          {/* Expand indicator */}
-          <div className="shrink-0 mt-1">
-            {selected
-              ? <ChevronDown size={14} className="text-indigo-500 dark:text-indigo-400" />
-              : <ChevronRight size={14} className="text-slate-300 dark:text-white/20" />
-            }
           </div>
         </div>
       </div>
-
-      {/* Detail panel */}
       {selected && <JobDetailPanel job={job} onClose={() => onSelect(null)} />}
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────
-   CREW CARD
-───────────────────────────────────────────── */
-
-const CREW_STATUS = {
-  available: {
-    label: "Available",
-    color: "text-emerald-700 bg-emerald-100 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20",
-    bar: "bg-emerald-500 dark:bg-emerald-400",
-    capacityNote: "Capacity available for new starts",
-  },
-  "near-capacity": {
-    label: "Near capacity",
-    color: "text-amber-700 bg-amber-100 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20",
-    bar: "bg-amber-500 dark:bg-amber-400",
-    capacityNote: "Limited bandwidth — monitor before scheduling",
-  },
-  overallocated: {
-    label: "Overallocated",
-    color: "text-rose-700 bg-rose-100 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20",
-    bar: "bg-rose-500 dark:bg-rose-400",
-    capacityNote: "Over capacity — review job schedule",
-  },
-};
-
-function CrewCard({ crew }: { crew: CrewStatus }) {
-  const s = CREW_STATUS[crew.status];
-  const remainingHours = crew.capacity_hours - crew.hours_this_week;
-
-  return (
-    <div className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
-      <div className="flex items-start justify-between gap-2 mb-4">
-        <div>
-          <p className="text-sm font-bold text-slate-900 dark:text-white">{crew.name}</p>
-          <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">Lead: {crew.lead}</p>
-        </div>
-        <span className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 ${s.color}`}>
-          {s.label}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div>
-          <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 font-semibold uppercase tracking-widest">Jobs</p>
-          <p className="text-xl font-bold leading-none text-slate-900 dark:text-white">{crew.jobs_active}</p>
-          <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">active</p>
-        </div>
-        <div>
-          <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 font-semibold uppercase tracking-widest">Hours</p>
-          <p className="text-xl font-bold leading-none text-slate-900 dark:text-white">
-            {crew.hours_this_week}
-            <span className="text-xs text-slate-400 dark:text-white/30 font-normal">/{crew.capacity_hours}</span>
-          </p>
-          <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">{remainingHours > 0 ? `${remainingHours} remaining` : "At capacity"}</p>
-        </div>
-        <div>
-          <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 font-semibold uppercase tracking-widest">Util.</p>
-          <p className={`text-xl font-bold leading-none ${crew.utilisation_pct >= 95 ? "text-rose-700 dark:text-rose-300" : crew.utilisation_pct >= 88 ? "text-amber-700 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-300"}`}>
-            {crew.utilisation_pct}%
-          </p>
-          <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">this week</p>
-        </div>
-      </div>
-
-      {/* Utilisation bar */}
-      <div className="mb-3">
-        <div className="h-2 rounded-full bg-slate-100 dark:bg-white/[0.07] overflow-hidden">
-          <div className={`h-2 rounded-full ${s.bar} transition-all`} style={{ width: `${crew.utilisation_pct}%` }} />
-        </div>
-      </div>
-
-      <p className="text-[11px] text-slate-400 dark:text-white/30 leading-relaxed">{s.capacityNote}</p>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   MATERIAL ROW
-───────────────────────────────────────────── */
-
-const MAT_SEVERITY = {
-  over: {
-    label: "Over budget",
-    pill: "text-rose-700 bg-rose-100 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20",
-    border: "border-rose-200 bg-rose-50 dark:border-rose-500/15 dark:bg-rose-500/[0.03]",
-  },
-  watch: {
-    label: "Watch",
-    pill: "text-amber-700 bg-amber-100 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20",
-    border: "border-amber-200 bg-amber-50 dark:border-amber-500/15 dark:bg-amber-500/[0.03]",
-  },
-  "supply-risk": {
-    label: "Supply risk",
-    pill: "text-orange-700 bg-orange-100 border-orange-200 dark:text-orange-400 dark:bg-orange-500/10 dark:border-orange-500/20",
-    border: "border-orange-200 bg-orange-50 dark:border-orange-500/15 dark:bg-orange-500/[0.03]",
-  },
-};
-
-function MaterialRow({ mat }: { mat: MaterialAlert }) {
-  const s = MAT_SEVERITY[mat.severity];
-
-  return (
-    <div className={`p-4 rounded-xl border ${s.border}`}>
-      <div className="flex items-start justify-between gap-3 mb-2.5">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{mat.material}</p>
-          <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">{mat.job_id} · {mat.job_name}</p>
-        </div>
-        <span className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 ${s.pill}`}>
-          {s.label}
-        </span>
-      </div>
-      {mat.severity !== "supply-risk" ? (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs mb-2">
-          <span className="text-slate-500 dark:text-white/40">
-            Committed: <span className="text-slate-700 dark:text-white/70 font-semibold">{fmt(mat.committed_gbp)}</span>
-          </span>
-          <span className="text-slate-300 dark:text-white/20">·</span>
-          <span className="text-slate-500 dark:text-white/40">Estimate: {fmt(mat.estimate_gbp)}</span>
-          <span className="text-slate-300 dark:text-white/20">·</span>
-          <span className="font-bold text-rose-600 dark:text-rose-400">+{mat.variance_pct.toFixed(1)}% over</span>
-        </div>
-      ) : (
-        <p className="text-xs text-slate-500 dark:text-white/40 mb-2">Committed: {fmt(mat.committed_gbp)}</p>
-      )}
-      <p className="text-[11px] text-slate-400 dark:text-white/30 italic leading-relaxed">{mat.note}</p>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   MAIN EXPORT
+   MAIN COMPONENT
 ───────────────────────────────────────────── */
 
 export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [activeTab, setActiveTab] = useState<Tab>("financial");
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("month");
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-  const {
-    kpis,
-    operationalKPIs,
-    monthlyRevenue,
-    topProducts,
-    lowStockItems,
-    activeJobs,
-    crewStatuses,
-    materialAlerts,
-    source,
-  } = data;
+  const { kpis, operationalKPIs, monthlyRevenue, topProducts, lowStockItems, activeJobs, source } = data;
 
-  const revenueGrowthPct =
-    monthlyRevenue.length >= 2
-      ? (
-          ((monthlyRevenue.at(-1)!.revenue - monthlyRevenue[0].revenue) /
-            monthlyRevenue[0].revenue) *
-          100
-        ).toFixed(0)
-      : null;
+  const totalCost = kpis.totalRevenue - kpis.totalProfit;
+  const revenueGrowthPct = monthlyRevenue.length >= 2
+    ? (((monthlyRevenue.at(-1)!.revenue - monthlyRevenue[0].revenue) / monthlyRevenue[0].revenue) * 100).toFixed(0)
+    : null;
 
-  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-    { id: "overview",  label: "Overview",          icon: Activity },
-    { id: "jobs",      label: "Job Tracker",        icon: Briefcase },
-    { id: "labour",    label: "Labour & Materials", icon: Users },
-    { id: "finance",   label: "Finance",            icon: BarChart2 },
-  ];
+  const activeOnlyJobs = activeJobs.filter((j) => j.status !== "complete");
+  const totalJobBudget = activeOnlyJobs.reduce((s, j) => s + j.budget_gbp, 0);
+  const totalJobActual = activeOnlyJobs.reduce((s, j) => s + j.actual_cost_gbp, 0);
+  const jobsSortedByMargin = [...activeOnlyJobs].sort((a, b) => {
+    const mA = a.margin_pct ?? ((a.budget_gbp - a.actual_cost_gbp) / a.budget_gbp * 100);
+    const mB = b.margin_pct ?? ((b.budget_gbp - b.actual_cost_gbp) / b.budget_gbp * 100);
+    return mA - mB;
+  });
 
   const timePeriods: { id: TimePeriod; label: string }[] = [
     { id: "week",  label: "This Week" },
@@ -684,15 +426,19 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
     { id: "last",  label: "Last Month" },
   ];
 
+  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+    { id: "financial",  label: "Financial",       icon: Activity   },
+    { id: "products",   label: "Products",        icon: BarChart2  },
+    { id: "jobs",       label: "Jobs & Margin",   icon: Briefcase  },
+    { id: "inventory",  label: "Inventory",       icon: Package    },
+  ];
+
   return (
     <div className="space-y-0">
 
-      {/* ══════════════════════════════════════
-          SYSTEM CHROME — toolbar
-      ══════════════════════════════════════ */}
+      {/* ── SYSTEM CHROME ── */}
       <div className="rounded-t-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#0c0c18] shadow-sm dark:shadow-none overflow-hidden">
 
-        {/* Top bar */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="flex gap-1.5">
@@ -701,32 +447,24 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/60" />
             </div>
             <div className="h-4 w-px bg-slate-200 dark:bg-white/[0.08]" />
-            <p className="text-xs font-semibold text-slate-500 dark:text-white/40">InventoryCo · Operations</p>
+            <p className="text-xs font-semibold text-slate-500 dark:text-white/40">InventoryCo · Financial Operating Layer</p>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[10px] text-slate-400 dark:text-white/25">Live</span>
             </div>
           </div>
-
           <div className="flex items-center gap-2">
-            {/* Time filter */}
             <div className="flex items-center bg-slate-100 dark:bg-white/[0.04] rounded-lg p-0.5 border border-slate-200 dark:border-white/[0.07]">
               {timePeriods.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => setTimePeriod(p.id)}
-                  className={`px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all ${
-                    timePeriod === p.id
-                      ? "bg-white dark:bg-white/[0.08] text-slate-800 dark:text-white shadow-sm"
-                      : "text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50"
-                  }`}
+                  className={`px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all ${timePeriod === p.id ? "bg-white dark:bg-white/[0.08] text-slate-800 dark:text-white shadow-sm" : "text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50"}`}
                 >
                   {p.label}
                 </button>
               ))}
             </div>
-
-            {/* Source badge */}
             <div className="flex items-center gap-1.5 border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] rounded-lg px-3 py-1.5">
               <Database size={11} className={source === "supabase" ? "text-emerald-500" : "text-slate-400 dark:text-white/25"} />
               <span className={`text-[10px] font-semibold ${source === "supabase" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-white/25"}`}>
@@ -736,7 +474,7 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
           </div>
         </div>
 
-        {/* Tab navigation */}
+        {/* Tabs */}
         <div className="flex items-center border-b border-slate-100 dark:border-white/[0.06] px-5 gap-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -744,11 +482,7 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3 py-3 text-xs font-semibold transition-all border-b-2 -mb-px ${
-                  activeTab === tab.id
-                    ? "border-indigo-500 text-indigo-600 dark:text-indigo-400"
-                    : "border-transparent text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50"
-                }`}
+                className={`flex items-center gap-2 px-3 py-3 text-xs font-semibold transition-all border-b-2 -mb-px whitespace-nowrap ${activeTab === tab.id ? "border-indigo-500 text-indigo-600 dark:text-indigo-400" : "border-transparent text-slate-400 dark:text-white/30 hover:text-slate-600 dark:hover:text-white/50"}`}
               >
                 <Icon size={13} />
                 {tab.label}
@@ -757,72 +491,45 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
           })}
         </div>
 
-        {/* Tab content */}
+        {/* ── TAB CONTENT ── */}
         <div className="p-6">
 
-          {/* ══ OVERVIEW TAB ══ */}
-          {activeTab === "overview" && (
+          {/* ════ FINANCIAL TAB ════ */}
+          {activeTab === "financial" && (
             <div className="space-y-8">
 
-              {/* Insight engine */}
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <Zap size={13} className="text-amber-500" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-white/40">Insight engine</span>
-                  <span className="text-[10px] text-slate-300 dark:text-white/20">— auto-generated from live data</span>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <InsightCard index={1} severity="alert"
-                    text="Two active jobs are over labour budget by more than 10%"
-                    action="J-1042 and J-1055 are tracking above labour estimate — now surfaced automatically rather than discovered at job close."
-                  />
-                  <InsightCard index={2} severity="alert"
-                    text="One high-value project is at risk due to material shortages"
-                    action="Emergency Exit & Safety Packs delayed at source, affecting J-1051. Surfaced 3 days before a manual review would have caught it."
-                  />
-                  <InsightCard index={3} severity="warn"
-                    text="Crew C is nearing full allocation next week"
-                    action="At 94% utilisation — limited capacity for new job starts. Make staffing decisions with confidence before it becomes a problem."
-                  />
-                  <InsightCard index={4} severity="warn"
-                    text="Material cost variance is reducing margin on retrofit work"
-                    action="LED Panel Pro units required additional on-site units — committed spend 18.2% above estimate on J-1042."
-                  />
-                  <InsightCard index={5} severity="info"
-                    text="Stock delays affecting project delivery timelines"
-                    action="Outdoor Floodlight stock at 27% of reorder level — critical shortfall that could delay upcoming site works."
-                  />
-                </div>
+              {/* Hero financial metrics */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-white/[0.06] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
+                {[
+                  { label: "Revenue",       value: fmt(kpis.totalRevenue),  sub: "6-month total",           accent: false },
+                  { label: "Cost of Sales", value: fmt(totalCost),          sub: "direct costs, 6 months",  accent: false },
+                  { label: "Gross Profit",  value: fmt(kpis.totalProfit),   sub: "after direct costs",      accent: true  },
+                  { label: "Gross Margin",  value: pct(kpis.grossMarginPct),sub: "blended, all products",   accent: true  },
+                ].map((m) => (
+                  <div key={m.label} className={`p-7 flex flex-col gap-3 ${m.accent ? "bg-emerald-50 dark:bg-emerald-500/[0.05]" : "bg-white dark:bg-[#07070e]"}`}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">
+                      {m.label}
+                    </p>
+                    <p className={`text-3xl md:text-4xl font-bold tracking-tight leading-none ${m.accent ? "text-emerald-700 dark:text-emerald-300" : "text-slate-900 dark:text-white"}`}>
+                      {m.value}
+                    </p>
+                    <p className="text-xs text-slate-400 dark:text-white/35">{m.sub}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* KPI overview */}
+              {/* Trend chart */}
               <div>
-                <SectionLabel label="Business Overview" />
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  <TopKPI label="Revenue" value={fmt(kpis.totalRevenue)} delta={revenueGrowthPct ? `+${revenueGrowthPct}%` : undefined} deltaPositive={true} sub="6-month total" />
-                  <TopKPI label="Gross Profit" value={fmt(kpis.totalProfit)} delta={`${pct(kpis.grossMarginPct)} margin`} deltaPositive={true} sub="from centralised model" />
-                  <TopKPI label="Active Jobs" value={String(operationalKPIs.active_jobs)} sub="across all crews" />
-                  <TopKPI label="Jobs at Risk" value={String(operationalKPIs.jobs_at_risk)} deltaPositive={false} sub="flagged for review" />
-                  <TopKPI label="Crew Utilisation" value={`${operationalKPIs.crew_utilisation_pct}%`} sub="average, all crews" />
-                  <TopKPI label="Labour hrs / wk" value={String(operationalKPIs.labour_hours_week)} sub="logged this week" />
-                  <TopKPI label="Materials Committed" value={fmtk(operationalKPIs.materials_committed_gbp)} sub="to active jobs" />
-                  <TopKPI label="Cost Variance" value={`+${operationalKPIs.cost_variance_pct}%`} deltaPositive={false} sub="actuals vs estimates" />
-                </div>
-              </div>
-
-              {/* Revenue chart */}
-              <div>
-                <SectionLabel label="Revenue Trend" />
+                <SectionLabel label="Revenue & Profit Trend" sub="Oct 2025 – Mar 2026 · auto-generated from data model" />
                 <div className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] shadow-sm dark:shadow-none">
-                  <div className="flex items-start justify-between mb-5 gap-4">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">Monthly revenue & profit — Oct 2025 to Mar 2026</p>
-                      <p className="text-xs text-slate-400 dark:text-white/35 mt-1">Served from centralised data model. No manual assembly.</p>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-white/40 shrink-0">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500" />Revenue</span>
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" />Profit</span>
-                    </div>
+                  <div className="flex items-center gap-4 mb-4 text-xs text-slate-400 dark:text-white/40">
+                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-violet-500" />Revenue</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" />Profit</span>
+                    {revenueGrowthPct && (
+                      <span className="ml-auto flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <ArrowUpRight size={13} /> +{revenueGrowthPct}% revenue growth over period
+                      </span>
+                    )}
                   </div>
                   <ResponsiveContainer width="100%" height={200}>
                     <AreaChart data={monthlyRevenue} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
@@ -836,61 +543,162 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
                           <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                       <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`} width={42} />
                       <Tooltip content={<RevenueTooltip />} />
-                      <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} fill="url(#revGrad)" />
-                      <Area type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={2} fill="url(#profGrad)" />
+                      <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} fill="url(#revGrad)" dot={{ fill: "#8b5cf6", r: 3, strokeWidth: 0 }} />
+                      <Area type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={2} fill="url(#profGrad)" dot={{ fill: "#10b981", r: 3, strokeWidth: 0 }} />
                     </AreaChart>
                   </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Financial insights */}
+              <div>
+                <SectionLabel label="Financial Insights" />
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <InsightCard
+                    index={1}
+                    severity="info"
+                    text={`Revenue grew ${revenueGrowthPct}% over 6 months — from £54k to £100k per month.`}
+                    action="Growth is real and tracked from the same data model. No manual reporting needed to see this trend."
+                  />
+                  <InsightCard
+                    index={2}
+                    severity="warn"
+                    text="Gross margin at 28.4% — Emergency Exit Sign (17.8%) and Commercial Batten (22.4%) are pulling the blended margin down."
+                    action="Two product categories are underperforming on margin. Pricing or mix adjustment would improve blended profitability."
+                  />
+                  <InsightCard
+                    index={3}
+                    severity="alert"
+                    text="Material cost variance of +6.8% across active jobs is reducing job-level profit on current portfolio."
+                    action="Two jobs are tracking over labour and material estimates. Margin erosion is visible now — not at job close."
+                  />
                 </div>
               </div>
             </div>
           )}
 
-          {/* ══ JOB TRACKER TAB ══ */}
-          {activeTab === "jobs" && (
-            <div className="space-y-5">
+          {/* ════ PRODUCTS TAB ════ */}
+          {activeTab === "products" && (
+            <div className="space-y-8">
 
-              {/* Summary bar */}
-              <div className="flex flex-wrap gap-4 p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
+              {/* Summary callout */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-slate-200 dark:bg-white/[0.06] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
                 {[
-                  { label: "Active", count: activeJobs.filter(j => j.status !== "complete").length, color: "text-indigo-600 dark:text-indigo-400" },
-                  { label: "On Track", count: activeJobs.filter(j => j.status === "on-track").length, color: "text-emerald-600 dark:text-emerald-400" },
-                  { label: "At Risk", count: activeJobs.filter(j => j.status === "at-risk").length, color: "text-amber-600 dark:text-amber-400" },
-                  { label: "Delayed", count: activeJobs.filter(j => j.status === "delayed").length, color: "text-rose-600 dark:text-rose-400" },
-                  { label: "Complete", count: activeJobs.filter(j => j.status === "complete").length, color: "text-slate-500 dark:text-white/40" },
-                ].map((s) => (
-                  <div key={s.label} className="flex items-center gap-2">
-                    <span className={`text-lg font-bold ${s.color}`}>{s.count}</span>
-                    <span className="text-xs text-slate-400 dark:text-white/30">{s.label}</span>
+                  { label: "Products tracked",    value: String(topProducts.length), sub: "in this period" },
+                  { label: "Total revenue",        value: fmt(topProducts.reduce((s, p) => s + p.revenue, 0)), sub: "across all products" },
+                  { label: "Total profit",         value: fmt(topProducts.reduce((s, p) => s + p.profit,  0)), sub: "gross, all products" },
+                  { label: "Best margin",          value: pct(Math.max(...topProducts.map(p => p.margin_pct))), sub: "highest product margin" },
+                ].map((m) => (
+                  <div key={m.label} className="bg-white dark:bg-[#07070e] p-6 flex flex-col gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{m.label}</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{m.value}</p>
+                    <p className="text-xs text-slate-400 dark:text-white/35">{m.sub}</p>
                   </div>
                 ))}
-                <div className="ml-auto text-xs text-slate-400 dark:text-white/25 self-center">
-                  Click a job to see full detail
-                </div>
               </div>
 
-              {/* Legend */}
-              <div className="flex flex-wrap gap-3">
+              <SectionLabel label="Revenue, Profit & Margin — By Product" />
+
+              <div className="space-y-3">
+                {[...topProducts].sort((a, b) => b.profit - a.profit).map((p, i) => {
+                  const maxRevenue = Math.max(...topProducts.map(x => x.revenue));
+                  const revBar = Math.round((p.revenue / maxRevenue) * 100);
+                  const marginGood = p.margin_pct >= 30;
+                  const marginWarn = p.margin_pct >= 20 && p.margin_pct < 30;
+                  const marginColor = marginGood ? "text-emerald-600 dark:text-emerald-400" : marginWarn ? "text-amber-600 dark:text-amber-400" : "text-rose-600 dark:text-rose-400";
+                  const barColor = marginGood ? "bg-emerald-500" : marginWarn ? "bg-amber-500" : "bg-rose-500";
+
+                  return (
+                    <div key={p.product_name} className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-bold text-slate-400 dark:text-white/25 w-4">#{i + 1}</span>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{p.product_name}</p>
+                            <span className="text-[10px] text-slate-400 dark:text-white/30 border border-slate-200 dark:border-white/[0.08] px-2 py-0.5 rounded-full shrink-0">{p.category}</span>
+                          </div>
+                        </div>
+                        <span className={`text-base font-bold shrink-0 ${marginColor}`}>{pct(p.margin_pct)}</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/25 mb-0.5">Revenue</p>
+                          <p className="text-sm font-bold text-slate-700 dark:text-white/70">{fmt(p.revenue)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/25 mb-0.5">Gross Profit</p>
+                          <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{fmt(p.profit)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-400 dark:text-white/25 mb-0.5">Margin</p>
+                          <p className={`text-sm font-bold ${marginColor}`}>{pct(p.margin_pct)}</p>
+                        </div>
+                      </div>
+                      {/* Revenue bar */}
+                      <div>
+                        <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/[0.06]">
+                          <div className={`h-1.5 rounded-full transition-all ${barColor}`} style={{ width: `${revBar}%` }} />
+                        </div>
+                        <p className="text-[10px] text-slate-400 dark:text-white/25 mt-1">Revenue share relative to top product</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Top vs worst callout */}
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="p-5 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.05]">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">Highest margin</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    {topProducts.reduce((best, p) => p.margin_pct > best.margin_pct ? p : best).product_name}
+                  </p>
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                    {pct(Math.max(...topProducts.map(p => p.margin_pct)))}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-white/40 mt-1">Best performing product on margin</p>
+                </div>
+                <div className="p-5 rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-600 dark:text-rose-400 mb-2">Lowest margin</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    {topProducts.reduce((worst, p) => p.margin_pct < worst.margin_pct ? p : worst).product_name}
+                  </p>
+                  <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">
+                    {pct(Math.min(...topProducts.map(p => p.margin_pct)))}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-white/40 mt-1">Pulling blended margin below 30% target</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ════ JOBS & MARGIN TAB ════ */}
+          {activeTab === "jobs" && (
+            <div className="space-y-6">
+
+              {/* Financial summary of active jobs */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-slate-200 dark:bg-white/[0.06] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
                 {[
-                  { label: "On Track", dot: "bg-emerald-500" },
-                  { label: "At Risk",  dot: "bg-amber-500" },
-                  { label: "Delayed",  dot: "bg-rose-500" },
-                  { label: "Complete", dot: "bg-indigo-500" },
-                  { label: "Starting", dot: "bg-sky-500" },
-                ].map((s) => (
-                  <span key={s.label} className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/30">
-                    <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-                    {s.label}
-                  </span>
+                  { label: "Total job budget",  value: fmt(totalJobBudget),  sub: `${activeOnlyJobs.length} active jobs`,   accent: false },
+                  { label: "Actual cost to date",value: fmt(totalJobActual),  sub: "committed across portfolio",             accent: false },
+                  { label: "Jobs at risk",       value: String(operationalKPIs.jobs_at_risk), sub: "flagged — margin below target", accent: true },
+                ].map((m) => (
+                  <div key={m.label} className={`p-6 flex flex-col gap-2 ${m.accent ? "bg-amber-50 dark:bg-amber-500/[0.05]" : "bg-white dark:bg-[#07070e]"}`}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{m.label}</p>
+                    <p className={`text-2xl font-bold ${m.accent ? "text-amber-700 dark:text-amber-300" : "text-slate-900 dark:text-white"}`}>{m.value}</p>
+                    <p className="text-xs text-slate-400 dark:text-white/35">{m.sub}</p>
+                  </div>
                 ))}
               </div>
 
-              {/* Job cards */}
+              <SectionLabel label="Jobs by Margin — Lowest First" sub="Click any job to see cost breakdown and risk detail" />
+
               <div className="space-y-2">
-                {activeJobs.map((job) => (
+                {jobsSortedByMargin.map((job) => (
                   <JobCard
                     key={job.job_id}
                     job={job}
@@ -899,213 +707,89 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
                   />
                 ))}
               </div>
-
-              <p className="text-xs text-slate-400 dark:text-white/25 text-center pt-2">
-                Spot operational bottlenecks early — job status, crew load, and budget variance updated automatically.
-              </p>
             </div>
           )}
 
-          {/* ══ LABOUR & MATERIALS TAB ══ */}
-          {activeTab === "labour" && (
-            <div className="space-y-8">
+          {/* ════ INVENTORY TAB ════ */}
+          {activeTab === "inventory" && (
+            <div className="space-y-6">
 
-              {/* Crew summary */}
-              <div>
-                <div className="flex items-center gap-4 mb-5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Total capacity</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">480 hrs</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">3 crews · this week</p>
+              {/* Inventory hero */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-slate-200 dark:bg-white/[0.06] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
+                {[
+                  { label: "Inventory value",  value: fmt(kpis.inventoryValue),         sub: "at cost across all SKUs",         accent: false },
+                  { label: "Low stock alerts",  value: String(kpis.lowStockCount) + " SKUs", sub: "below reorder level",         accent: kpis.lowStockCount > 0 },
+                  { label: "Cost variance",    value: `+${operationalKPIs.cost_variance_pct}%`, sub: "materials: actuals vs estimates", accent: true },
+                ].map((m) => (
+                  <div key={m.label} className={`p-6 flex flex-col gap-2 ${m.accent ? "bg-rose-50 dark:bg-rose-500/[0.05]" : "bg-white dark:bg-[#07070e]"}`}>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{m.label}</p>
+                    <p className={`text-2xl font-bold ${m.accent ? "text-rose-700 dark:text-rose-300" : "text-slate-900 dark:text-white"}`}>{m.value}</p>
+                    <p className="text-xs text-slate-400 dark:text-white/35">{m.sub}</p>
                   </div>
-                  <div className="h-10 w-px bg-slate-200 dark:bg-white/[0.06]" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Hours logged</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{operationalKPIs.labour_hours_week}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">across all crews</p>
-                  </div>
-                  <div className="h-10 w-px bg-slate-200 dark:bg-white/[0.06]" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Avg utilisation</p>
-                    <p className="text-lg font-bold text-amber-700 dark:text-amber-300">{operationalKPIs.crew_utilisation_pct}%</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">nearing capacity</p>
-                  </div>
-                  <div className="h-10 w-px bg-slate-200 dark:bg-white/[0.06]" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Active jobs</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{operationalKPIs.active_jobs}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">{operationalKPIs.jobs_at_risk} at risk</p>
-                  </div>
-                </div>
-
-                <SectionLabel label="Crew Status" count={crewStatuses.length} />
-                <div className="grid md:grid-cols-3 gap-4">
-                  {crewStatuses.map((crew) => (
-                    <CrewCard key={crew.name} crew={crew} />
-                  ))}
-                </div>
-
-                <div className="mt-4 p-4 rounded-xl border border-amber-200 dark:border-white/[0.06] bg-amber-50 dark:bg-white/[0.02]">
-                  <div className="flex items-center gap-2 mb-1">
-                    <AlertCircle size={12} className="text-amber-600 dark:text-amber-400" />
-                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">Crew C nearing full allocation next week</p>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-white/35 leading-relaxed">
-                    Make staffing and scheduling decisions with confidence — crew capacity visible before it becomes a delivery problem.
-                  </p>
-                </div>
+                ))}
               </div>
 
-              {/* Materials */}
-              <div>
-                <div className="flex items-center gap-4 mb-5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Materials committed</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{fmtk(operationalKPIs.materials_committed_gbp)}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">across active jobs</p>
-                  </div>
-                  <div className="h-10 w-px bg-slate-200 dark:bg-white/[0.06]" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Cost variance</p>
-                    <p className="text-lg font-bold text-amber-700 dark:text-amber-300">+{operationalKPIs.cost_variance_pct}%</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">actuals vs estimates</p>
-                  </div>
-                  <div className="h-10 w-px bg-slate-200 dark:bg-white/[0.06]" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1 uppercase tracking-widest font-semibold">Active alerts</p>
-                    <p className="text-lg font-bold text-rose-700 dark:text-rose-300">{materialAlerts.length}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-white/25">flagged lines</p>
-                  </div>
-                </div>
+              <SectionLabel label="Stock Alerts — Below Reorder Level" sub="Auto-generated · revenue impact noted" />
 
-                <SectionLabel label="Materials & Cost Exposure" count={materialAlerts.length} />
-                <div className="space-y-3">
-                  {materialAlerts.map((mat) => (
-                    <MaterialRow key={mat.job_id + mat.material} mat={mat} />
-                  ))}
-                </div>
-                <div className="mt-3 p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle size={12} className="text-slate-400 dark:text-white/30" />
-                    <p className="text-xs font-semibold text-slate-500 dark:text-white/50">All other materials within estimate</p>
-                  </div>
-                  <p className="text-xs text-slate-400 dark:text-white/30 leading-relaxed">
-                    12 of 15 active material lines tracking at or below estimate. Only flagged lines shown above.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ══ FINANCE TAB ══ */}
-          {activeTab === "finance" && (
-            <div className="space-y-8">
-
-              {/* Financial KPIs */}
-              <div>
-                <SectionLabel label="Financial Performance" />
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[
-                    { label: "Total Revenue", value: fmt(kpis.totalRevenue), sub: revenueGrowthPct ? `+${revenueGrowthPct}% over period` : "6-month total", positive: true },
-                    { label: "Gross Profit",  value: fmt(kpis.totalProfit),  sub: `${pct(kpis.grossMarginPct)} margin`,         positive: true },
-                    { label: "Inventory Value", value: fmt(kpis.inventoryValue), sub: "at cost across all SKUs",               positive: null },
-                    { label: "Low Stock Alerts", value: `${kpis.lowStockCount} SKUs`, sub: "below reorder level",              positive: kpis.lowStockCount === 0 ? null : false },
-                  ].map((card) => (
-                    <div key={card.label} className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none flex flex-col gap-3">
-                      <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{card.label}</p>
-                      <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{card.value}</p>
-                      <div className="flex items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-white/[0.06]">
-                        {card.positive === true  && <TrendingUp  size={11} className="text-emerald-600 dark:text-emerald-400" />}
-                        {card.positive === false && <AlertTriangle size={11} className="text-amber-600 dark:text-amber-400" />}
-                        {card.positive === null  && <Minus size={11} className="text-slate-300 dark:text-white/20" />}
-                        <span className={`text-xs ${card.positive === true ? "text-emerald-600 dark:text-emerald-400 font-medium" : card.positive === false ? "text-amber-600 dark:text-amber-400 font-medium" : "text-slate-400 dark:text-white/30"}`}>
-                          {card.sub}
+              <div className="space-y-3">
+                {lowStockItems.map((a) => {
+                  const product = topProducts.find(p => p.product_name === a.product_name);
+                  const revenueAtRisk = product ? product.revenue : null;
+                  return (
+                    <div
+                      key={a.product_name}
+                      className={`p-5 rounded-xl border ${a.severity === "critical" ? "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.06]" : "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.06]"}`}
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="flex items-center gap-2.5">
+                          <AlertTriangle size={14} className={a.severity === "critical" ? "text-rose-600 dark:text-rose-400 shrink-0" : "text-amber-600 dark:text-amber-400 shrink-0"} />
+                          <div>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white">{a.product_name}</p>
+                            <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">
+                              {a.stock_level} units in stock · Reorder level: {a.reorder_level} units
+                            </p>
+                          </div>
+                        </div>
+                        <span className={`text-xs font-bold shrink-0 px-2.5 py-1 rounded-full border ${a.severity === "critical" ? "text-rose-700 bg-rose-100 border-rose-200 dark:text-rose-300 dark:bg-rose-500/10 dark:border-rose-500/25" : "text-amber-700 bg-amber-100 border-amber-200 dark:text-amber-300 dark:bg-amber-500/10 dark:border-amber-500/25"}`}>
+                          {a.severity === "critical" ? "Critical" : "Low stock"}
                         </span>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Products + Inventory side by side */}
-              <div className="grid md:grid-cols-2 gap-4">
-
-                {/* Top products */}
-                <div className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
-                  <SectionLabel label="Product Performance" />
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white -mt-2 mb-5">Top products — gross profit</p>
-                  <div className="space-y-4">
-                    {topProducts.map((p) => (
-                      <div key={p.product_name}>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <div className="min-w-0">
-                            <span className="text-xs font-semibold truncate block text-slate-900 dark:text-white">{p.product_name}</span>
-                            <span className="text-[10px] text-slate-400 dark:text-white/25">{p.category}</span>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0 ml-3">
-                            <span className="text-[10px] text-slate-400 dark:text-white/30">{pct(p.margin_pct)}</span>
-                            <span className="text-xs font-bold text-slate-700 dark:text-white/70">{fmt(p.profit)}</span>
-                          </div>
+                      {/* Stock level bar */}
+                      <div className="mb-3">
+                        <div className="h-2 rounded-full bg-slate-200/70 dark:bg-white/[0.08] overflow-hidden">
+                          <div
+                            className={`h-2 rounded-full transition-all ${a.severity === "critical" ? "bg-rose-500" : "bg-amber-500"}`}
+                            style={{ width: `${Math.min((a.stock_level / a.reorder_level) * 100, 100)}%` }}
+                          />
                         </div>
-                        <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/[0.06]">
-                          <div className="h-1.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400" style={{ width: `${p.bar}%` }} />
-                        </div>
+                        <p className="text-[10px] text-slate-400 dark:text-white/25 mt-1">
+                          {((a.stock_level / a.reorder_level) * 100).toFixed(0)}% of reorder level
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Inventory alerts */}
-                <div className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
-                  <SectionLabel label="Inventory Alerts" />
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white -mt-2 mb-5">Auto-generated · below reorder level</p>
-                  {lowStockItems.length === 0 ? (
-                    <div className="flex items-center gap-3 text-sm text-emerald-700 dark:text-emerald-400 p-4 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.07]">
-                      <Package size={14} /> All products above reorder level
+                      {revenueAtRisk && (
+                        <p className="text-xs text-slate-600 dark:text-white/50">
+                          <span className="font-semibold">Revenue at risk:</span> {fmt(revenueAtRisk)} generated from this product last period.
+                          {a.severity === "critical" && " Stock exhaustion will pause revenue from this line until restocked."}
+                        </p>
+                      )}
                     </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {lowStockItems.map((a) => (
-                        <div
-                          key={a.product_name}
-                          className={`p-4 rounded-xl border flex items-center justify-between ${a.severity === "critical" ? "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.07]" : "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.07]"}`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <AlertTriangle size={13} className={a.severity === "critical" ? "text-rose-600 dark:text-rose-400 shrink-0" : "text-amber-600 dark:text-amber-400 shrink-0"} />
-                            <div className="min-w-0">
-                              <span className="text-sm font-medium truncate block text-slate-900 dark:text-white">{a.product_name}</span>
-                              <span className="text-xs text-slate-400 dark:text-white/30">{a.stock_level} / {a.reorder_level} units</span>
-                            </div>
-                          </div>
-                          <span className={`text-xs font-semibold shrink-0 ml-3 ${a.severity === "critical" ? "text-rose-700 dark:text-rose-400" : "text-amber-700 dark:text-amber-400"}`}>
-                            {a.severity === "critical" ? "Critical" : "Low stock"}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <p className="text-[11px] text-slate-400 dark:text-white/20 mt-5 font-mono">WHERE stock_level &lt; reorder_level</p>
-                </div>
-
+                  );
+                })}
               </div>
             </div>
           )}
-
         </div>
       </div>
 
-      {/* ══════════════════════════════════════
-          CLOSING STATEMENT
-      ══════════════════════════════════════ */}
+      {/* ── CLOSING STATEMENT ── */}
       <div className="mt-6 p-8 rounded-2xl border border-indigo-200 dark:border-indigo-500/25 bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-500/[0.06] dark:to-violet-500/[0.04] text-center">
         <p className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
-          This is the level of operational visibility we build for our clients.
+          This is the level of financial and operational visibility we build for our clients.
         </p>
         <p className="text-sm text-slate-500 dark:text-white/45 max-w-xl mx-auto leading-relaxed">
-          Every number above — financial, operational, and job-level — comes from the same centralised data model. Updated automatically. No manual reporting. No version conflicts.
+          Revenue, margin, cost, and inventory — from one centralised data model. Updated automatically. No manual reporting. No version conflicts.
         </p>
       </div>
-
     </div>
   );
 }
