@@ -598,6 +598,79 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Featured: Lex & Co */}
+          <div className="mb-5 relative overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50 to-slate-50 dark:from-indigo-500/[0.04] dark:to-transparent p-8 md:p-10 shadow-sm dark:shadow-none">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-violet-100 dark:bg-violet-500/[0.06] rounded-full blur-3xl pointer-events-none" />
+            <div className="relative grid md:grid-cols-[1.3fr_1fr] gap-10 items-start">
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-5">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 bg-indigo-100 dark:bg-indigo-500/10 px-3 py-1 rounded-full">
+                    Case Study
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500 dark:text-white/30 border border-slate-200 dark:border-white/[0.08] px-3 py-1 rounded-full bg-white dark:bg-transparent">
+                    Legal Services
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500 dark:text-white/30 border border-slate-200 dark:border-white/[0.08] px-3 py-1 rounded-full bg-white dark:bg-transparent">
+                    WIP &amp; Financial Layer
+                  </span>
+                </div>
+
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight text-slate-900 dark:text-white">
+                  WIP, billing, and matter profitability —<br className="hidden md:block" /> unified into one partner view
+                </h3>
+                <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-3 max-w-lg">
+                  A mid-sized UK law firm running matters in Clio, invoicing in Xero, and WIP
+                  reconciliation manually in Excel — with no view of matter margin, billing
+                  delays, or write-off risk.
+                </p>
+                <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-4 max-w-lg">
+                  We centralised all three into a Postgres data model and built a partner-facing
+                  insight layer covering WIP, realisation rates, timekeeper utilisation, and
+                  billing performance.
+                </p>
+                <p className="text-xs text-slate-400 dark:text-white/30 mb-7 max-w-lg">
+                  Built using real-world system architecture — Clio API, Xero API, Postgres (Supabase), structured SQL views.
+                </p>
+
+                <Link
+                  href="/case-studies/lexco"
+                  className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors shadow-sm"
+                >
+                  Read full case study <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-4">
+                  Key results
+                </p>
+                {[
+                  { stat: "< 30 min", label: "Weekly reporting time",      was: "Was ~4 hours manual"           },
+                  { stat: "100%",     label: "Matter margin visibility",    was: "Previously unavailable"        },
+                  { stat: "Live",     label: "WIP & billing tracking",      was: "Was weekly manual reconcile"   },
+                  { stat: "1",        label: "Source of truth",             was: "Was 3+ disconnected systems"   },
+                ].map((r) => (
+                  <div
+                    key={r.label}
+                    className="flex items-center gap-4 p-4 rounded-xl border border-indigo-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.04]"
+                  >
+                    <span className="text-lg font-bold text-indigo-600 dark:text-indigo-300 shrink-0 w-16">
+                      {r.stat}
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800 dark:text-white/80">
+                        {r.label}
+                      </p>
+                      <p className="text-xs text-slate-400 dark:text-white/30">{r.was}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+
           {/* Secondary case studies */}
           <div className="grid lg:grid-cols-3 gap-5">
             {secondaryCaseStudies.map((cs) => (
