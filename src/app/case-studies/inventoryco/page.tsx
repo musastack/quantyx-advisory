@@ -173,7 +173,7 @@ export default async function InventoryCo() {
                   color: "text-sky-400",
                 },
               ].map((item) => (
-                <div key={item.label} className="bg-[#07070e] hover:bg-white/[0.025] transition-colors p-7 flex flex-col gap-3">
+                <div key={item.label} className="bg-[#07070e] p-7 flex flex-col gap-3">
                   <span className="text-xl">{item.icon}</span>
                   <p className={`text-sm font-bold ${item.color}`}>{item.label}</p>
                   <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
@@ -402,7 +402,7 @@ export default async function InventoryCo() {
               </div>
               <div className="space-y-3">
                 {deliverables.map((d) => (
-                  <div key={d.title} className="flex gap-4 p-5 rounded-xl border border-white/[0.07] bg-white/[0.025] hover:border-white/[0.12] transition-colors">
+                  <div key={d.title} className="flex gap-4 p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
                     <div className="w-7 h-7 rounded-lg bg-violet-500/15 flex items-center justify-center shrink-0 mt-0.5">
                       <d.icon size={14} className="text-violet-400" />
                     </div>
@@ -483,7 +483,7 @@ export default async function InventoryCo() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
               {outcomes.map((o) => (
-                <div key={o.label} className="bg-[#07070e] p-8 flex flex-col gap-2 hover:bg-white/[0.03] transition-colors">
+                <div key={o.label} className="bg-[#07070e] p-8 flex flex-col gap-2">
                   <p className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/55">{o.stat}</p>
                   <p className="text-sm font-semibold text-white/75 mt-1">{o.label}</p>
                   <p className="text-xs text-white/25">{o.was}</p>

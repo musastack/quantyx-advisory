@@ -106,7 +106,7 @@ function KPICard({
   positive: boolean | null;
 }) {
   return (
-    <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e] hover:bg-white/[0.03] transition-colors flex flex-col gap-3">
+    <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e] flex flex-col gap-3">
       <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
         {label}
       </p>
@@ -245,9 +245,7 @@ function JobRow({ job }: { job: ActiveJob }) {
   const s = JOB_STATUS[job.status];
 
   return (
-    <div
-      className={`p-5 rounded-xl border ${s.row} hover:bg-white/[0.04] transition-colors`}
-    >
+    <div className={`p-5 rounded-xl border ${s.row}`}>
       {/* Top row */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="min-w-0 flex-1">
