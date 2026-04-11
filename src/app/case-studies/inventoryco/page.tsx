@@ -18,7 +18,7 @@ import InsightLayer from "./InsightLayer";
 export const metadata = {
   title: "InventoryCo Ltd — Quantyx Advisory",
   description:
-    "Sample case study: how disconnected operational data across Xero, Cin7, and Excel can be centralised into a structured, automated reporting layer backed by Postgres.",
+    "Sample case study: how a commercial electrical contractor centralised financial, inventory, and operational data across Xero, Cin7, and Excel into a unified Postgres reporting and operating layer.",
 };
 
 /* ─────────────────────────────────────────────
@@ -29,30 +29,35 @@ const deliverables = [
   {
     icon: Plug,
     title: "API-connected data extraction",
-    body: "Xero and Cin7 data is pulled on a scheduled basis via their respective APIs. Structured uploads handle any data without an API endpoint. All ingestion is logged and auditable.",
+    body: "Xero and Cin7 data is pulled on a scheduled basis via their respective APIs. Job, labour, and material data is ingested via structured uploads from operational spreadsheets. All ingestion is logged and auditable.",
   },
   {
     icon: Database,
     title: "Centralised Postgres database",
-    body: "All extracted data lands in a structured Postgres schema (Supabase-hosted). Tables are designed around business entities — orders, products, inventory positions — with foreign key relationships defined.",
+    body: "All extracted data lands in a structured Postgres schema (Supabase-hosted). Tables are designed around business entities — jobs, crews, labour entries, materials, invoices, products, and inventory — with foreign key relationships defined throughout.",
   },
   {
     icon: GitMerge,
     title: "Transformation & data modelling",
-    body: "Raw ingested data is cleaned, deduplicated, and standardised. Calculated fields — margins, inventory cover days, reorder flags — are computed and stored as structured views.",
+    body: "Raw ingested data is cleaned, deduplicated, and standardised. Calculated fields — job margin, crew utilisation, labour variance, material cost exposure, inventory cover days — computed and stored as SQL views ready for reporting.",
   },
   {
     icon: BarChart3,
-    title: "Reporting & insight layer",
-    body: "The reporting layer queries the transformed data model directly. Outputs include KPI views, product-level margin breakdowns, and inventory alert logic — all from one consistent source.",
+    title: "Commercial reporting layer",
+    body: "The commercial layer provides KPI views, product-level margin breakdowns, revenue trend, and inventory alert logic — all from one consistent source, always current.",
+  },
+  {
+    icon: Layers,
+    title: "Operational insight layer",
+    body: "Built on the same data model, the operational layer surfaces job status, crew utilisation, labour overruns, material cost variance, and delivery risk — giving management real-time visibility over delivery as well as financials.",
   },
 ];
 
 const outcomes = [
-  { stat: "< 30 min", label: "Weekly reporting time",     was: "Was ~5 hours manual"          },
-  { stat: "100%",     label: "Product margin visibility", was: "Previously unavailable"       },
-  { stat: "3 days",   label: "Earlier stock alerts",      was: "Vs end-of-week batch review"  },
-  { stat: "1",        label: "Source of truth",           was: "Was 3 disconnected systems"   },
+  { stat: "< 30 min", label: "Weekly reporting time",      was: "Was ~5 hours manual"          },
+  { stat: "100%",     label: "Job margin visibility",      was: "Previously unavailable"       },
+  { stat: "Live",     label: "Crew & labour tracking",     was: "Was weekly manual timesheet"  },
+  { stat: "1",        label: "Source of truth",            was: "Was 3+ disconnected systems"  },
 ];
 
 /* ─────────────────────────────────────────────
@@ -95,28 +100,29 @@ export default async function InventoryCo() {
                 Sample / Illustrative
               </span>
               <span className="text-[11px] font-medium uppercase tracking-widest text-white/25 border border-white/8 px-3 py-1 rounded-full">
-                Wholesale Distribution
+                Commercial Electrical · Installation
               </span>
               <span className="text-[11px] font-medium uppercase tracking-widest text-white/25 border border-white/8 px-3 py-1 rounded-full">
-                Data Centralisation
+                Data & Operational Layer
               </span>
             </div>
 
             <h1 className="text-5xl md:text-[4rem] font-bold leading-[1.08] tracking-tight mb-7 max-w-3xl">
-              Three disconnected systems.<br className="hidden md:block" /> One{" "}
+              Financial, stock, and operations —<br className="hidden md:block" /> unified into{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                centralised data layer.
+                one operating layer.
               </span>
             </h1>
 
             <p className="text-lg md:text-xl text-white/50 leading-relaxed max-w-2xl mb-5">
-              A wholesale distributor running sales in Xero, inventory in Cin7, and
-              reporting in Excel — with no central view, 5 hours of weekly manual
-              reporting, and zero product-level margin visibility.
+              A commercial electrical contractor running invoicing in Xero, stock in
+              Cin7, and jobs, crews, and materials tracked manually in Excel — with
+              no central view of job profitability, crew utilisation, or delivery risk.
             </p>
-            <p className="text-sm text-white/25 mb-5 max-w-xl">
-              We unified all three systems into a single Postgres database, built
-              automated pipelines, and delivered a live reporting and insight layer.
+            <p className="text-sm text-white/35 mb-5 max-w-xl leading-relaxed">
+              We centralised all systems into a single Postgres data model and built
+              two layers on top: a commercial reporting layer and a live operational
+              layer covering jobs, labour, crews, and material cost exposure.
             </p>
             <p className="text-xs text-white/20 mb-14 max-w-xl">
               <span className="text-white/35 font-medium">Note:</span> InventoryCo Ltd is
@@ -128,9 +134,9 @@ export default async function InventoryCo() {
               {[
                 ["Client",     "InventoryCo Ltd (sample)"],
                 ["Revenue",    "~£3–5m / year"],
-                ["Sector",     "Wholesale / Distribution"],
+                ["Sector",     "Commercial Electrical / Lighting Installation"],
                 ["Stack",      "Xero · Cin7 · Postgres · Supabase"],
-                ["Approach",   "API extraction · SQL modelling · reporting layer"],
+                ["Approach",   "API extraction · SQL modelling · operational reporting layer"],
               ].map(([label, value]) => (
                 <div key={label}>
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-1">{label}</p>
@@ -187,22 +193,24 @@ export default async function InventoryCo() {
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">The Problem</p>
                 <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-6 tracking-tight">
-                  Three systems.<br />No central database.
+                  Three systems.<br />No operational visibility.
                 </h2>
                 <p className="text-white/45 leading-relaxed mb-8">
-                  Reporting relied entirely on manual effort. Each week someone would
-                  export data from Xero and Cin7, paste it into Excel, and build a report
-                  by hand. By the time it reached leadership, the numbers were already
-                  days old — and reconciling across three systems introduced consistent
-                  errors.
+                  As the business grew from supply-only to supply-and-install,
+                  the reporting problem compounded. Financial data lived in Xero,
+                  stock in Cin7, and every operational record — jobs, crews, labour
+                  hours, material allocations — sat in Excel. Leadership had no
+                  joined-up view of whether projects were delivering on margin,
+                  whether crews were overcommitted, or where costs were running over.
                 </p>
                 <div className="space-y-3">
                   {[
-                    "No single source of truth — each system told a different story",
-                    "Manual reconciliation between sales and inventory data",
-                    "No product-level margin visibility — revenue and cost lived separately",
-                    "Stock issues only surfaced during end-of-week manual reviews",
-                    "Report quality depended on who built it and when",
+                    "No single source of truth — financial, stock, and operational data fully siloed",
+                    "Job profitability unknown until invoice raised — weeks after delivery",
+                    "Labour and material costs not tied to jobs — no variance tracking",
+                    "Crew allocation managed by memory and phone calls, not data",
+                    "Stock issues and supply delays only surfaced during manual end-of-week reviews",
+                    "Management reporting built manually each week — inconsistent and time-consuming",
                   ].map((issue) => (
                     <div key={issue} className="flex items-start gap-3 text-sm text-white/50">
                       <div className="mt-2 w-1 h-1 rounded-full bg-white/20 shrink-0" />
@@ -218,21 +226,24 @@ export default async function InventoryCo() {
                 </p>
                 {[
                   {
-                    name: "Xero",       badge: "Financial / Sales",
-                    detail: "Invoice and revenue data. Accessible via API — but only used as manual CSV exports in practice.",
-                    issue:  "No live integration — exports triggered manually each week",
+                    name: "Xero",
+                    badge: "Financial / Invoicing",
+                    detail: "Invoice and revenue data. API available but only used as manual CSV exports in practice. No linkage to job or delivery data.",
+                    issue: "Exports triggered manually — already days old before anyone read them",
                     accentBorder: "border-l-blue-500/50", accentBg: "bg-blue-500/[0.04]",
                   },
                   {
-                    name: "Cin7",       badge: "Inventory / Stock",
-                    detail: "Product catalogue, SKU-level stock positions, purchase orders, and warehouse data.",
-                    issue:  "Completely siloed — no linkage to sales or financials",
+                    name: "Cin7",
+                    badge: "Inventory / Purchasing",
+                    detail: "Product catalogue, SKU-level stock positions, purchase orders, and supplier data. Not linked to jobs or install projects.",
+                    issue: "Completely siloed — stock not tied to job material requirements",
                     accentBorder: "border-l-orange-500/50", accentBg: "bg-orange-500/[0.04]",
                   },
                   {
-                    name: "Excel",      badge: "Reporting",
-                    detail: "Weekly reports built by copy-pasting from Xero exports and Cin7 data dumps.",
-                    issue:  "Rebuilt from scratch each week — inconsistent and error-prone",
+                    name: "Excel",
+                    badge: "Jobs / Labour / Reporting",
+                    detail: "Used for everything not covered by Xero or Cin7: job tracking, crew allocation, labour hours, material usage, and the weekly management report — all in separate spreadsheets.",
+                    issue: "No single Excel model — multiple files, no version control, rebuilt weekly",
                     accentBorder: "border-l-emerald-500/50", accentBg: "bg-emerald-500/[0.04]",
                   },
                 ].map((s) => (
@@ -247,12 +258,19 @@ export default async function InventoryCo() {
                     </p>
                   </div>
                 ))}
-                <div className="mt-2 rounded-xl border border-rose-500/15 bg-rose-500/[0.06] p-5">
-                  <p className="text-sm font-semibold text-rose-300 mb-1.5">~5 hours per week</p>
-                  <p className="text-xs text-white/40 leading-relaxed">
-                    consumed by manual reporting — pulling exports, cleaning data,
-                    reconciling figures, and formatting before a single insight could be read.
-                  </p>
+                <div className="mt-2 rounded-xl border border-rose-500/15 bg-rose-500/[0.06] p-5 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-rose-300 mb-1">~5 hours per week</p>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      consumed by manual reporting — pulling exports, reconciling figures, and formatting before a single number could be shared.
+                    </p>
+                  </div>
+                  <div className="border-t border-white/[0.06] pt-3">
+                    <p className="text-sm font-semibold text-rose-300/70 mb-1">Zero job cost visibility</p>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      Labour and material costs were not linked to jobs — management had no way to know whether a project was delivering on margin until weeks after completion.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -269,9 +287,9 @@ export default async function InventoryCo() {
               <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">Architecture</p>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">The data architecture</h2>
               <p className="text-white/40 max-w-xl mx-auto text-base leading-relaxed">
-                A structured pipeline connects every source system to a centralised
-                Postgres database — with a clean transformation layer producing reporting
-                outputs.
+                A structured pipeline connects every source system — financial,
+                inventory, and operational — into a single Postgres database, with
+                commercial and operational reporting layers built on top.
               </p>
             </div>
 
@@ -319,11 +337,11 @@ export default async function InventoryCo() {
                     </div>
                     <p className="text-xs text-white/40 leading-relaxed mb-3">
                       The single source of truth. All source data stored in a structured
-                      relational schema — orders, products, inventory positions, and cost
-                      data joined by consistent keys.
+                      relational schema — jobs, crews, labour, materials, invoices,
+                      products, and inventory — joined by consistent keys.
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {["ic_sales", "ic_products", "ic_inventory", "views"].map((t) => (
+                      {["ic_jobs", "ic_labour_entries", "ic_materials", "ic_sales", "ic_products", "ic_inventory", "ic_crews", "views"].map((t) => (
                         <div key={t} className="text-center py-2 rounded-lg bg-white/[0.04] border border-white/[0.07]">
                           <p className="text-[10px] text-white/35 font-mono">{t}</p>
                         </div>
@@ -339,8 +357,8 @@ export default async function InventoryCo() {
                 icon={<GitMerge size={14} />}
                 color="border-indigo-500/25 bg-indigo-500/[0.07] text-indigo-300"
                 label="Transformation Layer"
-                pills={["Type normalisation", "Deduplication", "Margin calculations", "Reorder flag logic"]}
-                body="Raw tables are transformed into clean, analysis-ready views. Calculated fields — gross margin per SKU, inventory cover days, reorder alerts — computed as SQL views."
+                pills={["Type normalisation", "Deduplication", "Margin calculations", "Job cost variance", "Crew utilisation", "Reorder flags"]}
+                body="Raw tables are transformed into clean, analysis-ready views. Calculated fields include gross margin per SKU, job profitability, labour variance, crew utilisation, material cost exposure, and inventory cover — all computed as SQL views."
               />
 
               <ArchArrow label="serve to reporting" icon={<BarChart3 size={12} className="text-white/20" />} />
@@ -348,9 +366,19 @@ export default async function InventoryCo() {
               <ArchLayer
                 icon={<Layers size={14} />}
                 color="border-emerald-500/25 bg-emerald-500/[0.07] text-emerald-300"
-                label="Reporting & Insight Layer"
-                pills={["KPI views", "Product margin breakdowns", "Stock alert logic", "Scheduled summaries"]}
-                body="The reporting layer reads directly from transformed views. Outputs are consistent, always current, and require no manual input — every number traces to the same model."
+                label="Commercial Reporting Layer"
+                pills={["KPI views", "Product margin", "Revenue trend", "Stock alerts", "Scheduled summaries"]}
+                body="Commercial reporting outputs — revenue, profit, margin, inventory — served from transformed views. Always current, no manual assembly."
+              />
+
+              <ArchArrow label="serve to operations" icon={<BarChart3 size={12} className="text-white/20" />} />
+
+              <ArchLayer
+                icon={<Layers size={14} />}
+                color="border-violet-500/25 bg-violet-500/[0.07] text-violet-300"
+                label="Operational Insight Layer"
+                pills={["Job tracker", "Crew utilisation", "Labour overruns", "Material alerts", "Delivery risk"]}
+                body="Built on the same model, the operational layer surfaces job status, crew capacity, labour budget variance, and material cost exposure — giving management delivery control alongside financial visibility."
               />
 
             </div>
@@ -367,8 +395,9 @@ export default async function InventoryCo() {
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">Deliverables</p>
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-5">What was built</h2>
                 <p className="text-white/40 leading-relaxed text-sm">
-                  Four components — each removing a layer of manual dependency from
-                  the business and replacing it with an automated, reliable process.
+                  Five components — each removing a layer of manual dependency and
+                  replacing it with an automated, reliable process. The result is a
+                  single operating layer covering both commercial and delivery performance.
                 </p>
               </div>
               <div className="space-y-3">
@@ -422,12 +451,14 @@ export default async function InventoryCo() {
                   One version of the truth
                 </h2>
               </div>
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
-                  { heading: "Centralised data layer",  body: "Xero, Cin7, and Excel all feed into one Postgres database. Every report, view, and alert draws from the same underlying source."                       },
-                  { heading: "Automated pipelines",     body: "Scheduled API pulls replace all manual exports. Data arrives, is staged, cleaned, and loaded — without anyone needing to trigger it."           },
-                  { heading: "Near real-time visibility", body: "Revenue, margin, and stock data is current within the refresh cycle. Leadership no longer waits for a manually compiled weekly report."      },
-                  { heading: "Scalable architecture",   body: "The schema is designed to accommodate additional products, channels, or reporting requirements without structural rebuild."                     },
+                  { heading: "One central data model",       body: "Xero, Cin7, and Excel all feed into one Postgres database. Every report, KPI, and alert — commercial and operational — draws from the same source." },
+                  { heading: "Automated pipelines",          body: "Scheduled API pulls replace all manual exports. Data arrives, is staged, cleaned, and loaded without anyone needing to trigger it." },
+                  { heading: "Commercial visibility",        body: "Revenue, margin, and stock data is current within the refresh cycle. No more manually compiled weekly reports." },
+                  { heading: "Operational control",          body: "Job status, crew utilisation, labour budget variance, and material cost exposure are visible in real time — days before they would have surfaced manually." },
+                  { heading: "Job profitability — live",     body: "Labour entries and material allocations are now joined to job budgets. Management sees margin per job as it is earned, not weeks after completion." },
+                  { heading: "Scalable architecture",        body: "The schema is designed to accommodate additional crews, job types, or reporting requirements without a structural rebuild." },
                 ].map((item) => (
                   <div key={item.heading} className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
                     <p className="text-sm font-semibold mb-2">{item.heading}</p>
@@ -462,10 +493,10 @@ export default async function InventoryCo() {
 
             <div className="mt-10 grid sm:grid-cols-2 gap-3">
               {[
-                { heading: "Reporting time: 5 hours → 30 minutes",    body: "Weekly management reporting now runs automatically — no exports, no copy-paste, no manual reconciliation." },
-                { heading: "Product margin visibility: 0% → 100%",     body: "Every SKU now has a calculated gross margin — available in real time from the centralised data model." },
-                { heading: "Inventory alerts: end-of-week → live",     body: "Stock issues are surfaced automatically the moment they fall below reorder threshold — not days later." },
-                { heading: "One consistent source of truth",            body: "All reporting draws from the same Postgres model. No more version conflicts or figures that don't reconcile." },
+                { heading: "Reporting time: 5 hours → 30 minutes",       body: "Weekly management reporting now runs automatically — no exports, no copy-paste, no manual reconciliation." },
+                { heading: "Job margin visibility: unknown → live",        body: "Labour and material costs are now joined to jobs in real time. Management sees margin per project as it is earned, not weeks after completion." },
+                { heading: "Crew utilisation: tracked manually → live",   body: "Crew hours, capacity, and allocation are now visible at any point — no more reliance on phone calls or memory to manage workload." },
+                { heading: "One consistent source of truth",               body: "Every report, KPI, and alert draws from the same Postgres model. No version conflicts, no figures that don't reconcile." },
               ].map((item) => (
                 <div key={item.heading} className="flex items-start gap-3 p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
                   <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
@@ -487,15 +518,17 @@ export default async function InventoryCo() {
             <div className="max-w-3xl">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-8">Summary</p>
               <p className="text-2xl md:text-3xl font-medium leading-snug text-white/80 mb-8 tracking-tight">
-                &ldquo;Every business has different systems, different data, and different
-                decisions to make. That&rsquo;s why nothing here was adapted from a template
-                — it was designed specifically for how InventoryCo operates.&rdquo;
+                &ldquo;Every business has different systems, different operations, and
+                different decisions to make. That&rsquo;s why nothing here was adapted
+                from a template — it was designed specifically for how InventoryCo operates,
+                across both their commercial and delivery model.&rdquo;
               </p>
               <div className="flex flex-wrap gap-3 mb-8">
                 {[
-                  "Schema designed around their exact SKU structure",
-                  "Alert thresholds set by the client, automated by us",
-                  "Margin logic built to match their cost model",
+                  "Job schema designed around their exact project structure",
+                  "Labour and material variance logic built to their cost model",
+                  "Crew utilisation thresholds set by the client",
+                  "Alert rules defined by their operations team, automated by us",
                   "Reporting cadence matched to their management rhythm",
                 ].map((point) => (
                   <span key={point} className="text-xs font-medium text-white/40 border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 rounded-full">

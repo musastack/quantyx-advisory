@@ -542,21 +542,26 @@ export default function Home() {
                 Custom builds
               </div>
               <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.07] tracking-tight mb-6">
-                Your software<br />
-                can&apos;t do it?<br />
-                <span className="gradient-text">We&apos;ll build it for you.</span>
+                Need more than<br />
+                off-the-shelf?<br />
+                <span className="gradient-text">We build it from scratch.</span>
               </h2>
-              <p className="text-white/50 text-lg leading-relaxed mb-8 max-w-xl">
+              <p className="text-white/50 text-lg leading-relaxed mb-6 max-w-xl">
                 Off-the-shelf tools have limits. When your business hits those limits —
-                we step in and build exactly what you need from scratch. Bespoke
-                dashboards, custom automations, internal tools, data pipelines. If it
-                can be built, we&apos;ll build it.
+                we step in and build exactly what you need from scratch.
+              </p>
+              <p className="text-white/40 text-base leading-relaxed mb-8 max-w-xl">
+                That might be a custom reporting dashboard, an automated data pipeline,
+                or an internal operating layer that gives your team visibility over jobs,
+                costs, crews, or margins that no SaaS product covers by default.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-10">
                 {[
                   "Custom dashboards",
-                  "Internal tools",
+                  "Internal operating tools",
+                  "Job & project tracking",
+                  "Labour & cost visibility",
                   "Data pipelines",
                   "API integrations",
                   "Bespoke automations",
@@ -583,16 +588,16 @@ export default function Home() {
               {[
                 {
                   icon: "⚡",
-                  title: "Software restriction",
-                  body: "Your current tools don't support the workflow you need.",
+                  title: "Gap in your current tools",
+                  body: "Job costs, crew visibility, margin by project — most businesses track these in spreadsheets because no SaaS product covers their exact workflow.",
                   color: "border-rose-500/20 bg-rose-500/[0.06]",
                   label: "The problem",
                   labelColor: "text-rose-400 border-rose-500/25 bg-rose-500/10",
                 },
                 {
                   icon: "→",
-                  title: "Custom-built solution",
-                  body: "We design and build exactly what's needed — no compromises.",
+                  title: "Bespoke operating layer",
+                  body: "We build the exact reporting and operational layer your business needs — wired to your systems, built to your logic.",
                   color: "border-indigo-500/25 bg-indigo-500/[0.07]",
                   label: "Our answer",
                   labelColor: "text-indigo-300 border-indigo-500/25 bg-indigo-500/10",
@@ -600,7 +605,7 @@ export default function Home() {
                 {
                   icon: "✓",
                   title: "You own it, forever",
-                  body: "No vendor lock-in. Full handover, full documentation, yours to keep.",
+                  body: "No vendor lock-in. Full handover, full documentation, yours to keep and build on.",
                   color: "border-emerald-500/20 bg-emerald-500/[0.06]",
                   label: "The outcome",
                   labelColor: "text-emerald-400 border-emerald-500/25 bg-emerald-500/10",
