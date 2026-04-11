@@ -130,11 +130,15 @@ export default async function InventoryCo() {
               two layers on top: a commercial reporting layer and a live operational
               layer covering jobs, labour, crews, and material cost exposure.
             </p>
-            <p className="text-xs text-slate-300 dark:text-white/20 mb-14 max-w-xl">
+            <p className="text-xs text-slate-300 dark:text-white/20 mb-5 max-w-xl">
               <span className="text-slate-400 dark:text-white/35 font-medium">Note:</span> InventoryCo Ltd is
               a fictionalised example. All data is generated and illustrative. The
               architecture and approach reflect a realistic engagement.
             </p>
+            <div className="inline-flex items-center gap-2 border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.03] rounded-full px-4 py-1.5 mb-10">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <p className="text-xs text-slate-500 dark:text-white/40">Built using real-world system architecture — Xero API · Cin7 API · Postgres · Supabase</p>
+            </div>
 
             <div className="flex flex-wrap gap-x-10 gap-y-4">
               {[
@@ -440,6 +444,41 @@ export default async function InventoryCo() {
               </p>
             </div>
             <InsightLayer data={dashboardData} />
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════
+            5b. DECISION CONTEXT
+        ══════════════════════════════════════ */}
+        <section className="border-b border-slate-200 dark:border-white/[0.06]">
+          <div className="max-w-5xl mx-auto px-6 py-14">
+            <div className="grid sm:grid-cols-3 gap-5">
+              {[
+                {
+                  heading: "Identify margin issues before they impact profitability",
+                  body: "Labour overruns and material cost variance are surfaced as they happen — not discovered weeks after job close.",
+                  accent: "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.04]",
+                  label: "text-rose-600 dark:text-rose-400",
+                },
+                {
+                  heading: "Spot operational bottlenecks early",
+                  body: "Crew capacity, job risk, and delivery timelines are visible in real time — giving management time to act.",
+                  accent: "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.04]",
+                  label: "text-amber-600 dark:text-amber-400",
+                },
+                {
+                  heading: "Make staffing and inventory decisions with confidence",
+                  body: "Crew utilisation and material availability are tracked automatically — no phone calls, no manual tally.",
+                  accent: "border-indigo-200 bg-indigo-50 dark:border-indigo-500/20 dark:bg-indigo-500/[0.04]",
+                  label: "text-indigo-600 dark:text-indigo-400",
+                },
+              ].map((item) => (
+                <div key={item.heading} className={`p-6 rounded-2xl border ${item.accent}`}>
+                  <p className={`text-sm font-bold mb-2 ${item.label}`}>{item.heading}</p>
+                  <p className="text-xs text-slate-500 dark:text-white/40 leading-relaxed">{item.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

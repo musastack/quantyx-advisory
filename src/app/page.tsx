@@ -21,15 +21,14 @@ const services = [
   {
     icon: BarChart3,
     number: "01",
-    title: "Dashboard & Reporting Builds",
-    outcome: "Clear visibility on performance and faster decision-making.",
+    title: "Know exactly how your business is performing — without manual reporting",
+    outcome: "Clear visibility and faster decisions.",
     description:
-      "We turn raw business data into clear dashboards and management reporting — so you and your team always know what's happening across the business.",
+      "We turn raw business data into dashboards and reporting that make performance easy to understand — without anyone building a spreadsheet.",
     deliverables: [
       "Finance dashboards",
       "KPI tracking",
-      "Management reporting packs",
-      "Board-ready reporting",
+      "Management reporting",
     ],
     accent:      "border-indigo-500/20 bg-indigo-500/[0.04] dark:border-indigo-500/30 dark:bg-indigo-500/[0.05]",
     iconBg:      "bg-indigo-100 dark:bg-indigo-500/15",
@@ -40,15 +39,14 @@ const services = [
   {
     icon: Zap,
     number: "02",
-    title: "Process Automation",
-    outcome: "Less manual work, fewer errors, faster reporting.",
+    title: "Stop wasting time on manual reporting and repetitive processes",
+    outcome: "Less manual work, fewer errors.",
     description:
-      "We remove manual reporting and repetitive workflows — replacing hours of data wrangling with reliable, automated processes that run without anyone needing to trigger them.",
+      "We automate the reporting and workflows your team runs manually — so they spend time on decisions, not on data wrangling.",
     deliverables: [
-      "Automated reporting",
+      "Automated reports",
       "Reconciliations",
-      "Recurring data workflows",
-      "Scheduled exports and imports",
+      "Recurring processes",
     ],
     accent:      "border-violet-500/20 bg-violet-500/[0.04] dark:border-violet-500/30 dark:bg-violet-500/[0.05]",
     iconBg:      "bg-violet-100 dark:bg-violet-500/15",
@@ -59,15 +57,14 @@ const services = [
   {
     icon: Layers,
     number: "03",
-    title: "Data Centralisation & Insight",
-    outcome: "Consistent data, better insights, improved decisions.",
+    title: "Get one reliable version of your data across your business",
+    outcome: "Reliable data and better insight.",
     description:
-      "We bring together data from multiple systems into one reporting layer — so every report draws from the same source and is always accurate and always available.",
+      "We connect your systems and centralise data into a structured reporting layer — so every report draws from the same source.",
     deliverables: [
       "Accounting + inventory + spreadsheets",
-      "Central reporting database",
       "Single source of truth",
-      "Cross-system reporting and insight",
+      "Consistent reporting",
     ],
     accent:      "border-emerald-500/20 bg-emerald-500/[0.04] dark:border-emerald-500/30 dark:bg-emerald-500/[0.05]",
     iconBg:      "bg-emerald-100 dark:bg-emerald-500/15",
@@ -179,20 +176,19 @@ export default function Home() {
 
           {/* Headline */}
           <h1 className="text-5xl md:text-[4.25rem] font-bold leading-[1.08] tracking-tight mb-7 text-slate-900 dark:text-white">
-            We turn messy business data<br className="hidden sm:block" /> into{" "}
-            <span className="gradient-text">clear reporting and insight.</span>
+            Build the reporting and operating layer<br className="hidden sm:block" />{" "}
+            <span className="gradient-text">your business is missing.</span>
           </h1>
 
           {/* Sub */}
           <p className="text-lg md:text-xl text-slate-600 dark:text-white/55 max-w-2xl mx-auto mb-4 leading-relaxed">
-            Helping growing businesses centralise data, automate reporting, and
-            build dashboards that support better decisions.
+            We help growing businesses centralise data, automate reporting, and
+            build dashboards and internal systems that support better decisions.
           </p>
 
           {/* Who it's for */}
           <p className="text-sm text-slate-400 dark:text-white/30 mb-10 max-w-xl mx-auto">
-            For founder-led businesses, SMEs, and lean finance teams —
-            with too many systems and not enough visibility.
+            For founder-led teams and lean finance functions.
           </p>
 
           {/* CTAs */}
@@ -269,7 +265,7 @@ export default function Home() {
                 <div className={`w-10 h-10 rounded-xl ${s.iconBg} flex items-center justify-center mb-4`}>
                   <s.icon size={19} className={s.iconColor} />
                 </div>
-                <h3 className="text-lg font-bold mb-3 leading-snug text-slate-900 dark:text-white">{s.title}</h3>
+                <h3 className="text-base font-bold mb-3 leading-snug text-slate-900 dark:text-white">{s.title}</h3>
 
                 <p className="text-sm text-slate-500 dark:text-white/45 leading-relaxed mb-6 flex-1">
                   {s.description}
@@ -520,10 +516,10 @@ export default function Home() {
             </p>
             <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Work we&apos;ve done
+                The systems we build
               </h2>
               <p className="text-slate-400 dark:text-white/40 text-sm">
-                Illustrative examples of real engagement types.
+                Illustrative examples based on real engagement types.
               </p>
             </div>
           </div>
@@ -554,10 +550,13 @@ export default function Home() {
                   Cin7, and all job, crew, and material tracking manually in Excel —
                   with no central view of job profitability, crew load, or delivery risk.
                 </p>
-                <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-7 max-w-lg">
+                <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-4 max-w-lg">
                   We centralised all three into a Postgres data model and built two layers
                   on top: a commercial reporting layer and a live operational layer
                   covering jobs, labour, crews, and material cost exposure.
+                </p>
+                <p className="text-xs text-slate-400 dark:text-white/30 mb-7 max-w-lg">
+                  Built using real-world system architecture — Xero API, Cin7 API, Postgres (Supabase), structured SQL views.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
