@@ -55,6 +55,10 @@ export type ActiveJob = {
   budget_gbp: number;
   actual_cost_gbp: number;
   risk_flag: string | null;
+  labour_hours?: number;
+  labour_cost_gbp?: number;
+  materials_cost_gbp?: number;
+  margin_pct?: number;
 };
 
 export type CrewStatus = {
@@ -162,6 +166,10 @@ const MOCK: InventoryCoDashboard = {
       budget_gbp: 48000,
       actual_cost_gbp: 38200,
       risk_flag: "Labour 14% over budget",
+      labour_hours: 218,
+      labour_cost_gbp: 23800,
+      materials_cost_gbp: 14400,
+      margin_pct: 20.4,
     },
     {
       job_id: "J-1048",
@@ -175,6 +183,10 @@ const MOCK: InventoryCoDashboard = {
       budget_gbp: 32500,
       actual_cost_gbp: 14800,
       risk_flag: null,
+      labour_hours: 92,
+      labour_cost_gbp: 9200,
+      materials_cost_gbp: 5600,
+      margin_pct: 26.8,
     },
     {
       job_id: "J-1051",
@@ -188,6 +200,10 @@ const MOCK: InventoryCoDashboard = {
       budget_gbp: 19200,
       actual_cost_gbp: 17900,
       risk_flag: "Awaiting materials — delivery delayed",
+      labour_hours: 104,
+      labour_cost_gbp: 11800,
+      materials_cost_gbp: 6100,
+      margin_pct: 6.8,
     },
     {
       job_id: "J-1037",
@@ -201,6 +217,10 @@ const MOCK: InventoryCoDashboard = {
       budget_gbp: 27000,
       actual_cost_gbp: 24800,
       risk_flag: null,
+      labour_hours: 142,
+      labour_cost_gbp: 15600,
+      materials_cost_gbp: 9200,
+      margin_pct: 8.1,
     },
     {
       job_id: "J-1055",
@@ -214,6 +234,10 @@ const MOCK: InventoryCoDashboard = {
       budget_gbp: 54000,
       actual_cost_gbp: 13100,
       risk_flag: "Start delayed — site access issue",
+      labour_hours: 76,
+      labour_cost_gbp: 8400,
+      materials_cost_gbp: 4700,
+      margin_pct: 31.2,
     },
     {
       job_id: "J-1061",
@@ -227,6 +251,44 @@ const MOCK: InventoryCoDashboard = {
       budget_gbp: 38500,
       actual_cost_gbp: 3200,
       risk_flag: null,
+      labour_hours: 28,
+      labour_cost_gbp: 2100,
+      materials_cost_gbp: 1100,
+      margin_pct: 34.1,
+    },
+    {
+      job_id: "J-1063",
+      name: "Car Park Lighting Upgrade",
+      client: "NCP Group — Birmingham",
+      status: "on-track",
+      crew: "Crew B",
+      start_date: "28 Mar",
+      due_date: "16 May",
+      pct_complete: 15,
+      budget_gbp: 41000,
+      actual_cost_gbp: 6800,
+      risk_flag: null,
+      labour_hours: 44,
+      labour_cost_gbp: 4400,
+      materials_cost_gbp: 2400,
+      margin_pct: 29.5,
+    },
+    {
+      job_id: "J-1034",
+      name: "School Block LED Refit",
+      client: "Oakfield Academy Trust",
+      status: "complete",
+      crew: "Crew A",
+      start_date: "10 Jan",
+      due_date: "28 Feb",
+      pct_complete: 100,
+      budget_gbp: 35500,
+      actual_cost_gbp: 33200,
+      risk_flag: null,
+      labour_hours: 188,
+      labour_cost_gbp: 20400,
+      materials_cost_gbp: 12800,
+      margin_pct: 6.5,
     },
   ],
 

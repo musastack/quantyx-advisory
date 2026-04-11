@@ -483,6 +483,73 @@ export default async function InventoryCo() {
         </section>
 
         {/* ══════════════════════════════════════
+            5c. BEFORE / AFTER COMPARISON
+        ══════════════════════════════════════ */}
+        <section className="border-b border-slate-200 dark:border-white/[0.06] bg-slate-100/50 dark:bg-white/[0.015]">
+          <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
+            <div className="text-center mb-12">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-3">The Transformation</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Before vs After</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-px bg-slate-200 dark:bg-white/[0.06] rounded-2xl overflow-hidden border border-slate-200 dark:border-white/[0.06]">
+
+              {/* BEFORE */}
+              <div className="bg-white dark:bg-[#07070e] p-8">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-rose-400" />
+                  <p className="text-xs font-bold uppercase tracking-widest text-rose-500 dark:text-rose-400">Before</p>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { label: "Reporting",     value: "5+ hours per week, built manually in Excel" },
+                    { label: "Job visibility", value: "None — profitability only known weeks after completion" },
+                    { label: "Cost tracking",  value: "Labour and materials not linked to jobs" },
+                    { label: "Crew status",    value: "Managed by memory and phone calls" },
+                    { label: "Data source",    value: "3 disconnected systems — Xero, Cin7, Excel" },
+                    { label: "Alerts",         value: "Stock and delivery issues surfaced in manual reviews" },
+                  ].map((row) => (
+                    <div key={row.label} className="flex gap-4 items-start">
+                      <div className="mt-2 w-1.5 h-1.5 rounded-full bg-rose-300 dark:bg-rose-500/50 shrink-0" />
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-0.5">{row.label}</p>
+                        <p className="text-sm text-slate-500 dark:text-white/45 leading-relaxed">{row.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AFTER */}
+              <div className="bg-slate-50 dark:bg-[#0b0b18] p-8">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <p className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">After</p>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { label: "Reporting",     value: "Automated — ready in under 30 minutes, no manual assembly" },
+                    { label: "Job visibility", value: "Live — margin tracked in real time as labour and materials are logged" },
+                    { label: "Cost tracking",  value: "Labour and materials joined to jobs — variance visible immediately" },
+                    { label: "Crew status",    value: "Live utilisation, capacity, and allocation tracked automatically" },
+                    { label: "Data source",    value: "One centralised Postgres model — every report from the same source" },
+                    { label: "Alerts",         value: "Automated flags for at-risk jobs, overruns, and low stock" },
+                  ].map((row) => (
+                    <div key={row.label} className="flex gap-4 items-start">
+                      <CheckCircle size={13} className="text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-0.5">{row.label}</p>
+                        <p className="text-sm text-slate-600 dark:text-white/60 leading-relaxed">{row.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════
             6. AFTER
         ══════════════════════════════════════ */}
         <section className="border-b border-slate-200 dark:border-white/[0.06]">
