@@ -7,6 +7,8 @@ import {
   CheckCircle,
   ExternalLink,
   ArrowUpRight,
+  Database,
+  GitMerge,
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────
@@ -17,49 +19,51 @@ const services = [
   {
     icon: BarChart3,
     number: "01",
-    title: "Dashboards & Management Reporting",
-    outcome: "Your key numbers in one clear view — updated automatically.",
+    title: "Dashboard & Reporting Builds",
+    outcome: "Clear visibility on performance and faster decision-making.",
     description:
-      "We design and build reporting that gives you and your finance team instant visibility into what's happening across the business. No more pulling data from different places to build a slide deck.",
+      "We turn raw business data into clear dashboards and management reporting — so you and your team always know what's happening across the business.",
     deliverables: [
-      "Finance and P&L dashboards",
-      "KPI and operational reporting",
-      "Management information packs",
+      "Finance dashboards",
+      "KPI tracking",
+      "Management reporting packs",
       "Board-ready reporting",
     ],
     accent: "border-indigo-500/30 bg-indigo-500/[0.05]",
     iconBg: "bg-indigo-500/15",
     iconColor: "text-indigo-400",
     numColor: "text-indigo-500/40",
+    outcomeBg: "border-indigo-500/25 bg-indigo-500/[0.08] text-indigo-300",
   },
   {
     icon: Zap,
     number: "02",
-    title: "Reporting & Process Automation",
-    outcome: "Replace hours of manual work with reliable, automated processes.",
+    title: "Process Automation",
+    outcome: "Less manual work, fewer errors, faster reporting.",
     description:
-      "We find where your team is losing time to repetitive finance and admin tasks — then build automations that run without anyone needing to trigger them. Reports that used to take hours generate themselves.",
+      "We remove manual reporting and repetitive workflows — replacing hours of data wrangling with reliable, automated processes that run without anyone needing to trigger them.",
     deliverables: [
-      "Automated report generation",
-      "Reconciliation workflows",
+      "Automated reporting",
+      "Reconciliations",
+      "Recurring data workflows",
       "Scheduled exports and imports",
-      "Finance process improvements",
     ],
     accent: "border-violet-500/30 bg-violet-500/[0.05]",
     iconBg: "bg-violet-500/15",
     iconColor: "text-violet-400",
     numColor: "text-violet-500/40",
+    outcomeBg: "border-violet-500/25 bg-violet-500/[0.08] text-violet-300",
   },
   {
     icon: Layers,
     number: "03",
     title: "Data Centralisation & Insight",
-    outcome: "One place for all your data — consistent, reliable, and current.",
+    outcome: "Consistent data, better insights, improved decisions.",
     description:
-      "If your reporting relies on exporting from one system, pasting into another, and hoping it matches — we fix that. We connect your platforms into a single data layer so reporting is always accurate and always available.",
+      "We bring together data from multiple systems into one reporting layer — so every report draws from the same source and is always accurate and always available.",
     deliverables: [
-      "System and API integrations",
-      "Centralised reporting database",
+      "Accounting + inventory + spreadsheets",
+      "Central reporting database",
       "Single source of truth",
       "Cross-system reporting and insight",
     ],
@@ -67,29 +71,15 @@ const services = [
     iconBg: "bg-emerald-500/15",
     iconColor: "text-emerald-400",
     numColor: "text-emerald-500/40",
+    outcomeBg: "border-emerald-500/25 bg-emerald-500/[0.08] text-emerald-300",
   },
 ];
 
 /* ─────────────────────────────────────────────
-   CASE STUDIES
+   SECONDARY CASE STUDIES
 ───────────────────────────────────────────── */
 
-const caseStudies = [
-  {
-    client: "InventoryCo Ltd",
-    industry: "Wholesale Distribution",
-    tag: "Data Centralisation",
-    tagColor: "text-indigo-300 bg-indigo-500/10 border-indigo-500/20",
-    headline: "From disconnected systems to real-time insight",
-    description:
-      "Unified Xero, Cin7, and Excel into a single centralised data model with automated pipelines — eliminating 6 hours of weekly manual reporting and giving leadership live visibility.",
-    results: [
-      "Reporting fully automated",
-      "3 systems unified in one model",
-      "Live inventory alerts deployed",
-    ],
-    href: "/case-studies/inventoryco",
-  },
+const secondaryCaseStudies = [
   {
     client: "Logistics SME",
     industry: "Logistics",
@@ -103,7 +93,6 @@ const caseStudies = [
       "Error rate dropped from 6% to 0.3%",
       "3 staff hours saved per day",
     ],
-    href: null,
   },
   {
     client: "Digital Marketing Agency",
@@ -118,7 +107,6 @@ const caseStudies = [
       "Reports go live in <2 hrs",
       "Client retention up 25%",
     ],
-    href: null,
   },
 ];
 
@@ -135,10 +123,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-xl font-bold gradient-text">Quantyx Advisory</span>
           <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
-            <a href="#custom-builds" className="hover:text-white transition-colors">Custom Builds</a>
-            <a href="#services"      className="hover:text-white transition-colors">Services</a>
-            <a href="#case-studies"  className="hover:text-white transition-colors">Case Studies</a>
-            <a href="#contact"       className="hover:text-white transition-colors">Contact</a>
+            <a href="#services"     className="hover:text-white transition-colors">Services</a>
+            <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
+            <a href="#case-studies" className="hover:text-white transition-colors">Case Studies</a>
+            <a href="#contact"      className="hover:text-white transition-colors">Contact</a>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -160,7 +148,7 @@ export default function Home() {
       {/* ══════════════════════════════════════
           HERO
       ══════════════════════════════════════ */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+      <section className="pt-32 pb-24 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_-20%,rgba(99,102,241,0.2),transparent_60%)]" />
         <div className="max-w-4xl mx-auto text-center relative">
 
@@ -171,34 +159,35 @@ export default function Home() {
 
           {/* Headline */}
           <h1 className="text-5xl md:text-[4.25rem] font-bold leading-[1.08] tracking-tight mb-7">
-            Clearer reporting.<br />
-            Less manual work.<br />
-            <span className="gradient-text">Better decisions.</span>
+            We turn messy business data<br className="hidden sm:block" /> into{" "}
+            <span className="gradient-text">clear reporting and insight.</span>
           </h1>
 
-          {/* Who we help */}
-          <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-4 leading-relaxed">
-            We help founder-led businesses and lean finance teams centralise data,
-            automate reporting, and build dashboards that give you real visibility
-            into your business.
+          {/* Sub */}
+          <p className="text-lg md:text-xl text-white/55 max-w-2xl mx-auto mb-4 leading-relaxed">
+            Helping growing businesses centralise data, automate reporting, and
+            build dashboards that support better decisions.
           </p>
-          <p className="text-sm text-white/30 mb-10">
-            Typically working with UK businesses between £1m–£20m revenue.
+
+          {/* Who it's for */}
+          <p className="text-sm text-white/30 mb-10 max-w-xl mx-auto">
+            For founder-led businesses, SMEs, and lean finance teams —
+            with too many systems and not enough visibility.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
-            <a
-              href="#services"
+            <Link
+              href="/case-studies/inventoryco"
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-medium transition-colors text-sm"
             >
-              See what we do <ArrowRight size={15} />
-            </a>
+              View Case Study <ArrowRight size={15} />
+            </Link>
             <a
-              href="#contact"
+              href="#services"
               className="text-white/55 hover:text-white px-7 py-3.5 rounded-xl border border-white/10 hover:border-white/20 transition-colors font-medium text-sm"
             >
-              Book a free call
+              See what we do
             </a>
           </div>
 
@@ -227,17 +216,327 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════
+          SERVICES
+      ══════════════════════════════════════ */}
+      <section id="services" className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+
+          <div className="mb-14">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
+              What we do
+            </p>
+            <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
+              <h2 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight max-w-xl">
+                Three services.<br />All focused on one outcome.
+              </h2>
+              <p className="text-white/40 text-sm leading-relaxed max-w-xs">
+                We help growing businesses centralise data, automate reporting, and
+                build dashboards that support faster, better-informed decisions.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-5">
+            {services.map((s) => (
+              <div
+                key={s.title}
+                className={`relative p-7 rounded-2xl border ${s.accent} flex flex-col`}
+              >
+                <span className={`text-6xl font-bold leading-none mb-6 ${s.numColor} select-none`}>
+                  {s.number}
+                </span>
+
+                <div className={`w-10 h-10 rounded-xl ${s.iconBg} flex items-center justify-center mb-4`}>
+                  <s.icon size={19} className={s.iconColor} />
+                </div>
+                <h3 className="text-lg font-bold mb-3 leading-snug">{s.title}</h3>
+
+                <p className="text-sm text-white/45 leading-relaxed mb-6 flex-1">
+                  {s.description}
+                </p>
+
+                <div className="border-t border-white/[0.07] pt-5 space-y-2 mb-5">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-3">
+                    Examples
+                  </p>
+                  {s.deliverables.map((d) => (
+                    <div key={d} className="flex items-center gap-2 text-xs text-white/50">
+                      <div className="w-1 h-1 rounded-full bg-white/25 shrink-0" />
+                      {d}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Outcome callout */}
+                <div className={`rounded-xl border px-4 py-3 ${s.outcomeBg}`}>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest opacity-50 mb-1">Outcome</p>
+                  <p className="text-xs font-semibold leading-snug">{s.outcome}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <p className="text-sm text-white/50 max-w-lg leading-relaxed">
+              Most projects combine elements of two or three of these. We scope
+              every engagement individually — no fixed packages, no off-the-shelf solutions.
+            </p>
+            <a
+              href="#contact"
+              className="shrink-0 flex items-center gap-1.5 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors whitespace-nowrap"
+            >
+              Discuss your project <ArrowUpRight size={14} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          HOW IT WORKS
+      ══════════════════════════════════════ */}
+      <section id="how-it-works" className="py-24 px-6 border-y border-white/[0.05] bg-white/[0.02]">
+        <div className="max-w-6xl mx-auto">
+
+          <div className="text-center mb-16">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
+              How it works
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+              Three steps. Minimal effort from your team.
+            </h2>
+            <p className="text-white/40 text-sm max-w-md mx-auto leading-relaxed">
+              We handle the technical complexity — you get clean data, clear reporting, and better decisions.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5 mb-10">
+            {[
+              {
+                step: "01",
+                Icon: Database,
+                title: "Extract data",
+                body: "We connect to your systems via APIs and structured exports — pulling sales, inventory, finance, or operational data from wherever it currently lives.",
+                tags: ["API integrations", "Scheduled exports", "Manual uploads"],
+                color: "border-sky-500/25 bg-sky-500/[0.05]",
+                iconBg: "bg-sky-500/15",
+                iconColor: "text-sky-400",
+                numColor: "text-sky-500/30",
+              },
+              {
+                step: "02",
+                Icon: GitMerge,
+                title: "Centralise and structure",
+                body: "All source data lands in a central database — cleaned, deduplicated, and modelled so every report and dashboard draws from the same consistent source.",
+                tags: ["Central database", "Data modelling", "Transformation layer"],
+                color: "border-violet-500/25 bg-violet-500/[0.05]",
+                iconBg: "bg-violet-500/15",
+                iconColor: "text-violet-400",
+                numColor: "text-violet-500/30",
+              },
+              {
+                step: "03",
+                Icon: BarChart3,
+                title: "Deliver insights",
+                body: "We build the reporting layer on top — dashboards, KPI views, alerts, and management packs — all connected to your live data and always current.",
+                tags: ["Live dashboards", "Automated reports", "KPI tracking"],
+                color: "border-emerald-500/25 bg-emerald-500/[0.05]",
+                iconBg: "bg-emerald-500/15",
+                iconColor: "text-emerald-400",
+                numColor: "text-emerald-500/30",
+              },
+            ].map(({ step, Icon, title, body, tags, color, iconBg, iconColor, numColor }) => (
+              <div key={step} className={`p-7 rounded-2xl border ${color} flex flex-col`}>
+                <div className="flex items-center justify-between mb-6">
+                  <span className={`text-5xl font-bold leading-none ${numColor} select-none`}>
+                    {step}
+                  </span>
+                  <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
+                    <Icon size={19} className={iconColor} />
+                  </div>
+                </div>
+                <h3 className="text-lg font-bold mb-3">{title}</h3>
+                <p className="text-sm text-white/45 leading-relaxed mb-6 flex-1">{body}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag) => (
+                    <span key={tag} className="text-[11px] text-white/35 bg-white/[0.04] border border-white/[0.07] px-2.5 py-1 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Engagement process */}
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/20 mb-4 text-center">
+              Our engagement process
+            </p>
+            <div className="grid sm:grid-cols-4 gap-3">
+              {[
+                { step: "1", title: "Discovery call",    body: "Free 30-minute call to understand your setup and what good looks like." },
+                { step: "2", title: "Scoped proposal",   body: "Clear deliverables, timeline, and fixed fee. No surprises." },
+                { step: "3", title: "Build and deliver", body: "We do the technical work. You stay involved at key points." },
+                { step: "4", title: "Handover & support", body: "Full documentation. Optional ongoing support available." },
+              ].map((item) => (
+                <div key={item.step} className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
+                  <div className="flex items-center gap-2.5 mb-2.5">
+                    <span className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+                      {item.step}
+                    </span>
+                    <p className="text-sm font-semibold">{item.title}</p>
+                  </div>
+                  <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          CASE STUDIES
+      ══════════════════════════════════════ */}
+      <section id="case-studies" className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+
+          <div className="mb-14">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
+              Case studies
+            </p>
+            <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+                Work we&apos;ve done
+              </h2>
+              <p className="text-white/40 text-sm">
+                Illustrative examples of real engagement types.
+              </p>
+            </div>
+          </div>
+
+          {/* Featured: InventoryCo */}
+          <div className="mb-5 relative overflow-hidden rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.04] p-8 md:p-10">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/[0.07] rounded-full blur-3xl pointer-events-none" />
+            <div className="relative grid md:grid-cols-[1.3fr_1fr] gap-10 items-start">
+
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-5">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-indigo-300 border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 rounded-full">
+                    Case Study
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-white/30 border border-white/[0.08] px-3 py-1 rounded-full">
+                    Wholesale Distribution
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-widest text-white/30 border border-white/[0.08] px-3 py-1 rounded-full">
+                    Data Centralisation
+                  </span>
+                </div>
+
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight">
+                  From disconnected systems<br className="hidden md:block" /> to real-time insight
+                </h3>
+                <p className="text-white/50 text-sm leading-relaxed mb-3 max-w-lg">
+                  A wholesale distributor running sales in Xero, inventory in Cin7, and
+                  reporting in Excel — three disconnected systems with no central view.
+                </p>
+                <p className="text-white/50 text-sm leading-relaxed mb-7 max-w-lg">
+                  We unified all three into a single Postgres database with automated
+                  pipelines and a live reporting layer — eliminating 6 hours of weekly
+                  manual reporting.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/case-studies/inventoryco"
+                    className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors"
+                  >
+                    Read full case study <ArrowRight size={14} />
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex items-center gap-2 text-sm text-white/45 hover:text-white/70 px-6 py-3 rounded-xl border border-white/[0.09] hover:border-white/[0.18] transition-colors"
+                  >
+                    View demo dashboard <ExternalLink size={14} />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-4">
+                  Key results
+                </p>
+                {[
+                  { stat: "< 30 min", label: "Weekly reporting time",       was: "Was ~5 hours manual"       },
+                  { stat: "3",        label: "Systems unified in one model", was: "Previously disconnected"   },
+                  { stat: "100%",     label: "Product margin visibility",    was: "Previously unavailable"    },
+                  { stat: "Live",     label: "Inventory alerts deployed",    was: "Was end-of-week manual"    },
+                ].map((r) => (
+                  <div key={r.label} className="flex items-center gap-4 p-4 rounded-xl border border-white/[0.07] bg-white/[0.04]">
+                    <span className="text-lg font-bold text-indigo-300 shrink-0 w-16">{r.stat}</span>
+                    <div>
+                      <p className="text-sm font-medium text-white/80">{r.label}</p>
+                      <p className="text-xs text-white/30">{r.was}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+          {/* Secondary case studies */}
+          <div className="grid lg:grid-cols-2 gap-5">
+            {secondaryCaseStudies.map((cs) => (
+              <div
+                key={cs.client}
+                className="p-7 rounded-2xl border border-white/[0.08] bg-white/[0.025] flex flex-col"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <p className="font-semibold text-sm">{cs.client}</p>
+                    <p className="text-xs text-white/35 mt-0.5">{cs.industry}</p>
+                  </div>
+                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border ${cs.tagColor}`}>
+                    {cs.tag}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold mb-3 leading-snug">{cs.headline}</h3>
+                <p className="text-white/40 text-sm leading-relaxed mb-5 flex-1">{cs.description}</p>
+                <ul className="space-y-2 mb-4">
+                  {cs.results.map((r) => (
+                    <li key={r} className="flex items-center gap-2 text-xs text-white/60">
+                      <CheckCircle size={12} className="text-indigo-400 shrink-0" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-white/20 mt-auto">Full write-up coming soon</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 text-sm text-indigo-300 hover:text-indigo-200 transition-colors"
+            >
+              Facing a similar problem? Let&apos;s talk <ExternalLink size={13} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
           CUSTOM BUILDS
       ══════════════════════════════════════ */}
-      <section id="custom-builds" className="py-20 px-6 relative overflow-hidden">
-        {/* Background glow */}
+      <section className="py-20 px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(99,102,241,0.12),transparent_65%)]" />
         <div className="absolute inset-0 border-y border-indigo-500/10" />
 
         <div className="max-w-6xl mx-auto relative">
           <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
 
-            {/* Left — copy */}
             <div>
               <div className="inline-flex items-center gap-2 border border-indigo-500/30 bg-indigo-500/10 rounded-full px-4 py-1.5 text-xs font-semibold text-indigo-300 mb-7 uppercase tracking-widest">
                 Custom builds
@@ -254,7 +553,6 @@ export default function Home() {
                 can be built, we&apos;ll build it.
               </p>
 
-              {/* Example tags */}
               <div className="flex flex-wrap gap-2 mb-10">
                 {[
                   "Custom dashboards",
@@ -281,7 +579,6 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Right — visual card stack */}
             <div className="hidden lg:flex flex-col gap-4">
               {[
                 {
@@ -324,208 +621,6 @@ export default function Home() {
               ))}
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
-          SERVICES
-      ══════════════════════════════════════ */}
-      <section id="services" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-
-          {/* Header */}
-          <div className="mb-14">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
-              What we do
-            </p>
-            <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
-              <h2 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight max-w-xl">
-                Three services.<br />All focused on one outcome.
-              </h2>
-              <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-                We help growing businesses centralise data, automate reporting, and
-                build dashboards that support faster, better-informed decisions.
-              </p>
-            </div>
-          </div>
-
-          {/* Service cards */}
-          <div className="grid lg:grid-cols-3 gap-5">
-            {services.map((s) => (
-              <div
-                key={s.title}
-                className={`relative p-7 rounded-2xl border ${s.accent} flex flex-col`}
-              >
-                {/* Number */}
-                <span className={`text-6xl font-bold leading-none mb-6 ${s.numColor} select-none`}>
-                  {s.number}
-                </span>
-
-                {/* Icon + title */}
-                <div className={`w-10 h-10 rounded-xl ${s.iconBg} flex items-center justify-center mb-4`}>
-                  <s.icon size={19} className={s.iconColor} />
-                </div>
-                <h3 className="text-lg font-bold mb-2 leading-snug">{s.title}</h3>
-
-                {/* Outcome line */}
-                <p className="text-sm font-medium text-white/70 mb-4 leading-snug">
-                  {s.outcome}
-                </p>
-
-                {/* Description */}
-                <p className="text-sm text-white/40 leading-relaxed mb-6 flex-1">
-                  {s.description}
-                </p>
-
-                {/* Deliverables */}
-                <div className="border-t border-white/[0.07] pt-5 space-y-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-3">
-                    What this includes
-                  </p>
-                  {s.deliverables.map((d) => (
-                    <div key={d} className="flex items-center gap-2 text-xs text-white/50">
-                      <div className="w-1 h-1 rounded-full bg-white/25 shrink-0" />
-                      {d}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-5 p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <p className="text-sm text-white/50 max-w-lg leading-relaxed">
-              Most projects combine elements of two or three of these. We scope
-              every engagement individually — no fixed packages, no off-the-shelf solutions.
-            </p>
-            <a
-              href="#contact"
-              className="shrink-0 flex items-center gap-1.5 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors whitespace-nowrap"
-            >
-              Discuss your project <ArrowUpRight size={14} />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
-          HOW WE WORK
-      ══════════════════════════════════════ */}
-      <section className="py-20 px-6 border-y border-white/[0.05] bg-white/[0.02]">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-[1fr_2fr] gap-12 items-start">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
-                How we work
-              </p>
-              <h2 className="text-3xl font-bold tracking-tight leading-tight">
-                Scoped projects.<br />Clear deliverables.<br />No surprises.
-              </h2>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {[
-                {
-                  step: "1",
-                  title: "Discovery call",
-                  body: "Free 30-minute call to understand your current setup, what's not working, and what good looks like for you.",
-                },
-                {
-                  step: "2",
-                  title: "Scoped proposal",
-                  body: "We send a clear proposal — what we'll build, how long it will take, and what it will cost. Fixed-fee where possible.",
-                },
-                {
-                  step: "3",
-                  title: "Build and deliver",
-                  body: "We do the work. You stay involved at key points without needing to manage the technical details.",
-                },
-                {
-                  step: "4",
-                  title: "Handover and support",
-                  body: "Full documentation and handover. Optional ongoing support available for maintenance and improvements.",
-                },
-              ].map((item) => (
-                <div key={item.step} className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <span className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center text-[10px] font-bold text-indigo-400">
-                      {item.step}
-                    </span>
-                    <p className="text-sm font-semibold">{item.title}</p>
-                  </div>
-                  <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════
-          CASE STUDIES
-      ══════════════════════════════════════ */}
-      <section id="case-studies" className="py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-14">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-4">
-              Case studies
-            </p>
-            <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Work we&apos;ve done
-              </h2>
-              <p className="text-white/40 text-sm">
-                Illustrative examples of real engagement types.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-5">
-            {caseStudies.map((cs) => (
-              <div
-                key={cs.client}
-                className="p-7 rounded-2xl border border-white/[0.08] bg-white/[0.025] hover:border-indigo-500/25 transition-all flex flex-col"
-              >
-                <div className="flex items-center justify-between mb-5">
-                  <div>
-                    <p className="font-semibold text-sm">{cs.client}</p>
-                    <p className="text-xs text-white/35 mt-0.5">{cs.industry}</p>
-                  </div>
-                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border ${cs.tagColor}`}>
-                    {cs.tag}
-                  </span>
-                </div>
-                <h3 className="text-base font-bold mb-3 leading-snug">{cs.headline}</h3>
-                <p className="text-white/40 text-sm leading-relaxed mb-5 flex-1">{cs.description}</p>
-                <ul className="space-y-2 mb-5">
-                  {cs.results.map((r) => (
-                    <li key={r} className="flex items-center gap-2 text-xs text-white/60">
-                      <CheckCircle size={12} className="text-indigo-400 shrink-0" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-                {cs.href ? (
-                  <Link
-                    href={cs.href}
-                    className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-semibold mt-auto"
-                  >
-                    Read full case study <ArrowRight size={13} />
-                  </Link>
-                ) : (
-                  <p className="text-xs text-white/20 mt-auto">Full write-up coming soon</p>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 text-sm text-indigo-300 hover:text-indigo-200 transition-colors"
-            >
-              Facing a similar problem? Let&apos;s talk <ExternalLink size={13} />
-            </a>
           </div>
         </div>
       </section>

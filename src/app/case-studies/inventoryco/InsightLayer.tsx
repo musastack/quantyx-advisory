@@ -67,16 +67,16 @@ function KPICard({
   positive: boolean | null;
 }) {
   return (
-    <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e] hover:bg-white/[0.03] transition-colors flex flex-col gap-4">
+    <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e] hover:bg-white/[0.03] transition-colors flex flex-col gap-3">
       <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">{label}</p>
-      <p className="text-3xl font-bold tracking-tight leading-none">{value}</p>
-      <div className="flex items-center gap-1.5 mt-auto">
-        {positive === true  && <TrendingUp    size={12} className="text-emerald-400 shrink-0" />}
-        {positive === false && <AlertTriangle size={12} className="text-amber-400   shrink-0" />}
-        {positive === null  && <Minus         size={12} className="text-white/20    shrink-0" />}
+      <p className="text-4xl font-bold tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70">{value}</p>
+      <div className="flex items-center gap-1.5 mt-auto pt-1 border-t border-white/[0.06]">
+        {positive === true  && <TrendingUp    size={11} className="text-emerald-400 shrink-0" />}
+        {positive === false && <AlertTriangle size={11} className="text-amber-400   shrink-0" />}
+        {positive === null  && <Minus         size={11} className="text-white/20    shrink-0" />}
         <span className={`text-xs ${
-          positive === true  ? "text-emerald-400 font-semibold" :
-          positive === false ? "text-amber-400   font-semibold" :
+          positive === true  ? "text-emerald-400 font-medium" :
+          positive === false ? "text-amber-400   font-medium" :
           "text-white/30"
         }`}>
           {sub}
@@ -143,50 +143,48 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
       <div className="grid md:grid-cols-3 gap-4">
         {[
           {
-            tag: "Revenue",
+            tag: "Revenue insight",
             color: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-            dot: "bg-violet-400",
+            cardBorder: "border-violet-500/15 bg-violet-500/[0.04]",
             heading: "Growth is consistent but concentrated",
             body: "Revenue has grown across the period, primarily driven by the lighting category. That concentration creates risk that was previously invisible before data was centralised.",
           },
           {
-            tag: "Margin",
+            tag: "Margin insight",
             color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-            dot: "bg-emerald-400",
+            cardBorder: "border-emerald-500/15 bg-emerald-500/[0.04]",
             heading: "High-revenue ≠ high-margin",
             body: `LED Panel Pro delivers ${pct(topProducts[0]?.margin_pct ?? 34)} gross margin — the strongest in the range — yet this was undetectable before financial and product data were joined in a single model.`,
           },
           {
-            tag: "Stock",
+            tag: "Stock insight",
             color: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-            dot: "bg-amber-400",
-            heading: `${kpis.lowStockCount} SKU${kpis.lowStockCount === 1 ? "" : "s"} are a fulfilment risk`,
+            cardBorder: "border-amber-500/15 bg-amber-500/[0.04]",
+            heading: `${kpis.lowStockCount} SKU${kpis.lowStockCount === 1 ? "" : "s"} flagged as fulfilment risk`,
             body: "Items below reorder level are now flagged automatically via a threshold rule on the inventory table — surfaced days before they would have appeared in a manual end-of-week review.",
           },
         ].map((ins) => (
-          <div key={ins.tag} className="p-6 rounded-2xl border border-white/[0.06] bg-white/[0.025] flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <span className={`w-1.5 h-1.5 rounded-full ${ins.dot}`} />
-              <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-0.5 rounded-full border ${ins.color}`}>
-                {ins.tag}
-              </span>
-            </div>
+          <div key={ins.tag} className={`p-6 rounded-2xl border ${ins.cardBorder} flex flex-col gap-4`}>
+            <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full border self-start ${ins.color}`}>
+              {ins.tag}
+            </span>
             <p className="font-semibold text-sm leading-snug">{ins.heading}</p>
-            <p className="text-xs text-white/40 leading-relaxed">{ins.body}</p>
+            <p className="text-xs text-white/45 leading-relaxed flex-1">{ins.body}</p>
           </div>
         ))}
       </div>
 
       {/* ── Revenue trend chart ── */}
       <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.025]">
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-6 gap-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1.5">
               Revenue trend
             </p>
             <p className="text-sm font-semibold">Monthly revenue & profit — Oct 2025 to Mar 2026</p>
+            <p className="text-xs text-white/35 mt-1">Served from centralised data model. No manual assembly.</p>
           </div>
-          <div className="flex items-center gap-4 text-xs text-white/40">
+          <div className="flex items-center gap-4 text-xs text-white/40 shrink-0">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-violet-500" />Revenue
             </span>
@@ -245,9 +243,12 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
 
         {/* Top products by profit */}
         <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.025]">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-6">
-            Top products — gross profit
-          </p>
+          <div className="mb-6">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">
+              Product performance
+            </p>
+            <p className="text-sm font-semibold">Top products — gross profit</p>
+          </div>
           <div className="space-y-5">
             {topProducts.map((p) => (
               <div key={p.product_name}>
@@ -274,9 +275,12 @@ export default function InsightLayer({ data }: { data: InventoryCoDashboard }) {
 
         {/* Inventory alerts */}
         <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.025]">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-6">
-            Inventory alerts — auto-generated
-          </p>
+          <div className="mb-6">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 mb-1">
+              Inventory alerts
+            </p>
+            <p className="text-sm font-semibold">Auto-generated · below reorder level</p>
+          </div>
           {lowStockItems.length === 0 ? (
             <div className="flex items-center gap-3 text-sm text-emerald-400 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07]">
               <Package size={14} />

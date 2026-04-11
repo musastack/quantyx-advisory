@@ -103,20 +103,23 @@ export default async function InventoryCo() {
             </div>
 
             <h1 className="text-5xl md:text-[4rem] font-bold leading-[1.08] tracking-tight mb-7 max-w-3xl">
-              From Disconnected Systems<br className="hidden md:block" /> to a{" "}
+              Three disconnected systems.<br className="hidden md:block" /> One{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
-                Centralised Data Layer
+                centralised data layer.
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-white/45 leading-relaxed max-w-2xl mb-5">
-              This sample engagement demonstrates how a product business running sales,
-              inventory, and reporting across three disconnected platforms can be unified
-              into a single Postgres database — with automated pipelines and a structured
-              reporting layer built on top.
+            <p className="text-lg md:text-xl text-white/50 leading-relaxed max-w-2xl mb-5">
+              A wholesale distributor running sales in Xero, inventory in Cin7, and
+              reporting in Excel — with no central view, 5 hours of weekly manual
+              reporting, and zero product-level margin visibility.
             </p>
-            <p className="text-sm text-white/25 mb-14 max-w-xl">
-              <span className="text-white/40 font-medium">Note:</span> InventoryCo Ltd is
+            <p className="text-sm text-white/25 mb-5 max-w-xl">
+              We unified all three systems into a single Postgres database, built
+              automated pipelines, and delivered a live reporting and insight layer.
+            </p>
+            <p className="text-xs text-white/20 mb-14 max-w-xl">
+              <span className="text-white/35 font-medium">Note:</span> InventoryCo Ltd is
               a fictionalised example. All data is generated and illustrative. The
               architecture and approach reflect a realistic engagement.
             </p>
@@ -450,23 +453,26 @@ export default async function InventoryCo() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06]">
               {outcomes.map((o) => (
                 <div key={o.label} className="bg-[#07070e] p-8 flex flex-col gap-2 hover:bg-white/[0.03] transition-colors">
-                  <p className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">{o.stat}</p>
-                  <p className="text-sm font-semibold text-white/70">{o.label}</p>
-                  <p className="text-xs text-white/25 mt-1">{o.was}</p>
+                  <p className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/55">{o.stat}</p>
+                  <p className="text-sm font-semibold text-white/75 mt-1">{o.label}</p>
+                  <p className="text-xs text-white/25">{o.was}</p>
                 </div>
               ))}
             </div>
 
             <div className="mt-10 grid sm:grid-cols-2 gap-3">
               {[
-                "Reporting time reduced significantly — from ~5 hours to under 30 minutes per week",
-                "Clear visibility on product-level margins for the first time",
-                "Inventory issues surfaced automatically, before they become fulfilment problems",
-                "A consistent, reliable reporting process that doesn't depend on one person",
+                { heading: "Reporting time: 5 hours → 30 minutes",    body: "Weekly management reporting now runs automatically — no exports, no copy-paste, no manual reconciliation." },
+                { heading: "Product margin visibility: 0% → 100%",     body: "Every SKU now has a calculated gross margin — available in real time from the centralised data model." },
+                { heading: "Inventory alerts: end-of-week → live",     body: "Stock issues are surfaced automatically the moment they fall below reorder threshold — not days later." },
+                { heading: "One consistent source of truth",            body: "All reporting draws from the same Postgres model. No more version conflicts or figures that don't reconcile." },
               ].map((item) => (
-                <div key={item} className="flex items-start gap-3 text-sm text-white/50 p-4 rounded-xl border border-white/[0.06]">
+                <div key={item.heading} className="flex items-start gap-3 p-5 rounded-xl border border-white/[0.07] bg-white/[0.025]">
                   <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
-                  {item}
+                  <div>
+                    <p className="text-sm font-semibold text-white/80 mb-1">{item.heading}</p>
+                    <p className="text-xs text-white/40 leading-relaxed">{item.body}</p>
+                  </div>
                 </div>
               ))}
             </div>
