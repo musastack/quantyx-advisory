@@ -51,10 +51,10 @@ function pct(n: number) {
 function SectionLabel({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3 mb-5">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 shrink-0">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 shrink-0">
         {label}
       </p>
-      <div className="h-px flex-1 bg-white/[0.06]" />
+      <div className="h-px flex-1 bg-slate-200 dark:bg-white/[0.06]" />
     </div>
   );
 }
@@ -74,7 +74,13 @@ function RevenueTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#0f0f1a] border border-white/10 rounded-xl px-4 py-3 text-sm shadow-xl">
+    <div
+      className="rounded-xl px-4 py-3 text-sm shadow-xl"
+      style={{
+        background: "var(--chart-tooltip-bg)",
+        border: "1px solid var(--chart-tooltip-bd)",
+      }}
+    >
       <p className="text-white/40 text-xs mb-2">{label}</p>
       <div className="space-y-1">
         <p className="text-white font-medium">
@@ -106,30 +112,30 @@ function KPICard({
   positive: boolean | null;
 }) {
   return (
-    <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#07070e] flex flex-col gap-3">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+    <div className="p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#07070e] shadow-sm dark:shadow-none flex flex-col gap-3">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">
         {label}
       </p>
-      <p className="text-4xl font-bold tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70">
+      <p className="text-4xl font-bold tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-white/70">
         {value}
       </p>
-      <div className="flex items-center gap-1.5 mt-auto pt-1 border-t border-white/[0.06]">
+      <div className="flex items-center gap-1.5 mt-auto pt-1 border-t border-slate-100 dark:border-white/[0.06]">
         {positive === true && (
-          <TrendingUp size={11} className="text-emerald-400 shrink-0" />
+          <TrendingUp size={11} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
         )}
         {positive === false && (
-          <AlertTriangle size={11} className="text-amber-400 shrink-0" />
+          <AlertTriangle size={11} className="text-amber-600 dark:text-amber-400 shrink-0" />
         )}
         {positive === null && (
-          <Minus size={11} className="text-white/20 shrink-0" />
+          <Minus size={11} className="text-slate-300 dark:text-white/20 shrink-0" />
         )}
         <span
           className={`text-xs ${
             positive === true
-              ? "text-emerald-400 font-medium"
+              ? "text-emerald-600 dark:text-emerald-400 font-medium"
               : positive === false
-              ? "text-amber-400 font-medium"
-              : "text-white/30"
+              ? "text-amber-600 dark:text-amber-400 font-medium"
+              : "text-slate-400 dark:text-white/30"
           }`}
         >
           {sub}
@@ -159,24 +165,24 @@ function StatCard({
   icon?: React.ElementType;
 }) {
   const borderBg: Record<StatState, string> = {
-    good:    "border-emerald-500/20 bg-emerald-500/[0.04]",
-    warn:    "border-amber-500/20   bg-amber-500/[0.04]",
-    alert:   "border-rose-500/20   bg-rose-500/[0.04]",
-    neutral: "border-white/[0.07]  bg-white/[0.025]",
+    good:    "border-emerald-400/30 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.04]",
+    warn:    "border-amber-400/30 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/[0.04]",
+    alert:   "border-rose-400/30 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.04]",
+    neutral: "border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025]",
   };
   const valueColor: Record<StatState, string> = {
-    good:    "text-emerald-300",
-    warn:    "text-amber-300",
-    alert:   "text-rose-300",
-    neutral: "text-white",
+    good:    "text-emerald-700 dark:text-emerald-300",
+    warn:    "text-amber-700 dark:text-amber-300",
+    alert:   "text-rose-700 dark:text-rose-300",
+    neutral: "text-slate-900 dark:text-white",
   };
 
   return (
     <div
-      className={`p-5 rounded-xl border ${borderBg[state]} flex flex-col gap-2.5`}
+      className={`p-5 rounded-xl border shadow-sm dark:shadow-none ${borderBg[state]} flex flex-col gap-2.5`}
     >
       <div className="flex items-center justify-between">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">
           {label}
         </p>
         {Icon && (
@@ -189,7 +195,7 @@ function StatCard({
                 ? "text-amber-500/60"
                 : state === "alert"
                 ? "text-rose-500/60"
-                : "text-white/15"
+                : "text-slate-300 dark:text-white/15"
             }
           />
         )}
@@ -199,7 +205,7 @@ function StatCard({
       >
         {value}
       </p>
-      <p className="text-xs text-white/35 mt-auto">{sub}</p>
+      <p className="text-xs text-slate-400 dark:text-white/35 mt-auto">{sub}</p>
     </div>
   );
 }
@@ -211,33 +217,33 @@ function StatCard({
 const JOB_STATUS = {
   "on-track": {
     label: "On Track",
-    pill: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
-    bar: "bg-emerald-400",
-    row: "border-white/[0.06] bg-white/[0.02]",
+    pill: "text-emerald-700 bg-emerald-100 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/25",
+    bar: "bg-emerald-500 dark:bg-emerald-400",
+    row: "border-slate-200 bg-white dark:border-white/[0.06] dark:bg-white/[0.02]",
   },
   "at-risk": {
     label: "At Risk",
-    pill: "text-amber-400 bg-amber-500/10 border-amber-500/25",
-    bar: "bg-amber-400",
-    row: "border-amber-500/15 bg-amber-500/[0.025]",
+    pill: "text-amber-700 bg-amber-100 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/25",
+    bar: "bg-amber-500 dark:bg-amber-400",
+    row: "border-amber-300/50 bg-amber-50 dark:border-amber-500/15 dark:bg-amber-500/[0.025]",
   },
   delayed: {
     label: "Delayed",
-    pill: "text-rose-400 bg-rose-500/10 border-rose-500/25",
-    bar: "bg-rose-400",
-    row: "border-rose-500/15 bg-rose-500/[0.025]",
+    pill: "text-rose-700 bg-rose-100 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/25",
+    bar: "bg-rose-500 dark:bg-rose-400",
+    row: "border-rose-300/50 bg-rose-50 dark:border-rose-500/15 dark:bg-rose-500/[0.025]",
   },
   complete: {
     label: "Complete",
-    pill: "text-indigo-400 bg-indigo-500/10 border-indigo-500/25",
-    bar: "bg-indigo-400",
-    row: "border-white/[0.06] bg-white/[0.02]",
+    pill: "text-indigo-700 bg-indigo-100 border-indigo-200 dark:text-indigo-400 dark:bg-indigo-500/10 dark:border-indigo-500/25",
+    bar: "bg-indigo-500 dark:bg-indigo-400",
+    row: "border-slate-200 bg-white dark:border-white/[0.06] dark:bg-white/[0.02]",
   },
   starting: {
     label: "Starting",
-    pill: "text-sky-400 bg-sky-500/10 border-sky-500/25",
-    bar: "bg-sky-400",
-    row: "border-white/[0.06] bg-white/[0.02]",
+    pill: "text-sky-700 bg-sky-100 border-sky-200 dark:text-sky-400 dark:bg-sky-500/10 dark:border-sky-500/25",
+    bar: "bg-sky-500 dark:bg-sky-400",
+    row: "border-slate-200 bg-white dark:border-white/[0.06] dark:bg-white/[0.02]",
   },
 };
 
@@ -245,12 +251,12 @@ function JobRow({ job }: { job: ActiveJob }) {
   const s = JOB_STATUS[job.status];
 
   return (
-    <div className={`p-5 rounded-xl border ${s.row}`}>
+    <div className={`p-5 rounded-xl border shadow-sm dark:shadow-none ${s.row}`}>
       {/* Top row */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-mono text-white/30">
+            <span className="text-[11px] font-mono text-slate-400 dark:text-white/30">
               {job.job_id}
             </span>
             <span
@@ -260,11 +266,11 @@ function JobRow({ job }: { job: ActiveJob }) {
             </span>
           </div>
           <p className="text-sm font-semibold leading-tight">{job.name}</p>
-          <p className="text-xs text-white/35 mt-0.5">{job.client}</p>
+          <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">{job.client}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-xs font-medium text-white/50">{job.crew}</p>
-          <p className="text-xs text-white/25 mt-0.5">Due {job.due_date}</p>
+          <p className="text-xs font-medium text-slate-500 dark:text-white/50">{job.crew}</p>
+          <p className="text-xs text-slate-400 dark:text-white/25 mt-0.5">Due {job.due_date}</p>
         </div>
       </div>
 
@@ -273,14 +279,14 @@ function JobRow({ job }: { job: ActiveJob }) {
         {/* Progress */}
         <div className="flex-1 min-w-[130px]">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[10px] text-white/30 font-medium">
+            <span className="text-[10px] text-slate-400 dark:text-white/30 font-medium">
               Progress
             </span>
-            <span className="text-[10px] font-semibold text-white/50">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-white/50">
               {job.pct_complete}%
             </span>
           </div>
-          <div className="h-1.5 rounded-full bg-white/[0.07]">
+          <div className="h-1.5 rounded-full bg-slate-200 dark:bg-white/[0.07]">
             <div
               className={`h-1.5 rounded-full ${s.bar} transition-all`}
               style={{ width: `${job.pct_complete}%` }}
@@ -290,12 +296,12 @@ function JobRow({ job }: { job: ActiveJob }) {
 
         {/* Cost vs budget */}
         <div className="shrink-0">
-          <p className="text-[10px] text-white/30 font-medium mb-0.5">
+          <p className="text-[10px] text-slate-400 dark:text-white/30 font-medium mb-0.5">
             Cost vs budget
           </p>
           <p className="text-xs font-semibold">
             {fmtk(job.actual_cost_gbp)}
-            <span className="text-white/30 font-normal">
+            <span className="text-slate-400 dark:text-white/30 font-normal">
               {" "}
               / {fmtk(job.budget_gbp)}
             </span>
@@ -304,9 +310,9 @@ function JobRow({ job }: { job: ActiveJob }) {
 
         {/* Risk flag */}
         {job.risk_flag && (
-          <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-1.5 shrink-0">
-            <AlertTriangle size={10} className="text-amber-400 shrink-0" />
-            <span className="text-[11px] font-medium text-amber-300">
+          <div className="flex items-center gap-1.5 bg-amber-100 dark:bg-amber-500/10 border border-amber-300/60 dark:border-amber-500/20 rounded-lg px-3 py-1.5 shrink-0">
+            <AlertTriangle size={10} className="text-amber-600 dark:text-amber-400 shrink-0" />
+            <span className="text-[11px] font-medium text-amber-700 dark:text-amber-300">
               {job.risk_flag}
             </span>
           </div>
@@ -323,18 +329,18 @@ function JobRow({ job }: { job: ActiveJob }) {
 const CREW_STATUS = {
   available: {
     label: "Available",
-    color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-    bar: "bg-emerald-400",
+    color: "text-emerald-700 bg-emerald-100 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/20",
+    bar: "bg-emerald-500 dark:bg-emerald-400",
   },
   "near-capacity": {
     label: "Near capacity",
-    color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-    bar: "bg-amber-400",
+    color: "text-amber-700 bg-amber-100 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20",
+    bar: "bg-amber-500 dark:bg-amber-400",
   },
   overallocated: {
     label: "Overallocated",
-    color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
-    bar: "bg-rose-400",
+    color: "text-rose-700 bg-rose-100 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20",
+    bar: "bg-rose-500 dark:bg-rose-400",
   },
 };
 
@@ -342,11 +348,11 @@ function CrewCard({ crew }: { crew: CrewStatus }) {
   const s = CREW_STATUS[crew.status];
 
   return (
-    <div className="p-5 rounded-xl border border-white/[0.07] bg-white/[0.025] flex flex-col gap-4">
+    <div className="p-5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none flex flex-col gap-4">
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-bold">{crew.name}</p>
-          <p className="text-xs text-white/35 mt-0.5">{crew.lead}</p>
+          <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">{crew.lead}</p>
         </div>
         <span
           className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 ${s.color}`}
@@ -357,14 +363,14 @@ function CrewCard({ crew }: { crew: CrewStatus }) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="text-[10px] text-white/30 mb-1">Active jobs</p>
+          <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1">Active jobs</p>
           <p className="text-2xl font-bold leading-none">{crew.jobs_active}</p>
         </div>
         <div>
-          <p className="text-[10px] text-white/30 mb-1">Hours this week</p>
+          <p className="text-[10px] text-slate-400 dark:text-white/30 mb-1">Hours this week</p>
           <p className="text-2xl font-bold leading-none">
             {crew.hours_this_week}
-            <span className="text-sm text-white/30 font-normal">
+            <span className="text-sm text-slate-400 dark:text-white/30 font-normal">
               /{crew.capacity_hours}
             </span>
           </p>
@@ -373,12 +379,12 @@ function CrewCard({ crew }: { crew: CrewStatus }) {
 
       <div>
         <div className="flex justify-between mb-1.5">
-          <p className="text-[10px] text-white/30">Utilisation</p>
-          <p className="text-[10px] font-semibold text-white/50">
+          <p className="text-[10px] text-slate-400 dark:text-white/30">Utilisation</p>
+          <p className="text-[10px] font-semibold text-slate-500 dark:text-white/50">
             {crew.utilisation_pct}%
           </p>
         </div>
-        <div className="h-2 rounded-full bg-white/[0.07]">
+        <div className="h-2 rounded-full bg-slate-200 dark:bg-white/[0.07]">
           <div
             className={`h-2 rounded-full ${s.bar}`}
             style={{ width: `${crew.utilisation_pct}%` }}
@@ -396,18 +402,18 @@ function CrewCard({ crew }: { crew: CrewStatus }) {
 const MAT_SEVERITY = {
   over: {
     label: "Over budget",
-    pill: "text-rose-400 bg-rose-500/10 border-rose-500/20",
-    border: "border-rose-500/15 bg-rose-500/[0.03]",
+    pill: "text-rose-700 bg-rose-100 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20",
+    border: "border-rose-300/50 bg-rose-50 dark:border-rose-500/15 dark:bg-rose-500/[0.03]",
   },
   watch: {
     label: "Watch",
-    pill: "text-amber-400 bg-amber-500/10 border-amber-500/20",
-    border: "border-amber-500/15 bg-amber-500/[0.03]",
+    pill: "text-amber-700 bg-amber-100 border-amber-200 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20",
+    border: "border-amber-300/50 bg-amber-50 dark:border-amber-500/15 dark:bg-amber-500/[0.03]",
   },
   "supply-risk": {
     label: "Supply risk",
-    pill: "text-orange-400 bg-orange-500/10 border-orange-500/20",
-    border: "border-orange-500/15 bg-orange-500/[0.03]",
+    pill: "text-orange-700 bg-orange-100 border-orange-200 dark:text-orange-400 dark:bg-orange-500/10 dark:border-orange-500/20",
+    border: "border-orange-300/50 bg-orange-50 dark:border-orange-500/15 dark:bg-orange-500/[0.03]",
   },
 };
 
@@ -419,7 +425,7 @@ function MaterialRow({ mat }: { mat: MaterialAlert }) {
       <div className="flex items-start justify-between gap-3 mb-2.5">
         <div className="min-w-0">
           <p className="text-sm font-semibold truncate">{mat.material}</p>
-          <p className="text-xs text-white/35 mt-0.5">
+          <p className="text-xs text-slate-400 dark:text-white/35 mt-0.5">
             {mat.job_id} · {mat.job_name}
           </p>
         </div>
@@ -432,28 +438,28 @@ function MaterialRow({ mat }: { mat: MaterialAlert }) {
 
       {mat.severity !== "supply-risk" ? (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs mb-2">
-          <span className="text-white/40">
+          <span className="text-slate-500 dark:text-white/40">
             Committed:{" "}
-            <span className="text-white/70 font-semibold">
+            <span className="text-slate-700 dark:text-white/70 font-semibold">
               {fmt(mat.committed_gbp)}
             </span>
           </span>
-          <span className="text-white/20">·</span>
-          <span className="text-white/40">
+          <span className="text-slate-300 dark:text-white/20">·</span>
+          <span className="text-slate-500 dark:text-white/40">
             Estimate: {fmt(mat.estimate_gbp)}
           </span>
-          <span className="text-white/20">·</span>
-          <span className="font-semibold text-rose-400">
+          <span className="text-slate-300 dark:text-white/20">·</span>
+          <span className="font-semibold text-rose-600 dark:text-rose-400">
             +{mat.variance_pct.toFixed(1)}%
           </span>
         </div>
       ) : (
-        <p className="text-xs text-white/40 mb-2">
+        <p className="text-xs text-slate-500 dark:text-white/40 mb-2">
           Committed: {fmt(mat.committed_gbp)}
         </p>
       )}
 
-      <p className="text-[11px] text-white/30 italic leading-relaxed">
+      <p className="text-[11px] text-slate-400 dark:text-white/30 italic leading-relaxed">
         {mat.note}
       </p>
     </div>
@@ -498,12 +504,12 @@ export default function InsightLayer({
         <Database
           size={13}
           className={
-            source === "supabase" ? "text-emerald-400" : "text-white/25"
+            source === "supabase" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-white/25"
           }
         />
         <span
           className={`text-xs font-medium ${
-            source === "supabase" ? "text-emerald-400" : "text-white/25"
+            source === "supabase" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-white/25"
           }`}
         >
           {source === "supabase"
@@ -621,23 +627,22 @@ export default function InsightLayer({
           {[
             {
               tag: "Revenue insight",
-              cardBorder: "border-violet-500/15 bg-violet-500/[0.04]",
-              tagColor:
-                "bg-violet-500/10 text-violet-400 border-violet-500/20",
+              cardBorder: "border-violet-300/50 bg-violet-50 dark:border-violet-500/15 dark:bg-violet-500/[0.04]",
+              tagColor: "bg-violet-100 text-violet-700 border-violet-300/50 dark:bg-violet-500/10 dark:text-violet-400 dark:border-violet-500/20",
               heading: "Revenue growth driven by installation work",
               body: "Monthly revenue has grown consistently — now exceeding £100k in March. Growth is concentrated in commercial LED retrofit jobs, which carry stronger margin than standard supply-only orders.",
             },
             {
               tag: "Operational insight",
-              cardBorder: "border-amber-500/15 bg-amber-500/[0.04]",
-              tagColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+              cardBorder: "border-amber-300/50 bg-amber-50 dark:border-amber-500/15 dark:bg-amber-500/[0.04]",
+              tagColor: "bg-amber-100 text-amber-700 border-amber-300/50 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20",
               heading: "Two active jobs exceeding labour budget by 10%+",
               body: `J-1042 and J-1055 are tracking above labour estimate. Previously undetectable until job close — now surfaced automatically from labour entry data joined to job budgets.`,
             },
             {
               tag: "Materials insight",
-              cardBorder: "border-rose-500/15 bg-rose-500/[0.04]",
-              tagColor: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+              cardBorder: "border-rose-300/50 bg-rose-50 dark:border-rose-500/15 dark:bg-rose-500/[0.04]",
+              tagColor: "bg-rose-100 text-rose-700 border-rose-300/50 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20",
               heading: "Supply delay creating delivery risk on J-1051",
               body: "Emergency Exit & Safety Packs are delayed at source, pushing back the Hartley Council project. Material availability is now monitored in real time — surfaced 3 days before it would have appeared in a manual review.",
             },
@@ -652,7 +657,7 @@ export default function InsightLayer({
                 {ins.tag}
               </span>
               <p className="font-semibold text-sm leading-snug">{ins.heading}</p>
-              <p className="text-xs text-white/45 leading-relaxed flex-1">
+              <p className="text-xs text-slate-500 dark:text-white/45 leading-relaxed flex-1">
                 {ins.body}
               </p>
             </div>
@@ -665,17 +670,17 @@ export default function InsightLayer({
       ══════════════════════════════════════ */}
       <div>
         <SectionLabel label="Revenue Trend" />
-        <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+        <div className="p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
           <div className="flex items-start justify-between mb-6 gap-4">
             <div>
               <p className="text-sm font-semibold">
                 Monthly revenue & profit — Oct 2025 to Mar 2026
               </p>
-              <p className="text-xs text-white/35 mt-1">
+              <p className="text-xs text-slate-400 dark:text-white/35 mt-1">
                 Served from centralised data model. No manual assembly.
               </p>
             </div>
-            <div className="flex items-center gap-4 text-xs text-white/40 shrink-0">
+            <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-white/40 shrink-0">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-violet-500" />
                 Revenue
@@ -703,16 +708,16 @@ export default function InsightLayer({
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.04)"
+                stroke="var(--chart-grid)"
               />
               <XAxis
                 dataKey="month"
-                tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
+                tick={{ fill: "var(--chart-tick)", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
+                tick={{ fill: "var(--chart-tick)", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `£${(v / 1000).toFixed(0)}k`}
@@ -743,11 +748,11 @@ export default function InsightLayer({
       ══════════════════════════════════════ */}
       <div>
         <div className="flex items-center gap-3 mb-5">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/30 shrink-0">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 shrink-0">
             Job Tracker
           </p>
-          <div className="h-px flex-1 bg-white/[0.06]" />
-          <span className="text-[10px] font-medium text-white/25 shrink-0">
+          <div className="h-px flex-1 bg-slate-200 dark:bg-white/[0.06]" />
+          <span className="text-[10px] font-medium text-slate-400 dark:text-white/25 shrink-0">
             {operationalKPIs.active_jobs} active projects total
           </span>
         </div>
@@ -756,7 +761,7 @@ export default function InsightLayer({
             <JobRow key={job.job_id} job={job} />
           ))}
         </div>
-        <p className="text-xs text-white/20 text-center mt-4">
+        <p className="text-xs text-slate-300 dark:text-white/20 text-center mt-4">
           Showing {activeJobs.length} of {operationalKPIs.active_jobs} active
           projects · sorted by risk
         </p>
@@ -775,14 +780,14 @@ export default function InsightLayer({
               <CrewCard key={crew.name} crew={crew} />
             ))}
           </div>
-          <div className="mt-4 p-4 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+          <div className="mt-4 p-4 rounded-xl border border-amber-300/40 dark:border-white/[0.06] bg-amber-50 dark:bg-white/[0.02]">
             <div className="flex items-center gap-2 mb-1">
-              <AlertCircle size={12} className="text-amber-400" />
-              <p className="text-xs font-semibold text-amber-300">
+              <AlertCircle size={12} className="text-amber-600 dark:text-amber-400" />
+              <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
                 Crew C nearing full allocation next week
               </p>
             </div>
-            <p className="text-xs text-white/35 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-white/35 leading-relaxed">
               At 94% utilisation, Crew C has limited capacity for new job
               starts scheduled for the coming week.
             </p>
@@ -797,14 +802,14 @@ export default function InsightLayer({
               <MaterialRow key={mat.job_id + mat.material} mat={mat} />
             ))}
           </div>
-          <div className="mt-4 p-4 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+          <div className="mt-4 p-4 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
             <div className="flex items-center gap-2 mb-1">
-              <CheckCircle size={12} className="text-white/30" />
-              <p className="text-xs font-semibold text-white/50">
+              <CheckCircle size={12} className="text-slate-400 dark:text-white/30" />
+              <p className="text-xs font-semibold text-slate-500 dark:text-white/50">
                 All other materials within estimate
               </p>
             </div>
-            <p className="text-xs text-white/30 leading-relaxed">
+            <p className="text-xs text-slate-400 dark:text-white/30 leading-relaxed">
               12 of 15 active material lines are tracking at or below estimate.
               Only flagged lines shown above.
             </p>
@@ -819,7 +824,7 @@ export default function InsightLayer({
       <div className="grid md:grid-cols-2 gap-4">
 
         {/* Top products by profit */}
-        <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+        <div className="p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
           <div className="mb-6">
             <SectionLabel label="Product Performance" />
             <p className="text-sm font-semibold -mt-2">
@@ -834,18 +839,18 @@ export default function InsightLayer({
                     <span className="text-sm font-medium truncate block">
                       {p.product_name}
                     </span>
-                    <span className="text-xs text-white/25">{p.category}</span>
+                    <span className="text-xs text-slate-400 dark:text-white/25">{p.category}</span>
                   </div>
                   <div className="flex items-center gap-3 shrink-0 ml-3">
-                    <span className="text-xs text-white/30">
+                    <span className="text-xs text-slate-400 dark:text-white/30">
                       {pct(p.margin_pct)}
                     </span>
-                    <span className="text-sm font-semibold text-white/70">
+                    <span className="text-sm font-semibold text-slate-600 dark:text-white/70">
                       {fmt(p.profit)}
                     </span>
                   </div>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-white/[0.06]">
+                <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/[0.06]">
                   <div
                     className="h-1.5 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400 transition-all"
                     style={{ width: `${p.bar}%` }}
@@ -857,7 +862,7 @@ export default function InsightLayer({
         </div>
 
         {/* Inventory alerts */}
-        <div className="p-6 rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+        <div className="p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.025] shadow-sm dark:shadow-none">
           <div className="mb-6">
             <SectionLabel label="Inventory Alerts" />
             <p className="text-sm font-semibold -mt-2">
@@ -865,7 +870,7 @@ export default function InsightLayer({
             </p>
           </div>
           {lowStockItems.length === 0 ? (
-            <div className="flex items-center gap-3 text-sm text-emerald-400 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07]">
+            <div className="flex items-center gap-3 text-sm text-emerald-700 dark:text-emerald-400 p-4 rounded-xl border border-emerald-300/50 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.07]">
               <Package size={14} />
               All products above reorder level
             </div>
@@ -876,8 +881,8 @@ export default function InsightLayer({
                   key={a.product_name}
                   className={`p-4 rounded-xl border flex items-center justify-between ${
                     a.severity === "critical"
-                      ? "border-rose-500/20 bg-rose-500/[0.07]"
-                      : "border-amber-500/20 bg-amber-500/[0.07]"
+                      ? "border-rose-300/50 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.07]"
+                      : "border-amber-300/50 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.07]"
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -885,15 +890,15 @@ export default function InsightLayer({
                       size={13}
                       className={
                         a.severity === "critical"
-                          ? "text-rose-400 shrink-0"
-                          : "text-amber-400 shrink-0"
+                          ? "text-rose-600 dark:text-rose-400 shrink-0"
+                          : "text-amber-600 dark:text-amber-400 shrink-0"
                       }
                     />
                     <div className="min-w-0">
                       <span className="text-sm font-medium truncate block">
                         {a.product_name}
                       </span>
-                      <span className="text-xs text-white/30">
+                      <span className="text-xs text-slate-400 dark:text-white/30">
                         {a.stock_level} / {a.reorder_level} units
                       </span>
                     </div>
@@ -901,8 +906,8 @@ export default function InsightLayer({
                   <span
                     className={`text-xs font-semibold shrink-0 ml-3 ${
                       a.severity === "critical"
-                        ? "text-rose-400"
-                        : "text-amber-400"
+                        ? "text-rose-700 dark:text-rose-400"
+                        : "text-amber-700 dark:text-amber-400"
                     }`}
                   >
                     {a.severity === "critical" ? "Critical" : "Low stock"}
@@ -911,7 +916,7 @@ export default function InsightLayer({
               ))}
             </div>
           )}
-          <p className="text-[11px] text-white/20 mt-5 leading-relaxed font-mono">
+          <p className="text-[11px] text-slate-400 dark:text-white/20 mt-5 leading-relaxed font-mono">
             WHERE stock_level &lt; reorder_level
           </p>
         </div>

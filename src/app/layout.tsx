@@ -42,9 +42,23 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#05050f] text-white">{children}</body>
+      <head>
+        {/*
+          Flash-prevention: runs synchronously before paint.
+          Reads localStorage, falls back to OS preference.
+          Light is default — no class needed on <html>.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('qx-theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(s===null&&p)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#05050f] dark:text-white">
+        {children}
+      </body>
     </html>
   );
 }

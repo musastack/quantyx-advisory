@@ -1,19 +1,66 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────
+   QUANTYX ADVISORY — DUAL-THEME SYSTEM
+   Light is default. .dark on <html> activates dark mode.
+   @variant tells Tailwind to recognise dark: prefix with
+   the .dark class selector (Tailwind v4 class-based dark).
+───────────────────────────────────────────────────────── */
+
+@variant dark (&:where(.dark, .dark *));
+
+/* ── Light mode (default) ──────────────────────────────── */
 :root {
-  --background: #05050f;
-  --foreground: #f0f0ff;
+  /* Chart-specific variables (used inline in Recharts) */
+  --chart-grid:          rgba(0, 0, 0, 0.06);
+  --chart-tick:          rgba(0, 0, 0, 0.35);
+  --chart-tooltip-bg:    #1E2030;
+  --chart-tooltip-bd:    rgba(0, 0, 0, 0.12);
+
+  /* Nav semi-transparent bg */
+  --nav-bg:              rgba(248, 249, 252, 0.88);
+
+  /* Gradient text (deeper for light bg readability) */
+  --grad-from:           #3F52E3;
+  --grad-to:             #7B5CF6;
+}
+
+/* ── Dark mode ─────────────────────────────────────────── */
+.dark {
+  --chart-grid:          rgba(255, 255, 255, 0.04);
+  --chart-tick:          rgba(255, 255, 255, 0.30);
+  --chart-tooltip-bg:    #0f0f1a;
+  --chart-tooltip-bd:    rgba(255, 255, 255, 0.10);
+
+  --nav-bg:              rgba(5, 5, 15, 0.85);
+
+  --grad-from:           #6366f1;
+  --grad-to:             #a78bfa;
+}
+
+/* ── Base ──────────────────────────────────────────────── */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ── Gradient text ─────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+  background: linear-gradient(135deg, var(--grad-from), var(--grad-to));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ── Focus ring ────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #3F52E3;
+  outline-offset: 3px;
 }
