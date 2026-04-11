@@ -13,8 +13,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quantyx Advisory — Business Automation & Dashboards",
-  description: "Quantyx Advisory helps businesses automate workflows and build powerful data dashboards to drive smarter decisions.",
+  title: "Quantyx Advisory — Data Consultancy for Growing Businesses",
+  description:
+    "Quantyx Advisory helps growing businesses centralise data, automate reporting, and build dashboards that support better decisions. Specialist data consultancy based in the UK.",
+  keywords: [
+    "data consultancy", "business reporting", "dashboard build", "data automation",
+    "SME data", "management reporting", "Supabase", "Postgres", "UK consultancy",
+  ],
+  openGraph: {
+    title: "Quantyx Advisory — Data Consultancy for Growing Businesses",
+    description:
+      "We turn messy business data into clear reporting and insight. Specialists in dashboards, automation, and data centralisation for founder-led businesses and SMEs.",
+    type: "website",
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Quantyx Advisory",
+    description: "We turn messy business data into clear reporting and insight.",
+  },
 };
 
 export default function RootLayout({

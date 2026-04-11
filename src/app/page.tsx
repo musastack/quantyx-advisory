@@ -10,6 +10,7 @@ import {
   Database,
   GitMerge,
 } from "lucide-react";
+import MobileNav from "./MobileNav";
 
 /* ─────────────────────────────────────────────
    SERVICES
@@ -82,30 +83,44 @@ const services = [
 const secondaryCaseStudies = [
   {
     client: "Logistics SME",
-    industry: "Logistics",
+    industry: "Road Freight · 45 staff",
     tag: "Process Automation",
     tagColor: "text-violet-300 bg-violet-500/10 border-violet-500/20",
-    headline: "Automated invoice & delivery tracking",
+    headline: "Automated invoice & delivery reconciliation",
     description:
-      "Designed an end-to-end automation that matched purchase orders, invoices, and delivery confirmations — eliminating manual data entry and catching errors before they reached clients.",
+      "The finance team spent 3 hours daily matching purchase orders, delivery notes, and supplier invoices across three systems. We built an automated reconciliation pipeline that did it in seconds and flagged mismatches for review.",
     results: [
-      "Zero manual invoice matching",
-      "Error rate dropped from 6% to 0.3%",
-      "3 staff hours saved per day",
+      "3 hrs/day manual matching eliminated",
+      "Error rate: 6% → 0.3%",
+      "Supplier disputes resolved 4x faster",
     ],
   },
   {
     client: "Digital Marketing Agency",
-    industry: "Marketing",
+    industry: "Marketing · 12 staff",
     tag: "Reporting Builds",
     tagColor: "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
-    headline: "White-label client dashboards",
+    headline: "White-label client reporting portals",
     description:
-      "Created branded, auto-updating dashboards for 20+ agency clients pulling from Google Ads, Meta, and GA4 — replacing PDF reports with live portals each client could access anytime.",
+      "The agency was sending PDF reports weekly — manually pulled from Google Ads, Meta, and GA4, formatted in slides, and emailed to 20+ clients. We replaced the whole process with branded live dashboards each client could access anytime.",
     results: [
-      "20+ client portals deployed",
-      "Reports go live in <2 hrs",
-      "Client retention up 25%",
+      "20+ client portals live",
+      "Reporting time: 8 hrs/week → automated",
+      "Client churn down 25%",
+    ],
+  },
+  {
+    client: "Professional Services Firm",
+    industry: "Consultancy · 28 staff",
+    tag: "Data Centralisation",
+    tagColor: "text-sky-300 bg-sky-500/10 border-sky-500/20",
+    headline: "Centralised project margin & utilisation reporting",
+    description:
+      "Billable hours, project costs, and client revenues lived in three different systems with no joined view. Management couldn't see project margin or team utilisation without a manual weekly pull. We built a central model covering both.",
+    results: [
+      "Project margin visible in real time",
+      "Utilisation tracked automatically",
+      "Weekly management pack: 4 hrs → 20 min",
     ],
   },
 ];
@@ -126,6 +141,7 @@ export default function Home() {
             <a href="#services"     className="hover:text-white transition-colors">Services</a>
             <a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a>
             <a href="#case-studies" className="hover:text-white transition-colors">Case Studies</a>
+            <a href="#about"        className="hover:text-white transition-colors">About</a>
             <a href="#contact"      className="hover:text-white transition-colors">Contact</a>
           </div>
           <div className="flex items-center gap-3">
@@ -137,10 +153,11 @@ export default function Home() {
             </Link>
             <a
               href="#contact"
-              className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+              className="hidden sm:block text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors font-medium"
             >
               Book a Call
             </a>
+            <MobileNav />
           </div>
         </div>
       </nav>
@@ -396,6 +413,100 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════
+          WHY QUANTYX
+      ══════════════════════════════════════ */}
+      <section id="about" className="py-24 px-6 border-t border-white/[0.05]">
+        <div className="max-w-6xl mx-auto">
+
+          <div className="grid lg:grid-cols-[1fr_1.4fr] gap-16 items-start">
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-white/30 mb-5">
+                About us
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-6">
+                A small specialist team.<br />
+                Serious about<br />
+                <span className="gradient-text">your data.</span>
+              </h2>
+              <p className="text-white/45 leading-relaxed mb-5 text-base">
+                Quantyx Advisory is a specialist data consultancy working with
+                growing businesses — typically founder-led SMEs and lean finance
+                teams — who need better reporting and data infrastructure but
+                don&apos;t want to hire a full internal data team.
+              </p>
+              <p className="text-white/35 leading-relaxed text-sm">
+                We have backgrounds in accountancy, audit, and data analytics.
+                That combination matters: we understand how businesses work,
+                what finance teams actually need, and how to build the technical
+                infrastructure to deliver it.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                {
+                  icon: "📊",
+                  title: "Accounting background",
+                  body: "We understand P&Ls, management accounts, and what a finance team actually needs — not just how to build dashboards.",
+                  color: "border-indigo-500/20 bg-indigo-500/[0.04]",
+                  label: "text-indigo-400",
+                },
+                {
+                  icon: "🔍",
+                  title: "Ex-audit & data analytics",
+                  body: "We&apos;ve worked in audit and data roles — we know how to interrogate data and spot where things don&apos;t add up before they become problems.",
+                  color: "border-violet-500/20 bg-violet-500/[0.04]",
+                  label: "text-violet-400",
+                },
+                {
+                  icon: "🏗",
+                  title: "We build, not just advise",
+                  body: "We don&apos;t produce slide decks and strategy documents. We build the actual pipelines, databases, and dashboards — and hand them over working.",
+                  color: "border-sky-500/20 bg-sky-500/[0.04]",
+                  label: "text-sky-400",
+                },
+                {
+                  icon: "🤝",
+                  title: "SME-focused",
+                  body: "We work with businesses that don&apos;t have a data team. Our engagements are scoped, priced, and communicated in plain English — no enterprise overhead.",
+                  color: "border-emerald-500/20 bg-emerald-500/[0.04]",
+                  label: "text-emerald-400",
+                },
+              ].map((card) => (
+                <div key={card.title} className={`p-6 rounded-2xl border ${card.color}`}>
+                  <span className="text-2xl mb-4 block">{card.icon}</span>
+                  <p className={`text-sm font-bold mb-2 ${card.label}`}>{card.title}</p>
+                  <p className="text-xs text-white/40 leading-relaxed">{card.body}</p>
+                </div>
+              ))}
+
+              {/* What we&apos;re not */}
+              <div className="sm:col-span-2 p-5 rounded-2xl border border-white/[0.06] bg-white/[0.02]">
+                <p className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-3">
+                  What we&apos;re not
+                </p>
+                <div className="grid sm:grid-cols-3 gap-3 text-xs text-white/40">
+                  <div className="flex items-start gap-2">
+                    <span className="text-rose-500/60 shrink-0 mt-0.5">✗</span>
+                    A large agency with account managers and project overhead
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-rose-500/60 shrink-0 mt-0.5">✗</span>
+                    A SaaS product trying to fit your data into our template
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-rose-500/60 shrink-0 mt-0.5">✗</span>
+                    Consultants who produce recommendations and then leave
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
           CASE STUDIES
       ══════════════════════════════════════ */}
       <section id="case-studies" className="py-24 px-6">
@@ -426,24 +537,25 @@ export default function Home() {
                     Case Study
                   </span>
                   <span className="text-[10px] font-medium uppercase tracking-widest text-white/30 border border-white/[0.08] px-3 py-1 rounded-full">
-                    Wholesale Distribution
+                    Commercial Electrical
                   </span>
                   <span className="text-[10px] font-medium uppercase tracking-widest text-white/30 border border-white/[0.08] px-3 py-1 rounded-full">
-                    Data Centralisation
+                    Data &amp; Operational Layer
                   </span>
                 </div>
 
                 <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight">
-                  From disconnected systems<br className="hidden md:block" /> to real-time insight
+                  Financial, stock, and operations —<br className="hidden md:block" /> unified into one layer
                 </h3>
                 <p className="text-white/50 text-sm leading-relaxed mb-3 max-w-lg">
-                  A wholesale distributor running sales in Xero, inventory in Cin7, and
-                  reporting in Excel — three disconnected systems with no central view.
+                  A commercial electrical contractor running invoicing in Xero, stock in
+                  Cin7, and all job, crew, and material tracking manually in Excel —
+                  with no central view of job profitability, crew load, or delivery risk.
                 </p>
                 <p className="text-white/50 text-sm leading-relaxed mb-7 max-w-lg">
-                  We unified all three into a single Postgres database with automated
-                  pipelines and a live reporting layer — eliminating 6 hours of weekly
-                  manual reporting.
+                  We centralised all three into a Postgres data model and built two layers
+                  on top: a commercial reporting layer and a live operational layer
+                  covering jobs, labour, crews, and material cost exposure.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -467,10 +579,10 @@ export default function Home() {
                   Key results
                 </p>
                 {[
-                  { stat: "< 30 min", label: "Weekly reporting time",       was: "Was ~5 hours manual"       },
-                  { stat: "3",        label: "Systems unified in one model", was: "Previously disconnected"   },
-                  { stat: "100%",     label: "Product margin visibility",    was: "Previously unavailable"    },
-                  { stat: "Live",     label: "Inventory alerts deployed",    was: "Was end-of-week manual"    },
+                  { stat: "< 30 min", label: "Weekly reporting time",        was: "Was ~5 hours manual"         },
+                  { stat: "100%",     label: "Job margin visibility",         was: "Previously unavailable"      },
+                  { stat: "Live",     label: "Crew & labour tracking",        was: "Was weekly manual timesheet" },
+                  { stat: "1",        label: "Source of truth",               was: "Was 3+ disconnected systems" },
                 ].map((r) => (
                   <div key={r.label} className="flex items-center gap-4 p-4 rounded-xl border border-white/[0.07] bg-white/[0.04]">
                     <span className="text-lg font-bold text-indigo-300 shrink-0 w-16">{r.stat}</span>
@@ -486,24 +598,24 @@ export default function Home() {
           </div>
 
           {/* Secondary case studies */}
-          <div className="grid lg:grid-cols-2 gap-5">
+          <div className="grid lg:grid-cols-3 gap-5">
             {secondaryCaseStudies.map((cs) => (
               <div
                 key={cs.client}
                 className="p-7 rounded-2xl border border-white/[0.08] bg-white/[0.025] flex flex-col"
               >
-                <div className="flex items-center justify-between mb-5">
+                <div className="flex items-start justify-between gap-3 mb-5">
                   <div>
                     <p className="font-semibold text-sm">{cs.client}</p>
                     <p className="text-xs text-white/35 mt-0.5">{cs.industry}</p>
                   </div>
-                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border ${cs.tagColor}`}>
+                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border shrink-0 ${cs.tagColor}`}>
                     {cs.tag}
                   </span>
                 </div>
                 <h3 className="text-base font-bold mb-3 leading-snug">{cs.headline}</h3>
                 <p className="text-white/40 text-sm leading-relaxed mb-5 flex-1">{cs.description}</p>
-                <ul className="space-y-2 mb-4">
+                <ul className="space-y-2">
                   {cs.results.map((r) => (
                     <li key={r} className="flex items-center gap-2 text-xs text-white/60">
                       <CheckCircle size={12} className="text-indigo-400 shrink-0" />
@@ -511,7 +623,6 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <p className="text-xs text-white/20 mt-auto">Full write-up coming soon</p>
               </div>
             ))}
           </div>
