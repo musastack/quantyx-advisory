@@ -7,12 +7,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  const res = await fetch("https://api.resend.com/emails", {
+  const headers = {
+    Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+    "Content-Type": "application/json",
+  };
+
+  // Email 1 — notify us
+  const internalRes = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({
       from: "Quantyx Advisory <noreply@quantyxadvisory.com>",
       to: "contact@quantyxadvisory.com",
@@ -29,11 +32,28 @@ export async function POST(req: NextRequest) {
     }),
   });
 
-  if (!res.ok) {
-    const error = await res.text();
-    console.error("Resend error:", error);
+  if (!internalRes.ok) {
+    console.error("Resend error (internal):", await internalRes.text());
     return NextResponse.json({ error: "Failed to send" }, { status: 500 });
   }
+
+  // Email 2 — confirmation to enquirer
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      from: "Quantyx Advisory <noreply@quantyxadvisory.com>",
+      to: email,
+      subject: "We've received your enquiry",
+      text: `Hi ${name},\n\nThanks for getting in touch — we've received your enquiry and will be back in touch within 1 business day.\n\nBest,\nQuantyx Advisory`,
+      html: `
+        <p>Hi ${name},</p>
+        <p>Thanks for getting in touch — we've received your enquiry and will be back in touch within 1 business day.</p>
+        <br />
+        <p>Best,<br />Quantyx Advisory</p>
+      `,
+    }),
+  });
 
   return NextResponse.json({ ok: true });
 }
