@@ -432,7 +432,7 @@ export default function Home() {
                 Quantyx Advisory is a specialist data consultancy working with
                 growing businesses — typically founder-led SMEs and lean finance
                 teams — who need better reporting and data infrastructure but
-                don&apos;t want to hire a full internal data team.
+                don't want to hire a full internal data team.
               </p>
               <p className="text-slate-500 dark:text-white/35 leading-relaxed text-sm">
                 We have backgrounds in accountancy, audit, and data analytics.
@@ -454,21 +454,21 @@ export default function Home() {
                 {
                   icon: "🔍",
                   title: "Ex-audit & data analytics",
-                  body: "We&apos;ve worked in audit and data roles — we know how to interrogate data and spot where things don&apos;t add up before they become problems.",
+                  body: "We've worked in audit and data roles — we know how to interrogate data and spot where things don't add up before they become problems.",
                   color: "border-violet-200 bg-violet-50 dark:border-violet-500/20 dark:bg-violet-500/[0.04]",
                   label: "text-violet-700 dark:text-violet-400",
                 },
                 {
                   icon: "🏗",
                   title: "We build, not just advise",
-                  body: "We don&apos;t produce slide decks and strategy documents. We build the actual pipelines, databases, and dashboards — and hand them over working.",
+                  body: "We don't produce slide decks and strategy documents. We build the actual pipelines, databases, and dashboards — and hand them over working.",
                   color: "border-sky-200 bg-sky-50 dark:border-sky-500/20 dark:bg-sky-500/[0.04]",
                   label: "text-sky-700 dark:text-sky-400",
                 },
                 {
                   icon: "🤝",
                   title: "SME-focused",
-                  body: "We work with businesses that don&apos;t have a data team. Our engagements are scoped, priced, and communicated in plain English — no enterprise overhead.",
+                  body: "We work with businesses that don't have a data team. Our engagements are scoped, priced, and communicated in plain English — no enterprise overhead.",
                   color: "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/[0.04]",
                   label: "text-emerald-700 dark:text-emerald-400",
                 },
@@ -483,7 +483,7 @@ export default function Home() {
               {/* What we're not */}
               <div className="sm:col-span-2 p-5 rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
                 <p className="text-xs font-semibold text-slate-400 dark:text-white/30 uppercase tracking-widest mb-3">
-                  What we&apos;re not
+                  What we're not
                 </p>
                 <div className="grid sm:grid-cols-3 gap-3 text-xs text-slate-500 dark:text-white/40">
                   <div className="flex items-start gap-2">
@@ -707,7 +707,7 @@ export default function Home() {
               href="#contact"
               className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-300 dark:hover:text-indigo-200 transition-colors"
             >
-              Facing a similar problem? Let&apos;s talk <ExternalLink size={13} />
+              Facing a similar problem? Let's talk <ExternalLink size={13} />
             </a>
           </div>
         </div>
@@ -827,11 +827,11 @@ export default function Home() {
                 Get in touch
               </p>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-slate-900 dark:text-white">
-                Let&apos;s talk about<br />your reporting.
+                Let's talk about<br />your reporting.
               </h2>
               <p className="text-slate-600 dark:text-white/45 text-base leading-relaxed mb-8">
-                Book a free 30-minute call. We&apos;ll ask about your current
-                setup, understand what&apos;s not working, and tell you honestly
+                Book a free 30-minute call. We'll ask about your current
+                setup, understand what's not working, and tell you honestly
                 whether we can help — and how.
               </p>
               <div className="space-y-3">

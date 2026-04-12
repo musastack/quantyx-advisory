@@ -664,11 +664,11 @@ export default async function InventoryCo() {
               <div className="max-w-xl">
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400/70 mb-3">Custom build</p>
                 <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
-                  We&apos;ll build something this specific for you.
+                  We'll build something this specific for you.
                 </h3>
                 <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed">
                   Every engagement starts from scratch — your systems, your data, your rules.
-                  In a free 30-minute call we&apos;ll map your setup and show you exactly
+                  In a free 30-minute call we'll map your setup and show you exactly
                   what a bespoke solution would look like.
                 </p>
               </div>
