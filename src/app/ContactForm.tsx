@@ -28,7 +28,7 @@ export default function ContactForm() {
         <CheckCircle size={36} className="text-indigo-500" />
         <p className="text-lg font-semibold text-slate-900 dark:text-white">Message sent</p>
         <p className="text-sm text-slate-500 dark:text-white/40">
-          Thanks {name} — we'll be in touch within 1 business day.
+          Thanks {name} — we'll be in touch within 3 business days.
         </p>
       </div>
     );
@@ -84,7 +84,7 @@ export default function ContactForm() {
           {status === "sending" ? "Sending…" : "Book a free call"}
         </button>
         <p className="text-xs text-slate-400 dark:text-white/25 text-center">
-          We respond within 1 business day.
+          We respond within 3 business days.
         </p>
       </form>
     </div>

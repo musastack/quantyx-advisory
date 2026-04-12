@@ -45,10 +45,10 @@ export async function POST(req: NextRequest) {
       from: "Quantyx Advisory <noreply@quantyxadvisory.com>",
       to: email,
       subject: "We've received your enquiry",
-      text: `Hi ${name},\n\nThanks for getting in touch — we've received your enquiry and will be back in touch within 1 business day.\n\nBest,\nQuantyx Advisory`,
+      text: `Hi ${name},\n\nThanks for getting in touch — we've received your enquiry and will be back in touch within 3 business days.\n\nBest,\nQuantyx Advisory`,
       html: `
         <p>Hi ${name},</p>
-        <p>Thanks for getting in touch — we've received your enquiry and will be back in touch within 1 business day.</p>
+        <p>Thanks for getting in touch — we've received your enquiry and will be back in touch within 3 business days.</p>
         <br />
         <p>Best,<br />Quantyx Advisory</p>
       `,
