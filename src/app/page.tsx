@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import MobileNav from "./MobileNav";
 import ThemeToggle from "./ThemeToggle";
+import ContactForm from "./ContactForm";
 
 /* ─────────────────────────────────────────────
    SERVICES
@@ -848,46 +849,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-2xl p-8 shadow-sm dark:shadow-none">
-              <p className="text-sm font-semibold mb-6 text-slate-900 dark:text-white">Book a free discovery call</p>
-              <form className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-500 dark:text-white/35 block mb-1.5">Your name</label>
-                    <input
-                      type="text"
-                      placeholder="Jane Smith"
-                      className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-500/60 text-sm transition-colors"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 dark:text-white/35 block mb-1.5">Business email</label>
-                    <input
-                      type="email"
-                      placeholder="jane@company.co.uk"
-                      className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-500/60 text-sm transition-colors"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-slate-500 dark:text-white/35 block mb-1.5">What are you trying to solve?</label>
-                  <textarea
-                    rows={4}
-                    placeholder="e.g. We spend 4 hours every week pulling our management report together manually..."
-                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-500/60 text-sm transition-colors resize-none"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-semibold transition-colors text-sm shadow-sm"
-                >
-                  Book a free call
-                </button>
-                <p className="text-xs text-slate-400 dark:text-white/25 text-center">
-                  We respond within 1 business day.
-                </p>
-              </form>
-            </div>
+            <ContactForm />
 
           </div>
         </div>
