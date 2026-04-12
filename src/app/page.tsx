@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   BarChart3,
   Zap,
@@ -135,7 +136,7 @@ export default function Home() {
       <nav className="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-white/5"
            style={{ background: "var(--nav-bg)", backdropFilter: "blur(12px)" }}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-xl font-bold gradient-text">Quantyx Advisory</span>
+          <Image src="/logo.png" alt="Quantyx Advisory" height={40} width={160} className="object-contain" priority />
           <div className="hidden md:flex items-center gap-8 text-sm text-slate-600 dark:text-white/60">
             <a href="#services"     className="hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
             <a href="#how-it-works" className="hover:text-slate-900 dark:hover:text-white transition-colors">How It Works</a>
