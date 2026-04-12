@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Quantyx Advisory Website <onboarding@resend.dev>",
+      from: "Quantyx Advisory <noreply@quantyxadvisory.com>",
       to: "contact@quantyxadvisory.com",
       reply_to: email,
       subject: `New enquiry from ${name}`,
