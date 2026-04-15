@@ -142,12 +142,12 @@ const INV_STATUS = {
 ───────────────────────────────────────────── */
 
 const reports = [
-  { name: "April 2026 — P&L Summary",          type: "Financial",  updated: "Today",  icon: BarChart2     },
-  { name: "Q1 2026 — Crew Utilisation Report",  type: "Labour",     updated: "01 Apr", icon: HardHat       },
-  { name: "April 2026 — Job Profitability",     type: "Operations", updated: "Today",  icon: ClipboardList },
-  { name: "March 2026 — Materials Variance",    type: "Materials",  updated: "02 Apr", icon: Wrench        },
-  { name: "Q1 2026 — Invoice Ageing Analysis",  type: "Finance",    updated: "31 Mar", icon: FileText      },
-  { name: "YTD 2026 — Revenue by Client",       type: "Financial",  updated: "Today",  icon: TrendingUp    },
+  { name: "April 2026 — P&L Summary",          type: "Financial",  updated: "Today",  icon: BarChart2,     filename: "apr2026_pl_summary.csv",         csv: `Category,Amount (£)\nRevenue,148200\nCost of Sales,82400\nGross Profit,65800\nOperating Expenses,31200\nEBITDA,34600\nDepreciation,4800\nNet Profit,29800\n` },
+  { name: "Q1 2026 — Crew Utilisation Report",  type: "Labour",     updated: "01 Apr", icon: HardHat,       filename: "q1_2026_crew_utilisation.csv",    csv: `Employee,Role,Billable Hours,Total Hours,Utilisation %\nJames Thornton,Site Supervisor,148,160,92.5\nLaura Simmons,Electrician,134,160,83.8\nDan Okafor,Plumber,152,160,95.0\nSophie Wells,Labourer,120,160,75.0\nRaj Patel,Electrician,141,160,88.1\nMike Carter,Site Supervisor,155,160,96.9\n` },
+  { name: "April 2026 — Job Profitability",     type: "Operations", updated: "Today",  icon: ClipboardList, filename: "apr2026_job_profitability.csv",   csv: `Job ID,Client,Revenue (£),Labour Cost (£),Materials Cost (£),Gross Profit (£),Margin %\nJOB-2041,Hartley Homes,18400,7200,4100,7100,38.6\nJOB-2042,Pinnacle Developments,32100,12800,8400,10900,34.0\nJOB-2043,Orion Build Group,9800,3900,2200,3700,37.8\nJOB-2044,Crest Contractors,21500,9100,5600,6800,31.6\nJOB-2045,Bluewave Projects,15200,6300,3800,5100,33.6\n` },
+  { name: "March 2026 — Materials Variance",    type: "Materials",  updated: "02 Apr", icon: Wrench,        filename: "mar2026_materials_variance.csv", csv: `Material,Budgeted (£),Actual (£),Variance (£),Variance %\nStructural Steel,14200,15800,-1600,-11.3\nConcrete Mix,8400,8100,300,3.6\nElectrical Cable,5200,5600,-400,-7.7\nPVC Piping,3100,2950,150,4.8\nPlasterboard,4800,5200,-400,-8.3\nInsulation,2600,2450,150,5.8\nFixings & Fasteners,1800,1920,-120,-6.7\n` },
+  { name: "Q1 2026 — Invoice Ageing Analysis",  type: "Finance",    updated: "31 Mar", icon: FileText,      filename: "q1_2026_invoice_ageing.csv",     csv: `Client,Invoice Ref,Amount (£),Issue Date,Due Date,Days Overdue,Status\nHartley Homes,INV-1041,9200,03 Jan,31 Jan,0,Paid\nPinnacle Developments,INV-1042,18400,10 Jan,07 Feb,0,Paid\nOrion Build Group,INV-1043,7600,18 Feb,18 Mar,13,Overdue\nCrest Contractors,INV-1044,12100,01 Mar,29 Mar,2,Overdue\nBluewave Projects,INV-1045,5400,15 Mar,12 Apr,0,Current\nHartley Homes,INV-1046,11300,22 Mar,19 Apr,0,Current\n` },
+  { name: "YTD 2026 — Revenue by Client",       type: "Financial",  updated: "Today",  icon: TrendingUp,    filename: "ytd2026_revenue_by_client.csv",  csv: `Client,Jan (£),Feb (£),Mar (£),Apr (£),YTD Total (£)\nHartley Homes,18200,21400,19800,20500,79900\nPinnacle Developments,32100,28600,34200,31500,126400\nOrion Build Group,9400,11200,8900,10100,39600\nCrest Contractors,15800,14200,17400,16200,63600\nBluewave Projects,8600,9800,11200,12400,42000\n` },
 ];
 
 /* ─────────────────────────────────────────────
@@ -641,6 +641,16 @@ function InvoicingSection() {
   );
 }
 
+function downloadCSV(filename: string, csv: string) {
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function ReportsSection() {
   return (
     <div className="space-y-5">
@@ -664,7 +674,10 @@ function ReportsSection() {
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">{r.name}</p>
                 <p className="text-xs text-slate-500 dark:text-white/35">{r.type} · Updated {r.updated}</p>
               </div>
-              <button className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-colors shrink-0">
+              <button
+                onClick={() => downloadCSV(r.filename, r.csv)}
+                className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-colors shrink-0"
+              >
                 <Download size={13} />Export
               </button>
               <button className="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors shrink-0">
