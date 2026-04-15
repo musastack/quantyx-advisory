@@ -196,10 +196,10 @@ export default function Home() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
             <Link
-              href="/case-studies/inventoryco"
+              href="/dashboard"
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-medium transition-colors text-sm shadow-sm"
             >
-              View Case Study <ArrowRight size={15} />
+              See Demo <ArrowRight size={15} />
             </Link>
             <a
               href="#services"
