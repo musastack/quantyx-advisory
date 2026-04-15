@@ -9,7 +9,7 @@ import {
   Hammer, Users, TrendingDown, AlertCircle, Bell, Settings,
   ArrowLeft, TrendingUp, Wrench, ClipboardList, FileText,
   BarChart2, HardHat, CheckCircle2, AlertTriangle, Package,
-  ChevronRight, Download, Calendar,
+  Download, Calendar,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../ThemeToggle";
@@ -679,9 +679,6 @@ function ReportsSection() {
                 className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-colors shrink-0"
               >
                 <Download size={13} />Export
-              </button>
-              <button className="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors shrink-0">
-                View<ChevronRight size={13} />
               </button>
             </div>
           ))}
