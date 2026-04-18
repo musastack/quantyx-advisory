@@ -23,14 +23,14 @@ const services = [
   {
     icon: BarChart3,
     number: "01",
-    title: "A custom financial and performance system built around how your business actually works",
+    title: "A bespoke financial operating system built around your business",
     outcome: "Full visibility. No manual pulls.",
     description:
-      "We design and build a bespoke financial operating layer — connecting your data sources into a live, structured system that gives management the visibility they need without spreadsheets or manual effort.",
+      "We design and build a bespoke financial operating system — connecting your data sources into a live, structured layer that gives management the visibility they need without spreadsheets or manual effort.",
     deliverables: [
-      "Custom financial operating layer",
-      "Live performance system",
-      "Management intelligence views",
+      "Financial operating system",
+      "Executive performance layer",
+      "Decision-ready management views",
     ],
     accent:      "border-indigo-500/20 bg-indigo-500/[0.04] dark:border-indigo-500/30 dark:bg-indigo-500/[0.05]",
     iconBg:      "bg-indigo-100 dark:bg-indigo-500/15",
@@ -173,7 +173,7 @@ export default function Home() {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 border border-slate-200 bg-white rounded-full px-4 py-1.5 text-sm text-slate-500 mb-8 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-white/50">
-            Specialist data consultancy · UK
+            Custom financial and operational systems for SMEs
           </div>
 
           {/* Headline */}
@@ -184,14 +184,14 @@ export default function Home() {
 
           {/* Sub */}
           <p className="text-lg md:text-xl text-slate-600 dark:text-white/55 max-w-2xl mx-auto mb-4 leading-relaxed">
-            Your systems are disconnected. Your data is fragmented. Your team is
-            making decisions without a joined-up view. We fix that — by building
-            the custom data infrastructure and operating systems your business needs.
+            Your systems are disconnected, your data is fragmented, and your team
+            is operating without a joined-up view of the business. We design and build
+            the custom data infrastructure and operating systems that fix it.
           </p>
 
           {/* Who it's for */}
           <p className="text-sm text-slate-400 dark:text-white/30 mb-10 max-w-xl mx-auto">
-            For founder-led businesses and lean finance teams who need more than off-the-shelf tools.
+            For founder-led businesses and lean finance teams that have outgrown generic tools.
           </p>
 
           {/* CTAs */}
@@ -250,7 +250,7 @@ export default function Home() {
               </h2>
               <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed max-w-xs">
                 We build the data infrastructure and operating systems that give
-                growing businesses a joined-up view of performance, without the enterprise overhead.
+                growing businesses a joined-up view of performance — without the enterprise overhead.
               </p>
             </div>
           </div>
@@ -356,7 +356,7 @@ export default function Home() {
                 step: "03",
                 Icon: BarChart3,
                 title: "Deliver your operating layer",
-                body: "We build the custom operating system on top — performance views, exception alerts, automated outputs, and management tools — all wired to live data, built to your business logic, and fully handed over.",
+                body: "We build the custom operating system on top — performance views, exception alerts, automated outputs, and management tools — all connected to live data, built around your business logic, and fully handed over to your team.",
                 tags: ["Custom operating system", "Exception monitoring", "Automated outputs"],
                 color:    "border-emerald-200 bg-white dark:border-emerald-500/25 dark:bg-emerald-500/[0.05]",
                 iconBg:   "bg-emerald-100 dark:bg-emerald-500/15",
@@ -431,10 +431,10 @@ export default function Home() {
                 <span className="gradient-text">real business problems.</span>
               </h2>
               <p className="text-slate-600 dark:text-white/45 leading-relaxed mb-5 text-base">
-                Quantyx Advisory is a specialist data and systems consultancy working with
+                Quantyx Advisory is a specialist data and systems consultancy. We work with
                 growing businesses — typically founder-led SMEs and lean finance teams —
-                who need a proper data and operating infrastructure but don't want to build
-                an internal data team or pay enterprise consultancy rates.
+                that need a proper operating infrastructure but don't want to build an
+                internal data team or pay enterprise consultancy rates.
               </p>
               <p className="text-slate-500 dark:text-white/35 leading-relaxed text-sm">
                 Our backgrounds span accountancy, audit, and data engineering.
@@ -463,7 +463,7 @@ export default function Home() {
                 {
                   icon: "🏗",
                   title: "We build, not just advise",
-                  body: "We don't produce slide decks and strategy documents. We build the actual pipelines, databases, and dashboards — and hand them over working.",
+                  body: "We don't produce slide decks or strategy documents. We build the actual pipelines, data models, and internal systems — and hand them over working.",
                   color: "border-sky-200 bg-sky-50 dark:border-sky-500/20 dark:bg-sky-500/[0.04]",
                   label: "text-sky-700 dark:text-sky-400",
                 },
@@ -749,14 +749,14 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-2 mb-10">
                 {[
-                  "Custom dashboards",
-                  "Internal operating tools",
-                  "Job & project tracking",
+                  "Financial operating systems",
+                  "Internal decision tools",
+                  "Job & project control systems",
                   "Labour & cost visibility",
                   "Data pipelines",
                   "API integrations",
-                  "Bespoke automations",
-                  "White-label portals",
+                  "Bespoke workflow automation",
+                  "White-label client portals",
                 ].map((tag) => (
                   <span
                     key={tag}
@@ -833,12 +833,12 @@ export default function Home() {
                 Get in touch
               </p>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-slate-900 dark:text-white">
-                Let's talk about<br />your data problems.
+                Let's talk about<br />what's missing.
               </h2>
               <p className="text-slate-600 dark:text-white/45 text-base leading-relaxed mb-8">
-                Book a free 30-minute call. We'll ask about your current setup,
-                understand what's broken or missing, and tell you honestly
-                whether we can help — and what that would look like.
+                Book a free 30-minute call. We'll review your current setup,
+                identify what's missing or broken, and give you an honest
+                assessment of what we can build — and what it would take.
               </p>
               <div className="space-y-3">
                 {[
@@ -866,7 +866,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-6">
             <div>
               <span className="font-bold gradient-text text-base">Quantyx Advisory</span>
-              <p className="text-xs text-slate-400 dark:text-white/30 mt-1">Specialist data consultancy · UK</p>
+              <p className="text-xs text-slate-400 dark:text-white/30 mt-1">Custom financial and operational systems for SMEs</p>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 text-xs text-slate-400 dark:text-white/30">
               <a href="mailto:contact@quantyxadvisory.com" className="hover:text-slate-700 dark:hover:text-white/60 transition-colors">
