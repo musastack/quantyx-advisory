@@ -159,28 +159,31 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
   );
 }
 
-function KpiCard({ label, value, sub, change, up, icon: Icon, color, bg, glow }: {
+function KpiCard({ label, value, sub, change, up, icon: Icon, color, bg, glow, accent }: {
   label: string; value: string; sub: string; change: string; up: boolean;
-  icon: React.ElementType; color: string; bg: string; glow: string;
+  icon: React.ElementType; color: string; bg: string; glow: string; accent?: string;
 }) {
   return (
-    <Card className={`!p-6 ${glow}`}>
-      <div className="flex items-center justify-between mb-5">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{label}</p>
-        <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
-          <Icon size={17} className={color} />
+    <div className={`rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden ${glow}`}>
+      {accent && <div className={`h-[3px] ${accent}`} />}
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-5">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{label}</p>
+          <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
+            <Icon size={17} className={color} />
+          </div>
         </div>
+        <p className="text-[2rem] font-bold tracking-tight mb-2.5 text-slate-900 dark:text-white font-mono leading-none">{value}</p>
+        <div className="flex items-center gap-1.5 mb-1.5">
+          {up
+            ? <TrendingUp  size={11} className="text-emerald-500 dark:text-emerald-400 shrink-0" />
+            : <TrendingDown size={11} className="text-rose-500 dark:text-rose-400 shrink-0" />
+          }
+          <span className={`text-xs font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{change}</span>
+        </div>
+        <p className="text-[11px] text-slate-400 dark:text-white/25 leading-snug">{sub}</p>
       </div>
-      <p className="text-[2rem] font-bold tracking-tight mb-2 text-slate-900 dark:text-white font-mono leading-none">{value}</p>
-      <div className="flex items-center gap-1.5 mb-1">
-        {up
-          ? <TrendingUp  size={11} className="text-emerald-500 dark:text-emerald-400 shrink-0" />
-          : <TrendingDown size={11} className="text-rose-500 dark:text-rose-400 shrink-0" />
-        }
-        <span className={`text-xs font-medium ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{change}</span>
-      </div>
-      <p className="text-[11px] text-slate-400 dark:text-white/25">{sub}</p>
-    </Card>
+    </div>
   );
 }
 
@@ -241,6 +244,51 @@ function ChartTooltip({ active, payload, label, formatter }: {
    TAB SECTIONS
 ───────────────────────────────────────────── */
 
+function CommandStrip() {
+  const overdue      = invoices.filter(i => i.status === "overdue");
+  const overdueTotal = overdue.reduce((s, i) => s + i.amount, 0);
+  const atRisk       = jobs.filter(j => j.status === "at-risk" || j.status === "delayed").length;
+
+  return (
+    <div className="mb-7 relative overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-50/80 via-white to-white dark:from-indigo-500/[0.07] dark:via-[#0b0b17] dark:to-[#0b0b17] shadow-sm dark:shadow-none">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-violet-50 to-transparent dark:from-violet-500/[0.03] dark:to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-indigo-300/50 via-violet-300/30 to-transparent dark:from-indigo-500/30 dark:via-violet-500/10 dark:to-transparent" />
+      </div>
+      <div className="relative p-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2.5 mb-2.5">
+              <div className="w-7 h-7 rounded-lg bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center shrink-0 shadow-sm">
+                <span className="text-[10px] font-bold text-white tracking-tight">MC</span>
+              </div>
+              <span className="font-bold text-slate-900 dark:text-white text-[13px] tracking-tight">Meridian Contractors Ltd</span>
+              <span className="text-slate-300 dark:text-white/15 select-none">·</span>
+              <span className="text-xs text-slate-400 dark:text-white/35 font-medium">April 2026</span>
+              <span className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />Live
+              </span>
+            </div>
+            <p className="text-[12.5px] text-slate-600 dark:text-white/45 leading-relaxed max-w-2xl">
+              Revenue growing but margin under pressure — down 3.8pp since October. Three jobs below threshold margin. £{(overdueTotal/1000).toFixed(1)}k overdue. Cash recovery this week depends on collecting INV-0339 (Prestige Retail) and INV-0341 (Hartley Council).
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-1.5 shrink-0">
+            {[
+              { label: "4 critical alerts",                   cls: "text-rose-700   bg-rose-100   border-rose-300   dark:text-rose-300   dark:bg-rose-500/15   dark:border-rose-500/30"   },
+              { label: `£${(overdueTotal/1000).toFixed(1)}k overdue`, cls: "text-rose-600   bg-rose-50    border-rose-200   dark:text-rose-400   dark:bg-rose-500/10   dark:border-rose-500/20"   },
+              { label: `${atRisk} jobs at risk`,              cls: "text-amber-700  bg-amber-100  border-amber-300  dark:text-amber-300  dark:bg-amber-500/15  dark:border-amber-500/30"  },
+              { label: "Margin –3.8pp",                       cls: "text-violet-700 bg-violet-100 border-violet-300 dark:text-violet-300 dark:bg-violet-500/15 dark:border-violet-500/30" },
+            ].map(b => (
+              <span key={b.label} className={`text-[11px] font-semibold px-3 py-1.5 rounded-full border ${b.cls} whitespace-nowrap`}>{b.label}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function OverviewSection() {
   const overdue      = invoices.filter(i => i.status === "overdue");
   const overdueTotal = overdue.reduce((s, i) => s + i.amount, 0);
@@ -253,42 +301,48 @@ function OverviewSection() {
   return (
     <div className="space-y-6">
 
+      {/* Executive command strip */}
+      <CommandStrip />
+
       {/* 6-KPI grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <KpiCard label="Cash balance"        value={`£${(cashBalance/1000).toFixed(0)}k`}      change="–£4.6k vs last week"  up={false} icon={DollarSign}   color="text-indigo-600 dark:text-indigo-400"  bg="bg-indigo-100 dark:bg-indigo-500/10"  glow="glow-indigo" sub="as of 21 Apr" />
-        <KpiCard label="Overdue receivables" value={`£${(overdueTotal/1000).toFixed(0)}k`}     change={`${overdue.length} invoices open`} up={false} icon={AlertCircle}  color="text-rose-600 dark:text-rose-400"     bg="bg-rose-100 dark:bg-rose-500/10"     glow="glow-rose"   sub={`oldest: ${Math.max(...overdue.map(i=>i.age??0))} days`} />
-        <KpiCard label="Gross margin"        value={`${avgMargin}%`}                            change="–0.8pp vs last month" up={false} icon={TrendingDown}  color="text-violet-600 dark:text-violet-400" bg="bg-violet-100 dark:bg-violet-500/10" glow=""            sub="Apr 2026 · declining" />
-        <KpiCard label="Jobs at risk"        value={`${atRisk}`}                                change="of 7 active jobs"     up={false} icon={ShieldAlert}  color="text-amber-600 dark:text-amber-400"   bg="bg-amber-100 dark:bg-amber-500/10"   glow="glow-amber"  sub="delayed or over budget" />
-        <KpiCard label="Unbilled WIP"        value={`£${(wipTotal/1000).toFixed(0)}k`}         change="across 6 active jobs" up={false} icon={FileText}     color="text-sky-600 dark:text-sky-400"       bg="bg-sky-100 dark:bg-sky-500/10"       glow=""            sub="invoiceable pipeline" />
-        <KpiCard label="Stock at risk"       value={`£${(stockRisk/1000).toFixed(0)}k`}        change="items >60 days idle"  up={false} icon={Package}      color="text-orange-600 dark:text-orange-400" bg="bg-orange-100 dark:bg-orange-500/10" glow=""            sub="review and reallocate" />
+        <KpiCard label="Cash balance"        value={`£${(cashBalance/1000).toFixed(0)}k`}      change="–£4.6k vs last week"  up={false} icon={DollarSign}   color="text-indigo-600 dark:text-indigo-400"  bg="bg-indigo-100 dark:bg-indigo-500/10"  glow="glow-indigo" accent="bg-indigo-500"            sub="as of 21 Apr" />
+        <KpiCard label="Overdue receivables" value={`£${(overdueTotal/1000).toFixed(0)}k`}     change={`${overdue.length} invoices open`} up={false} icon={AlertCircle}  color="text-rose-600 dark:text-rose-400"     bg="bg-rose-100 dark:bg-rose-500/10"     glow="glow-rose"   accent="bg-rose-500"              sub={`oldest: ${Math.max(...overdue.map(i=>i.age??0))} days`} />
+        <KpiCard label="Gross margin"        value={`${avgMargin}%`}                            change="–0.8pp vs last month" up={false} icon={TrendingDown}  color="text-violet-600 dark:text-violet-400" bg="bg-violet-100 dark:bg-violet-500/10" glow=""            accent="bg-violet-500"           sub="Apr 2026 · declining" />
+        <KpiCard label="Jobs at risk"        value={`${atRisk}`}                                change="of 7 active jobs"     up={false} icon={ShieldAlert}  color="text-amber-600 dark:text-amber-400"   bg="bg-amber-100 dark:bg-amber-500/10"   glow="glow-amber"  accent="bg-amber-400"             sub="delayed or over budget" />
+        <KpiCard label="Unbilled WIP"        value={`£${(wipTotal/1000).toFixed(0)}k`}         change="across 6 active jobs" up={false} icon={FileText}     color="text-sky-600 dark:text-sky-400"       bg="bg-sky-100 dark:bg-sky-500/10"       glow=""            accent="bg-sky-400"               sub="invoiceable pipeline" />
+        <KpiCard label="Stock at risk"       value={`£${(stockRisk/1000).toFixed(0)}k`}        change="items >60 days idle"  up={false} icon={Package}      color="text-orange-600 dark:text-orange-400" bg="bg-orange-100 dark:bg-orange-500/10" glow=""            accent="bg-orange-400"            sub="review and reallocate" />
       </div>
 
       {/* Revenue chart */}
       <Card>
         <SectionHeader title="Revenue and gross margin" sub="Oct 2025 – Apr 2026 · Meridian Contractors Ltd" />
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={revenueData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-            <defs>
-              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.18} />
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}    />
-              </linearGradient>
-              <linearGradient id="gpGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#10b981" stopOpacity={0.14} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0}    />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-            <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={44} />
-            <Tooltip content={<ChartTooltip />} />
-            <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} fill="url(#revGrad)" name="Revenue" />
-            <Area type="monotone" dataKey="gp"      stroke="#10b981" strokeWidth={2} fill="url(#gpGrad)"  name="Gross profit" />
-          </AreaChart>
-        </ResponsiveContainer>
-        <div className="flex items-center gap-5 mt-3 text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-500" />Revenue</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" />Gross profit</span>
+        <div className="mt-1 mb-2">
+          <ResponsiveContainer width="100%" height={230}>
+            <AreaChart data={revenueData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <defs>
+                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0}    />
+                </linearGradient>
+                <linearGradient id="gpGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%"  stopColor="#10b981" stopOpacity={0.16} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}    />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={44} />
+              <Tooltip content={<ChartTooltip />} />
+              <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2.5} fill="url(#revGrad)" name="Revenue" />
+              <Area type="monotone" dataKey="gp"      stroke="#10b981" strokeWidth={2}   fill="url(#gpGrad)"  name="Gross profit" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex items-center gap-6 pt-2 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Revenue</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />Gross profit</span>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Apr revenue +8.0% vs Mar · margin compressing</span>
         </div>
       </Card>
 
@@ -296,51 +350,79 @@ function OverviewSection() {
       <div className="grid lg:grid-cols-3 gap-5">
 
         {/* What needs attention */}
-        <Card className="lg:col-span-1">
-          <SectionHeader title="What needs attention" sub="Exception signals — this week" badge="Live" />
-          <div className="space-y-2.5">
-            <Signal type="alert"
-              title={`£${(overdueTotal/1000).toFixed(0)}k overdue — ${overdue.length} invoices unpaid`}
-              detail="INV-0339 (Prestige Retail) is 52 days overdue. INV-0341 (Hartley Council) at 38 days. Combined: £49.6k."
-              action="Review receivables" />
-            <Signal type="alert"
-              title="Crew D overallocated — 196 hrs across 8 jobs"
-              detail="At 98% capacity. Two jobs (#2867, #2863) at risk of slipping before week end."
-              action="Replan crew" />
-            <Signal type="warning"
-              title="Gross margin declining — down 3.8pp since October"
-              detail="Three jobs below 30% margin are compressing the blended rate. Volume growth is masking the deterioration." />
-            <Signal type="warning"
-              title="£38.4k of stock idle for 90+ days — structural I-beams"
-              detail="STL-I-200 unallocated since procurement in Jan. Tied-up working capital with no current demand signal." />
-            <Signal type="warning"
-              title="Receipts w/e 14 Apr: £48.2k vs £97.8k outflows"
-              detail="Cash balance fell to 8-week low (£116.3k). Collecting INV-0339 and INV-0341 this week adds £49.6k." />
-            <Signal type="info"
-              title="£47.1k completed work not yet invoiced — Avonside"
-              detail="Job #2847 complete. Draft INV-0356 ready to raise. Invoicing now improves month-end cash position."
-              action="Raise invoice" />
-            <Signal type="info"
-              title="Avonside at 37.1% of revenue — concentration risk"
-              detail="Single client accounts for over a third of YTD revenue. No performance issues, but dependency is high." />
+        <div className="lg:col-span-1 rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+          <div className="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">What needs attention</h2>
+                <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Exception signals — this week</p>
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/25 bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-full">Live</span>
+            </div>
           </div>
-        </Card>
+          <div className="p-4 space-y-4">
+            {/* Critical */}
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-rose-500 dark:text-rose-400/70 mb-2 px-1">Critical</p>
+              <div className="space-y-2">
+                <Signal type="alert"
+                  title={`£${(overdueTotal/1000).toFixed(0)}k overdue — ${overdue.length} invoices unpaid`}
+                  detail="INV-0339 (Prestige Retail) 52 days · INV-0341 (Hartley Council) 38 days. Combined £49.6k."
+                  action="Review receivables" />
+                <Signal type="alert"
+                  title="Crew D overallocated — 196 hrs, 8 jobs"
+                  detail="98% capacity. Jobs #2867 and #2863 at risk of slipping before week end."
+                  action="Replan crew" />
+              </div>
+            </div>
+            {/* Warnings */}
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400/70 mb-2 px-1">Warnings</p>
+              <div className="space-y-2">
+                <Signal type="warning"
+                  title="Gross margin –3.8pp since October"
+                  detail="Three jobs below 30% compressing the blended rate. Volume growth masking deterioration." />
+                <Signal type="warning"
+                  title="£38.4k stock idle 90+ days — I-beams"
+                  detail="STL-I-200 unallocated since Jan. Working capital tied up with no demand signal." />
+                <Signal type="warning"
+                  title="Cash at 8-week low — w/e 14 Apr"
+                  detail="Inflows £48.2k vs £97.8k outflows. Recovery depends on collecting INV-0339 and INV-0341." />
+              </div>
+            </div>
+            {/* Intelligence */}
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-indigo-500 dark:text-indigo-400/70 mb-2 px-1">Intelligence</p>
+              <div className="space-y-2">
+                <Signal type="info"
+                  title="£47.1k completed work not invoiced — Avonside"
+                  detail="Job #2847 complete. INV-0356 draft ready. Invoicing now improves month-end cash."
+                  action="Raise invoice" />
+                <Signal type="info"
+                  title="Avonside 37.1% of revenue — concentration risk"
+                  detail="No performance issues. Single-client dependency risk is elevated." />
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Cash trend */}
         <Card className="lg:col-span-2">
           <SectionHeader title="Cash balance — rolling 8 weeks" sub="Weekly position · bank account view" />
-          <ResponsiveContainer width="100%" height={195}>
-            <LineChart data={cashFlowData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
-              <Tooltip content={<ChartTooltip />} />
-              <Line type="monotone" dataKey="balance" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3 }} name="Cash balance" />
-            </LineChart>
-          </ResponsiveContainer>
-          <div className="mt-3 p-3.5 rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/[0.05] flex items-start gap-2.5">
+          <div className="mt-1 mb-2">
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={cashFlowData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
+                <Tooltip content={<ChartTooltip />} />
+                <Line type="monotone" dataKey="balance" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5, fill: "#6366f1" }} name="Cash balance" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-2 p-3.5 rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/[0.05] flex items-start gap-2.5">
             <AlertTriangle size={13} className="text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-[11px] text-amber-700 dark:text-amber-300/80 leading-relaxed">Balance dropped to £116k w/e 14 Apr — lowest in 8 weeks. Outflows exceeded inflows by £49.6k. Collecting INV-0339 and INV-0341 this week would recover £49.6k.</p>
+            <p className="text-[11px] text-amber-700 dark:text-amber-300/80 leading-relaxed">Balance dropped to £116k w/e 14 Apr — lowest in 8 weeks. Outflows exceeded inflows by £49.6k. Collecting INV-0339 and INV-0341 this week recovers £49.6k.</p>
           </div>
         </Card>
 
@@ -376,19 +458,22 @@ function CashSection() {
 
       <Card>
         <SectionHeader title="Weekly cash flow" sub="Inflow vs outflow · 8-week view" />
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={cashFlowData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-            <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
-            <Tooltip content={<ChartTooltip />} />
-            <Bar dataKey="inflow"  fill="#6366f1" radius={[3,3,0,0]} name="Inflow"  />
-            <Bar dataKey="outflow" fill="#f43f5e" radius={[3,3,0,0]} name="Outflow" opacity={0.7} />
-          </BarChart>
-        </ResponsiveContainer>
-        <div className="flex items-center gap-5 mt-3 text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-500" />Inflow</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500" />Outflow</span>
+        <div className="mt-1 mb-2">
+          <ResponsiveContainer width="100%" height={230}>
+            <BarChart data={cashFlowData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
+              <Tooltip content={<ChartTooltip />} />
+              <Bar dataKey="inflow"  fill="#6366f1" radius={[4,4,0,0]} name="Inflow"  />
+              <Bar dataKey="outflow" fill="#f43f5e" radius={[4,4,0,0]} name="Outflow" opacity={0.75} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Inflow</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500" />Outflow</span>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">w/e 14 Apr: inflow £48.2k · outflow £97.8k · net –£49.6k</span>
         </div>
       </Card>
 
@@ -398,15 +483,15 @@ function CashSection() {
           {[...invoices].sort((a,b) => { const o={overdue:0,pending:1,draft:2,paid:3}; return o[a.status]-o[b.status]; }).map(inv => {
             const s = INV_STATUS[inv.status];
             return (
-              <div key={inv.id} className={`flex items-center gap-4 p-3.5 rounded-xl border ${s.row}`}>
-                <p className="text-xs font-mono text-slate-400 dark:text-white/40 w-20 shrink-0">{inv.id}</p>
+              <div key={inv.id} className={`flex items-center gap-4 p-3.5 rounded-xl border transition-colors ${s.row} hover:brightness-[0.97] dark:hover:bg-white/[0.035]`}>
+                <p className="text-xs font-mono text-slate-400 dark:text-white/35 w-20 shrink-0 tracking-tight">{inv.id}</p>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate text-slate-900 dark:text-white">{inv.client}</p>
                   <p className="text-xs text-slate-500 dark:text-white/35">{inv.job} · Due {inv.due}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-sm font-semibold font-mono text-slate-900 dark:text-white">£{inv.amount.toLocaleString("en-GB")}</p>
-                  {inv.age && <p className="text-[11px] text-rose-600 dark:text-rose-400">{inv.age}d overdue</p>}
+                  <p className="text-sm font-bold font-mono text-slate-900 dark:text-white">£{inv.amount.toLocaleString("en-GB")}</p>
+                  {inv.age && <p className="text-[11px] font-medium text-rose-600 dark:text-rose-400">{inv.age}d overdue</p>}
                 </div>
                 <span className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full border shrink-0 ${s.pill}`}>{s.label}</span>
               </div>
@@ -416,47 +501,52 @@ function CashSection() {
       </Card>
 
       {/* 4-week cash forecast */}
-      <Card>
+      <div className="rounded-2xl border border-indigo-100 dark:border-indigo-500/[0.18] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+        <div className="h-[3px] bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-400" />
+        <div className="p-6">
         <SectionHeader title="4-week cash forecast" sub="Projected balance — base case vs downside if overdue remains unpaid" badge="Forecast" />
-        <ResponsiveContainer width="100%" height={180}>
-          <LineChart data={cashForecastData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-            <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
-            <Tooltip content={<ChartTooltip />} />
-            <Line type="monotone" dataKey="base"     stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3 }} name="Base case" />
-            <Line type="monotone" dataKey="downside" stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="5 3" dot={{ fill: "#f43f5e", r: 2 }} name="Downside" />
-          </LineChart>
-        </ResponsiveContainer>
-        <div className="flex items-center gap-6 mt-3 mb-4 text-[11px] text-slate-500 dark:text-white/35">
+        <div className="mt-1 mb-2">
+          <ResponsiveContainer width="100%" height={190}>
+            <LineChart data={cashForecastData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
+              <Tooltip content={<ChartTooltip />} />
+              <Line type="monotone" dataKey="base"     stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5 }} name="Base case" />
+              <Line type="monotone" dataKey="downside" stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="5 3" dot={{ fill: "#f43f5e", r: 2.5, strokeWidth: 0 }} name="Downside" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex items-center gap-6 pt-3 mb-5 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
           <span className="flex items-center gap-1.5"><span className="inline-block w-5 h-0.5 bg-indigo-500 rounded" />Base — overdue collected w/e 28 Apr</span>
-          <span className="flex items-center gap-1.5"><span className="inline-block w-5 h-px bg-rose-500 rounded" style={{ borderTop: "2px dashed" }} />Downside — overdue unpaid</span>
+          <span className="flex items-center gap-1.5"><span className="inline-block w-4 border-t-2 border-dashed border-rose-500" />Downside — overdue unpaid</span>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.05]">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400/70 mb-1.5">Base case — 19 May close</p>
-            <p className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-300">£256.2k</p>
-            <p className="text-[11px] text-slate-500 dark:text-white/35 mt-0.5">Overdue collected + normal trading</p>
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.05]">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400/70 mb-2">Base case · 19 May</p>
+            <p className="text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-300">£256.2k</p>
+            <p className="text-[11px] text-slate-500 dark:text-white/35 mt-1">Overdue collected + normal trading</p>
           </div>
-          <div className="p-3.5 rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-600 dark:text-rose-400/70 mb-1.5">Downside — 19 May close</p>
-            <p className="text-xl font-bold font-mono text-rose-700 dark:text-rose-300">£206.6k</p>
-            <p className="text-[11px] text-slate-500 dark:text-white/35 mt-0.5">£49.6k gap if overdue stays unpaid</p>
+          <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400/70 mb-2">Downside · 19 May</p>
+            <p className="text-2xl font-bold font-mono text-rose-700 dark:text-rose-300">£206.6k</p>
+            <p className="text-[11px] text-slate-500 dark:text-white/35 mt-1">£49.6k gap if overdue stays unpaid</p>
           </div>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
-          <div className="p-3 rounded-lg border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-            <p className="text-slate-400 dark:text-white/30 mb-1">Expected receipts — this week</p>
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
+            <p className="text-slate-400 dark:text-white/30 mb-1.5">Expected receipts — this week</p>
             <p className="font-bold font-mono text-slate-800 dark:text-white">£32,050</p>
             <p className="text-slate-400 dark:text-white/25 text-[10px] mt-0.5">INV-0348 (£9.8k) + INV-0351 (£22.3k)</p>
           </div>
-          <div className="p-3 rounded-lg border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/[0.04]">
-            <p className="text-slate-400 dark:text-white/30 mb-1">Overdue recoverable if chased</p>
+          <div className="p-3.5 rounded-xl border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/[0.04]">
+            <p className="text-slate-400 dark:text-white/30 mb-1.5">Overdue recoverable if chased</p>
             <p className="font-bold font-mono text-indigo-700 dark:text-indigo-300">£49,600</p>
             <p className="text-slate-400 dark:text-white/25 text-[10px] mt-0.5">INV-0339 (£31.2k) + INV-0341 (£18.4k)</p>
           </div>
         </div>
-      </Card>
+        </div>
+      </div>
 
       <Card>
         <SectionHeader title="Cash risk signals" sub="Automated exception monitoring" badge="System" />
@@ -495,17 +585,22 @@ function MarginSection() {
       </div>
 
       <Card>
-        <SectionHeader title="Gross margin trend" sub="Oct 2025 – Apr 2026 · monthly" />
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={revenueData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-            <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[30,45]} tickFormatter={v => `${v}%`} width={40} />
-            <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
-            <Line type="monotone" dataKey="margin" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: "#8b5cf6", r: 3 }} name="Margin %" />
-          </LineChart>
-        </ResponsiveContainer>
-        <p className="text-[11px] text-rose-600 dark:text-rose-400/80 mt-3 flex items-center gap-1.5"><AlertTriangle size={11} className="shrink-0" /> Margin has compressed –3.8pp since Oct. Three low-margin jobs are the primary driver.</p>
+        <SectionHeader title="Gross margin trend" sub="Oct 2025 – Apr 2026 · monthly — declining" />
+        <div className="mt-1 mb-2">
+          <ResponsiveContainer width="100%" height={210}>
+            <LineChart data={revenueData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[30,45]} tickFormatter={v => `${v}%`} width={40} />
+              <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
+              <Line type="monotone" dataKey="margin" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: "#8b5cf6", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5, fill: "#8b5cf6" }} name="Margin %" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="pt-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center gap-2">
+          <AlertTriangle size={11} className="text-rose-500 shrink-0" />
+          <p className="text-[11px] text-rose-600 dark:text-rose-400/80">Margin compressed –3.8pp since Oct 2025. Three low-margin jobs are the primary driver.</p>
+        </div>
       </Card>
 
       <Card>
@@ -537,37 +632,40 @@ function MarginSection() {
       </Card>
 
       {/* Job margin outlook */}
-      <Card>
-        <SectionHeader title="Job margin outlook" sub="Projected final margin on flagged jobs — at current run-rate" badge="Forward view" />
-        <div className="space-y-3">
-          {jobOutlook.map(j => (
-            <div key={j.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
-              <div className="flex items-start justify-between gap-4 mb-2.5">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{j.name}</p>
-                  <p className="text-xs text-slate-500 dark:text-white/35">{j.client} · {j.id} · {j.pct}% complete</p>
+      <div className="rounded-2xl border border-amber-100 dark:border-amber-500/[0.18] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+        <div className="h-[3px] bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400" />
+        <div className="p-6">
+          <SectionHeader title="Job margin outlook" sub="Projected final margin on flagged jobs — at current run-rate" badge="Forward view" />
+          <div className="space-y-3">
+            {jobOutlook.map(j => (
+              <div key={j.id} className="p-4 rounded-xl border border-slate-100 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{j.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-white/35">{j.client} · {j.id} · {j.pct}% complete</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0 bg-slate-100 dark:bg-white/[0.04] rounded-lg px-3 py-2">
+                    <div className="text-right">
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-0.5">Current</p>
+                      <p className={`text-sm font-bold font-mono ${j.current < 25 ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>{j.current}%</p>
+                    </div>
+                    <span className="text-slate-300 dark:text-white/15">→</span>
+                    <div className="text-right">
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-0.5">Projected</p>
+                      <p className={`text-sm font-bold font-mono ${j.projHigh < 20 ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>{j.projLow}–{j.projHigh}%</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="text-right">
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-0.5">Now</p>
-                    <p className={`text-sm font-bold font-mono ${j.current < 25 ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>{j.current}%</p>
-                  </div>
-                  <span className="text-slate-300 dark:text-white/15 text-lg">→</span>
-                  <div className="text-right">
-                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-0.5">Projected</p>
-                    <p className={`text-sm font-bold font-mono ${j.projHigh < 20 ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>{j.projLow}–{j.projHigh}%</p>
-                  </div>
+                <div className="flex items-start gap-1.5">
+                  <AlertTriangle size={11} className="text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 leading-snug">{j.driver}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-1.5">
-                <AlertTriangle size={11} className="text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-slate-500 dark:text-white/40 leading-snug">{j.driver}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <p className="text-[11px] text-slate-400 dark:text-white/25 mt-4">Projections based on current cost burn rate and known risk factors. Subject to variation order outcomes and site conditions.</p>
         </div>
-        <p className="text-[11px] text-slate-400 dark:text-white/25 mt-4">Projections based on current cost burn rate and known risk factors. Subject to variation order outcomes and site conditions.</p>
-      </Card>
+      </div>
 
       <Card>
         <SectionHeader title="Margin intelligence" sub="System-generated signals" badge="System" />
@@ -614,7 +712,7 @@ function OperationsSection() {
             const s = JOB_STATUS[job.status];
             const costPct = Math.round((job.actual / job.budget) * 100);
             return (
-              <div key={job.id} className={`p-4 rounded-xl border ${s.row}`}>
+              <div key={job.id} className={`p-4 rounded-xl border transition-all ${s.row} hover:shadow-sm`}>
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-xs font-mono text-slate-400 dark:text-white/35 shrink-0">{job.id}</span>
@@ -736,28 +834,31 @@ function OperationsSection() {
       </Card>
 
       {/* Capacity and delivery outlook */}
-      <Card>
-        <SectionHeader title="Capacity and delivery outlook" sub="Forward risk signals — next 4 weeks" badge="Forecast" />
-        <div className="grid sm:grid-cols-2 gap-3 mb-4">
-          {[
-            { label: "Crew D — capacity eases",    value: "~24 Apr",   sub: "Jobs #2863 and #2867 closing",        color: "text-amber-700 dark:text-amber-300", border: "border-amber-200 dark:border-amber-500/20", bg: "bg-amber-50 dark:bg-amber-500/[0.04]" },
-            { label: "Crew B — available from",    value: "~12 May",   sub: "#2847 complete, #2841 closing",       color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-emerald-500/[0.04]" },
-            { label: "Invoicing backlog",           value: "£165k",     sub: "Unbilled — ready to raise now",      color: "text-violet-700 dark:text-violet-300", border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-violet-500/[0.04]" },
-            { label: "Stock reallocation window",  value: "by May",    sub: "I-beams — no demand signal beyond", color: "text-rose-700 dark:text-rose-300", border: "border-rose-200 dark:border-rose-500/20", bg: "bg-rose-50 dark:bg-rose-500/[0.04]" },
-          ].map(s => (
-            <div key={s.label} className={`p-4 rounded-xl border ${s.border} ${s.bg}`}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/30 mb-2">{s.label}</p>
-              <p className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</p>
-              <p className="text-[11px] text-slate-500 dark:text-white/35 mt-0.5">{s.sub}</p>
-            </div>
-          ))}
+      <div className="rounded-2xl border border-emerald-100 dark:border-emerald-500/[0.15] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+        <div className="h-[3px] bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-400" />
+        <div className="p-6">
+          <SectionHeader title="Capacity and delivery outlook" sub="Forward risk signals — next 4 weeks" badge="Forecast" />
+          <div className="grid sm:grid-cols-2 gap-3 mb-5">
+            {[
+              { label: "Crew D — capacity eases",   value: "~24 Apr", sub: "Jobs #2863 and #2867 closing",      color: "text-amber-700 dark:text-amber-300",   border: "border-amber-200 dark:border-amber-500/20",   bg: "bg-amber-50 dark:bg-amber-500/[0.04]"   },
+              { label: "Crew B — available from",   value: "~12 May", sub: "#2847 complete, #2841 closing",     color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-emerald-500/[0.04]" },
+              { label: "Invoicing backlog",          value: "£165k",   sub: "Unbilled — ready to raise now",    color: "text-violet-700 dark:text-violet-300",  border: "border-violet-200 dark:border-violet-500/20",  bg: "bg-violet-50 dark:bg-violet-500/[0.04]"  },
+              { label: "Stock reallocation window", value: "by May",  sub: "I-beams — no demand signal beyond", color: "text-rose-700 dark:text-rose-300",      border: "border-rose-200 dark:border-rose-500/20",      bg: "bg-rose-50 dark:bg-rose-500/[0.04]"      },
+            ].map(s => (
+              <div key={s.label} className={`p-4 rounded-xl border ${s.border} ${s.bg}`}>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-2">{s.label}</p>
+                <p className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</p>
+                <p className="text-[11px] text-slate-500 dark:text-white/35 mt-1">{s.sub}</p>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2.5">
+            <Signal type="warning" title="Two jobs likely to slip past due date if Crew D not reallocated" detail="Jobs #2863 (due 24 Apr) and #2867 (due 13 Apr) both dependent on Crew D at 98% capacity. Completion risk is high." />
+            <Signal type="info"    title="Invoicing backlog — £165k ready to bill this week"               detail="Four jobs are at or past the point where invoicing is appropriate. Clearing the backlog improves cash and reduces WIP risk." />
+            <Signal type="info"    title="Steel I-beams — supplier return window closes end of May"         detail="£38.4k of unallocated stock. If no demand materialises by 31 May, return to supplier is recommended." />
+          </div>
         </div>
-        <div className="space-y-2.5">
-          <Signal type="warning" title="Two jobs likely to slip past due date if Crew D not reallocated" detail="Jobs #2863 (due 24 Apr) and #2867 (due 13 Apr) both dependent on Crew D at 98% capacity. Completion risk is high." />
-          <Signal type="info"    title="Invoicing backlog — £165k ready to bill this week"               detail="Four jobs are at or past the point where invoicing is appropriate. Clearing the backlog improves cash and reduces WIP risk." />
-          <Signal type="info"    title="Steel I-beams — supplier return window closes end of May"         detail="£38.4k of unallocated stock. If no demand materialises by 31 May, return to supplier is recommended." />
-        </div>
-      </Card>
+      </div>
     </div>
   );
 }
@@ -787,7 +888,7 @@ function CustomersSection() {
         <SectionHeader title="Client profitability — YTD" sub="Revenue, margin, WIP, and overdue exposure" />
         <div className="space-y-2.5">
           {customers.map((c, i) => (
-            <div key={i} className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
+            <div key={i} className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02] transition-all hover:bg-white dark:hover:bg-white/[0.035] hover:shadow-sm">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
@@ -847,13 +948,16 @@ function AlertsSection() {
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Critical alerts", value: alerts.length,   color: "text-rose-700   dark:text-rose-400",   border: "border-rose-200   dark:border-rose-500/20",   bg: "bg-rose-50    dark:bg-white/[0.025]" },
-          { label: "Warnings",        value: warnings.length, color: "text-amber-700  dark:text-amber-400",  border: "border-amber-200  dark:border-amber-500/20",  bg: "bg-amber-50   dark:bg-white/[0.025]" },
-          { label: "Intelligence",    value: info.length,     color: "text-indigo-700 dark:text-indigo-400", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50  dark:bg-white/[0.025]" },
+          { label: "Critical alerts", value: alerts.length,   color: "text-rose-700   dark:text-rose-400",   border: "border-rose-200   dark:border-rose-500/20",   bg: "bg-rose-50    dark:bg-white/[0.025]",  accent: "bg-rose-500"   },
+          { label: "Warnings",        value: warnings.length, color: "text-amber-700  dark:text-amber-400",  border: "border-amber-200  dark:border-amber-500/20",  bg: "bg-amber-50   dark:bg-white/[0.025]",  accent: "bg-amber-400"  },
+          { label: "Intelligence",    value: info.length,     color: "text-indigo-700 dark:text-indigo-400", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50  dark:bg-white/[0.025]",  accent: "bg-indigo-500" },
         ].map(s => (
-          <div key={s.label} className={`p-6 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-3">{s.label}</p>
-            <p className={`text-4xl font-bold ${s.color}`}>{s.value}</p>
+          <div key={s.label} className={`rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none overflow-hidden`}>
+            <div className={`h-[3px] ${s.accent}`} />
+            <div className="p-6">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-3">{s.label}</p>
+              <p className={`text-4xl font-bold ${s.color}`}>{s.value}</p>
+            </div>
           </div>
         ))}
       </div>
@@ -898,7 +1002,7 @@ function AlertsSection() {
         <SectionHeader title="Available reports" sub="Auto-generated · updated daily from live data" badge={`${reports.length} reports`} />
         <div className="space-y-2.5">
           {reports.map((r, i) => (
-            <div key={i} className="flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
+            <div key={i} className="flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02] transition-all hover:bg-white dark:hover:bg-white/[0.04] hover:shadow-sm">
               <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
                 <FileText size={14} className="text-indigo-600 dark:text-indigo-400" />
               </div>
@@ -908,7 +1012,7 @@ function AlertsSection() {
               </div>
               <button
                 onClick={() => { const b=new Blob([r.csv],{type:"text/csv"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download=r.filename; a.click(); URL.revokeObjectURL(u); }}
-                className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white transition-colors shrink-0"
+                className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-white/35 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"
               >
                 <Download size={13} />Export
               </button>
@@ -959,41 +1063,45 @@ export default function Dashboard() {
 
         {/* Client identity */}
         <div className="p-5 border-b border-slate-100 dark:border-white/[0.06]">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center shrink-0 shadow-sm">
-              <span className="text-[11px] font-bold text-white">MC</span>
+          <div className="flex items-center gap-3 mb-3.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20 dark:shadow-indigo-500/30">
+              <span className="text-[11px] font-bold text-white tracking-tight">MC</span>
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-sm text-slate-900 dark:text-white leading-tight">Meridian Contractors</p>
-              <p className="text-[10px] text-slate-400 dark:text-white/30">Ltd</p>
+              <p className="font-bold text-[13px] text-slate-900 dark:text-white leading-tight tracking-tight">Meridian Contractors</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/30">Ltd · Apr 2026</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-            <p className="text-[11px] text-slate-400 dark:text-white/35">Live · synced 4 min ago</p>
+          <div className="flex items-center gap-1.5 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 shadow-sm shadow-emerald-500/50" />
+            <p className="text-[11px] text-slate-500 dark:text-white/35">Live · synced 4 min ago</p>
           </div>
-          <p className="text-[9px] font-semibold uppercase tracking-widest text-slate-300 dark:text-white/20 mt-3">Custom operating system</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/18">Custom operating system</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-0.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
-            const isAlerts = item.label === "Alerts";
+            const isAlerts  = item.label === "Alerts";
+            const isActive  = activeTab === item.label;
             return (
               <button
                 key={item.label}
                 onClick={() => setActiveTab(item.label)}
-                className={`w-full text-left px-3 py-2.5 rounded-xl transition-all text-sm flex items-center justify-between gap-2 ${
-                  activeTab === item.label
-                    ? "bg-indigo-50 text-indigo-700 font-medium dark:bg-indigo-500/15 dark:text-indigo-300"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.05]"
+                className={`relative w-full text-left px-3 py-2.5 rounded-xl transition-all text-sm flex items-center justify-between gap-2 ${
+                  isActive
+                    ? "bg-indigo-50 text-indigo-700 font-semibold dark:bg-indigo-500/[0.14] dark:text-indigo-300"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.05]"
                 }`}
               >
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] rounded-r-full bg-indigo-500 dark:bg-indigo-400" />
+                )}
                 <div className="flex items-center gap-2.5">
                   <item.icon size={14} className="shrink-0" />
                   {item.label}
                 </div>
                 {isAlerts && (
-                  <span className="text-[9px] font-bold bg-rose-500 text-white rounded-full w-4 h-4 flex items-center justify-center shrink-0">{alertCount}</span>
+                  <span className="text-[9px] font-bold bg-rose-500 text-white rounded-full w-4 h-4 flex items-center justify-center shrink-0 shadow-sm">{alertCount}</span>
                 )}
               </button>
             );
@@ -1020,27 +1128,27 @@ export default function Dashboard() {
       <div className="lg:ml-60">
 
         {/* Top bar */}
-        <header className="sticky top-0 z-30 h-14 border-b border-slate-200 dark:border-white/[0.07] bg-white/90 dark:bg-[#05050f]/90 backdrop-blur-md flex items-center justify-between px-6">
+        <header className="sticky top-0 z-30 h-[54px] border-b border-slate-200 dark:border-white/[0.07] bg-white/95 dark:bg-[#05050f]/95 backdrop-blur-md flex items-center justify-between px-6 shadow-[0_1px_0_0_rgba(0,0,0,0.04)] dark:shadow-none">
           <div>
-            <h1 className="font-semibold text-sm text-slate-900 dark:text-white tracking-tight">{header.title}</h1>
-            <p className="text-[11px] text-slate-400 dark:text-white/30">{header.sub}</p>
+            <h1 className="font-semibold text-[13.5px] text-slate-900 dark:text-white tracking-tight leading-tight">{header.title}</h1>
+            <p className="text-[10.5px] text-slate-400 dark:text-white/28 leading-tight mt-0.5">{header.sub}</p>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5">
             <ThemeToggle />
-            <button className="relative p-2 text-slate-400 hover:text-slate-700 dark:text-white/40 dark:hover:text-white transition-colors">
-              <Bell size={17} />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />
+            <button className="relative p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.06] transition-all">
+              <Bell size={16} />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-[#05050f]" />
             </button>
-            <button className="p-2 text-slate-400 hover:text-slate-700 dark:text-white/40 dark:hover:text-white transition-colors">
-              <Settings size={17} />
+            <button className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.06] transition-all">
+              <Settings size={16} />
             </button>
-            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-md ml-1">
               MC
             </div>
           </div>
         </header>
 
-        <main className="p-6">
+        <main className="p-6 lg:p-8 max-w-[1440px]">
           {activeTab === "Overview"           && <OverviewSection   />}
           {activeTab === "Cash & Receivables" && <CashSection       />}
           {activeTab === "Sales & Margin"     && <MarginSection     />}
@@ -1048,11 +1156,11 @@ export default function Dashboard() {
           {activeTab === "Customers"          && <CustomersSection  />}
           {activeTab === "Alerts"             && <AlertsSection     />}
 
-          <div className="text-center pt-8 pb-4">
-            <p className="text-xs text-slate-400 dark:text-white/20">
+          <div className="text-center pt-10 pb-6">
+            <p className="text-[11px] text-slate-400 dark:text-white/18">
               Built by{" "}
-              <span className="text-indigo-600 dark:text-indigo-400/60 font-medium">Quantyx Advisory</span>
-              {" "}for Meridian Contractors Ltd — every metric, alert, and data source configured to their exact operational needs.
+              <span className="text-indigo-600 dark:text-indigo-400/50 font-semibold">Quantyx Advisory</span>
+              {" "}for Meridian Contractors Ltd — every metric, alert, and data source configured to their exact operational model.
             </p>
           </div>
         </main>
