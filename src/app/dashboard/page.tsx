@@ -99,6 +99,24 @@ const reports = [
   { name: "April 2026 — Customer Margin",      type: "Commercial", updated: "Today",  filename: "apr2026_customer_margin.csv",  csv: `Client,Revenue (£),GP (£),Margin %\nAvonside Commercial,312400,118700,38.0\nHartley Council,198600,61600,31.0\nBarton Industrial,98400,27600,28.1\n` },
 ];
 
+/* 4-week cash forecast
+   Base: overdue collected w/e 28 Apr
+   Downside: overdue remains unpaid (£49.6k gap maintained) */
+const cashForecastData = [
+  { week: "21 Apr",  base: 161600, downside: 161600 },
+  { week: "28 Apr",  base: 197000, downside: 147400 },
+  { week: "05 May",  base: 213200, downside: 163600 },
+  { week: "12 May",  base: 209300, downside: 159700 },
+  { week: "19 May",  base: 256200, downside: 206600 },
+];
+
+/* Projected final margin on at-risk jobs */
+const jobOutlook = [
+  { id: "#2851", name: "Civic Centre Renovation",  client: "Hartley Council",   current: 29.4, projLow: 24, projHigh: 27, driver: "Labour overrun — £8–12k above estimate at current burn rate", pct: 43  },
+  { id: "#2859", name: "High Street Unit Refit",    client: "Prestige Retail",   current: 22.1, projLow: 14, projHigh: 18, driver: "Prelim costs accumulating daily — delay unresolved, VO not agreed", pct: 15 },
+  { id: "#2867", name: "Factory Mezzanine Install", client: "Barton Industrial", current: 19.2, projLow: 16, projHigh: 19, driver: "Steel bracket shortage — £3–5k additional cost likely before close", pct: 88 },
+];
+
 /* ─────────────────────────────────────────────
    STATUS MAPS
 ───────────────────────────────────────────── */
@@ -397,6 +415,49 @@ function CashSection() {
         </div>
       </Card>
 
+      {/* 4-week cash forecast */}
+      <Card>
+        <SectionHeader title="4-week cash forecast" sub="Projected balance — base case vs downside if overdue remains unpaid" badge="Forecast" />
+        <ResponsiveContainer width="100%" height={180}>
+          <LineChart data={cashForecastData} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+            <XAxis dataKey="week" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(0)}k`} width={48} />
+            <Tooltip content={<ChartTooltip />} />
+            <Line type="monotone" dataKey="base"     stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3 }} name="Base case" />
+            <Line type="monotone" dataKey="downside" stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="5 3" dot={{ fill: "#f43f5e", r: 2 }} name="Downside" />
+          </LineChart>
+        </ResponsiveContainer>
+        <div className="flex items-center gap-6 mt-3 mb-4 text-[11px] text-slate-500 dark:text-white/35">
+          <span className="flex items-center gap-1.5"><span className="inline-block w-5 h-0.5 bg-indigo-500 rounded" />Base — overdue collected w/e 28 Apr</span>
+          <span className="flex items-center gap-1.5"><span className="inline-block w-5 h-px bg-rose-500 rounded" style={{ borderTop: "2px dashed" }} />Downside — overdue unpaid</span>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.05]">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400/70 mb-1.5">Base case — 19 May close</p>
+            <p className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-300">£256.2k</p>
+            <p className="text-[11px] text-slate-500 dark:text-white/35 mt-0.5">Overdue collected + normal trading</p>
+          </div>
+          <div className="p-3.5 rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-600 dark:text-rose-400/70 mb-1.5">Downside — 19 May close</p>
+            <p className="text-xl font-bold font-mono text-rose-700 dark:text-rose-300">£206.6k</p>
+            <p className="text-[11px] text-slate-500 dark:text-white/35 mt-0.5">£49.6k gap if overdue stays unpaid</p>
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+          <div className="p-3 rounded-lg border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
+            <p className="text-slate-400 dark:text-white/30 mb-1">Expected receipts — this week</p>
+            <p className="font-bold font-mono text-slate-800 dark:text-white">£32,050</p>
+            <p className="text-slate-400 dark:text-white/25 text-[10px] mt-0.5">INV-0348 (£9.8k) + INV-0351 (£22.3k)</p>
+          </div>
+          <div className="p-3 rounded-lg border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/[0.04]">
+            <p className="text-slate-400 dark:text-white/30 mb-1">Overdue recoverable if chased</p>
+            <p className="font-bold font-mono text-indigo-700 dark:text-indigo-300">£49,600</p>
+            <p className="text-slate-400 dark:text-white/25 text-[10px] mt-0.5">INV-0339 (£31.2k) + INV-0341 (£18.4k)</p>
+          </div>
+        </div>
+      </Card>
+
       <Card>
         <SectionHeader title="Cash risk signals" sub="Automated exception monitoring" badge="System" />
         <div className="space-y-2.5">
@@ -473,6 +534,39 @@ function MarginSection() {
             );
           })}
         </div>
+      </Card>
+
+      {/* Job margin outlook */}
+      <Card>
+        <SectionHeader title="Job margin outlook" sub="Projected final margin on flagged jobs — at current run-rate" badge="Forward view" />
+        <div className="space-y-3">
+          {jobOutlook.map(j => (
+            <div key={j.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
+              <div className="flex items-start justify-between gap-4 mb-2.5">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{j.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-white/35">{j.client} · {j.id} · {j.pct}% complete</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="text-right">
+                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-0.5">Now</p>
+                    <p className={`text-sm font-bold font-mono ${j.current < 25 ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>{j.current}%</p>
+                  </div>
+                  <span className="text-slate-300 dark:text-white/15 text-lg">→</span>
+                  <div className="text-right">
+                    <p className="text-[10px] text-slate-400 dark:text-white/30 mb-0.5">Projected</p>
+                    <p className={`text-sm font-bold font-mono ${j.projHigh < 20 ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>{j.projLow}–{j.projHigh}%</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <AlertTriangle size={11} className="text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-slate-500 dark:text-white/40 leading-snug">{j.driver}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-slate-400 dark:text-white/25 mt-4">Projections based on current cost burn rate and known risk factors. Subject to variation order outcomes and site conditions.</p>
       </Card>
 
       <Card>
@@ -638,6 +732,30 @@ function OperationsSection() {
           <Signal type="alert"   title="Job #2859 delayed — site access issue, 15% complete"  detail="Prestige Retail. Prelim costs accumulating daily. Variation order required to protect margin." />
           <Signal type="warning" title="Steel bracket shortage — 5-day lead time confirmed"    detail="Affects #2867. Factory Mezzanine completion date at risk. Alternative supplier not yet sourced." />
           <Signal type="warning" title="Job #2851 at 43% complete, labour already 11% over"   detail="Civic Centre Renovation. Current trajectory puts final cost £8–12k above budget." />
+        </div>
+      </Card>
+
+      {/* Capacity and delivery outlook */}
+      <Card>
+        <SectionHeader title="Capacity and delivery outlook" sub="Forward risk signals — next 4 weeks" badge="Forecast" />
+        <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          {[
+            { label: "Crew D — capacity eases",    value: "~24 Apr",   sub: "Jobs #2863 and #2867 closing",        color: "text-amber-700 dark:text-amber-300", border: "border-amber-200 dark:border-amber-500/20", bg: "bg-amber-50 dark:bg-amber-500/[0.04]" },
+            { label: "Crew B — available from",    value: "~12 May",   sub: "#2847 complete, #2841 closing",       color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-emerald-500/[0.04]" },
+            { label: "Invoicing backlog",           value: "£165k",     sub: "Unbilled — ready to raise now",      color: "text-violet-700 dark:text-violet-300", border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-violet-500/[0.04]" },
+            { label: "Stock reallocation window",  value: "by May",    sub: "I-beams — no demand signal beyond", color: "text-rose-700 dark:text-rose-300", border: "border-rose-200 dark:border-rose-500/20", bg: "bg-rose-50 dark:bg-rose-500/[0.04]" },
+          ].map(s => (
+            <div key={s.label} className={`p-4 rounded-xl border ${s.border} ${s.bg}`}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/30 mb-2">{s.label}</p>
+              <p className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</p>
+              <p className="text-[11px] text-slate-500 dark:text-white/35 mt-0.5">{s.sub}</p>
+            </div>
+          ))}
+        </div>
+        <div className="space-y-2.5">
+          <Signal type="warning" title="Two jobs likely to slip past due date if Crew D not reallocated" detail="Jobs #2863 (due 24 Apr) and #2867 (due 13 Apr) both dependent on Crew D at 98% capacity. Completion risk is high." />
+          <Signal type="info"    title="Invoicing backlog — £165k ready to bill this week"               detail="Four jobs are at or past the point where invoicing is appropriate. Clearing the backlog improves cash and reduces WIP risk." />
+          <Signal type="info"    title="Steel I-beams — supplier return window closes end of May"         detail="£38.4k of unallocated stock. If no demand materialises by 31 May, return to supplier is recommended." />
         </div>
       </Card>
     </div>
@@ -819,7 +937,7 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
   "Overview":           { title: "Executive overview — April 2026",   sub: "Meridian Contractors Ltd · Custom operating system"         },
   "Cash & Receivables": { title: "Cash & receivables",                sub: "Cash position, overdue invoices, and WIP pipeline"          },
   "Sales & Margin":     { title: "Sales & gross margin",              sub: "Revenue performance and margin intelligence"                },
-  "Operations":         { title: "Operations",                        sub: "Jobs, crews, labour utilisation, materials, and stock"      },
+  "Operations":         { title: "Operations",                        sub: "Jobs, crews, labour utilisation, materials, stock, and forward outlook" },
   "Customers":          { title: "Customer profitability",            sub: "Client margin, overdue exposure, and concentration risk"    },
   "Alerts":             { title: "Alerts & exception monitoring",     sub: "All system-generated signals across the business"           },
 };
