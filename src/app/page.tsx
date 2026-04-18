@@ -220,7 +220,7 @@ export default function Home() {
                 { label: "Accountants",                color: "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/25 dark:bg-indigo-500/8 dark:text-indigo-300"   },
                 { label: "SME Specialists",             color: "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/25 dark:bg-violet-500/8 dark:text-violet-300"   },
                 { label: "Audit Background",             color: "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-500/25 dark:bg-sky-500/8 dark:text-sky-300"                     },
-                { label: "Data Analytics Specialists",  color: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/8 dark:text-emerald-300" },
+                { label: "Data Systems Specialists",    color: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/8 dark:text-emerald-300" },
               ].map((c) => (
                 <span
                   key={c.label}
@@ -250,7 +250,7 @@ export default function Home() {
               </h2>
               <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed max-w-xs">
                 We build the data infrastructure and operating systems that give
-                growing businesses a joined-up view of performance — without the enterprise overhead.
+                growing businesses a single decision-ready view across finance and operations — without the enterprise overhead.
               </p>
             </div>
           </div>
@@ -449,7 +449,7 @@ export default function Home() {
                 {
                   icon: "📊",
                   title: "Accounting background",
-                  body: "We understand P&Ls, management accounts, and what a finance team actually needs — not just how to build dashboards.",
+                  body: "We understand P&Ls, management accounts, and what a finance team actually needs — not just how to surface metrics.",
                   color: "border-indigo-200 bg-indigo-50 dark:border-indigo-500/20 dark:bg-indigo-500/[0.04]",
                   label: "text-indigo-700 dark:text-indigo-400",
                 },
@@ -788,7 +788,7 @@ export default function Home() {
                 {
                   icon: "→",
                   title: "Bespoke operating layer",
-                  body: "We build the exact reporting and operational layer your business needs — wired to your systems, built to your logic.",
+                  body: "We build the exact operating and decision layer your business needs — wired to your systems, built to your logic.",
                   color: "border-indigo-200 bg-indigo-50 dark:border-indigo-500/25 dark:bg-indigo-500/[0.07]",
                   label: "Our answer",
                   labelColor: "text-indigo-700 border-indigo-200 bg-indigo-100 dark:text-indigo-300 dark:border-indigo-500/25 dark:bg-indigo-500/10",
