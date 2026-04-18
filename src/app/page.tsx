@@ -23,14 +23,14 @@ const services = [
   {
     icon: BarChart3,
     number: "01",
-    title: "Know exactly how your business is performing — without manual reporting",
-    outcome: "Clear visibility and faster decisions.",
+    title: "A custom financial and performance system built around how your business actually works",
+    outcome: "Full visibility. No manual pulls.",
     description:
-      "We turn raw business data into dashboards and reporting that make performance easy to understand — without anyone building a spreadsheet.",
+      "We design and build a bespoke financial operating layer — connecting your data sources into a live, structured system that gives management the visibility they need without spreadsheets or manual effort.",
     deliverables: [
-      "Finance dashboards",
-      "KPI tracking",
-      "Management reporting",
+      "Custom financial operating layer",
+      "Live performance system",
+      "Management intelligence views",
     ],
     accent:      "border-indigo-500/20 bg-indigo-500/[0.04] dark:border-indigo-500/30 dark:bg-indigo-500/[0.05]",
     iconBg:      "bg-indigo-100 dark:bg-indigo-500/15",
@@ -41,14 +41,14 @@ const services = [
   {
     icon: Zap,
     number: "02",
-    title: "Stop wasting time on manual reporting and repetitive processes",
-    outcome: "Less manual work, fewer errors.",
+    title: "Replace manual processes with automated data pipelines and workflow logic",
+    outcome: "Hours saved. Errors eliminated.",
     description:
-      "We automate the reporting and workflows your team runs manually — so they spend time on decisions, not on data wrangling.",
+      "We automate the data workflows your team runs manually — reconciliations, scheduled extracts, cross-system updates — so the right information reaches the right people without anyone touching a spreadsheet.",
     deliverables: [
-      "Automated reports",
-      "Reconciliations",
-      "Recurring processes",
+      "Automated reconciliation pipelines",
+      "Scheduled data workflows",
+      "Cross-system process automation",
     ],
     accent:      "border-violet-500/20 bg-violet-500/[0.04] dark:border-violet-500/30 dark:bg-violet-500/[0.05]",
     iconBg:      "bg-violet-100 dark:bg-violet-500/15",
@@ -59,14 +59,14 @@ const services = [
   {
     icon: Layers,
     number: "03",
-    title: "Get one reliable version of your data across your business",
-    outcome: "Reliable data and better insight.",
+    title: "Connect your disconnected systems into a single structured data model",
+    outcome: "One version of the truth. Everywhere.",
     description:
-      "We connect your systems and centralise data into a structured reporting layer — so every report draws from the same source.",
+      "We centralise data from across your business — accounting, inventory, CRM, operational tools — into a clean, structured data layer. Every system you build on top draws from the same reliable source.",
     deliverables: [
-      "Accounting + inventory + spreadsheets",
-      "Single source of truth",
-      "Consistent reporting",
+      "Unified cross-system data model",
+      "Structured centralisation layer",
+      "Single authoritative data source",
     ],
     accent:      "border-emerald-500/20 bg-emerald-500/[0.04] dark:border-emerald-500/30 dark:bg-emerald-500/[0.05]",
     iconBg:      "bg-emerald-100 dark:bg-emerald-500/15",
@@ -86,27 +86,27 @@ const secondaryCaseStudies = [
     industry: "Road Freight · 45 staff",
     tag: "Process Automation",
     tagColor: "text-violet-700 bg-violet-100 border-violet-200 dark:text-violet-300 dark:bg-violet-500/10 dark:border-violet-500/20",
-    headline: "Automated invoice & delivery reconciliation",
+    headline: "Automated three-way matching across POs, deliveries, and supplier invoices",
     description:
-      "The finance team spent 3 hours daily matching purchase orders, delivery notes, and supplier invoices across three systems. We built an automated reconciliation pipeline that did it in seconds and flagged mismatches for review.",
+      "The finance team spent 3 hours daily reconciling purchase orders, delivery notes, and supplier invoices across three disconnected systems. We built an automated matching pipeline that processes the full cycle in seconds — with exception logic that flags mismatches for human review only.",
     results: [
-      "3 hrs/day manual matching eliminated",
-      "Error rate: 6% → 0.3%",
-      "Supplier disputes resolved 4x faster",
+      "3 hrs/day manual reconciliation eliminated",
+      "Match error rate: 6% → 0.3%",
+      "Supplier dispute resolution: 4× faster",
     ],
   },
   {
     client: "Digital Marketing Agency",
     industry: "Marketing · 12 staff",
-    tag: "Reporting Builds",
+    tag: "Custom Operating Layer",
     tagColor: "text-emerald-700 bg-emerald-100 border-emerald-200 dark:text-emerald-300 dark:bg-emerald-500/10 dark:border-emerald-500/20",
-    headline: "White-label client reporting portals",
+    headline: "Bespoke client performance system replacing 8 hours of manual weekly reporting",
     description:
-      "The agency was sending PDF reports weekly — manually pulled from Google Ads, Meta, and GA4, formatted in slides, and emailed to 20+ clients. We replaced the whole process with branded live dashboards each client could access anytime.",
+      "20+ clients receiving manually assembled PDF reports each week — data pulled from Google Ads, Meta, and GA4, formatted in slides, and emailed out. We replaced the entire process with a live performance system: branded client portals, automated data pipelines, and real-time access.",
     results: [
-      "20+ client portals live",
-      "Reporting time: 8 hrs/week → automated",
-      "Client churn down 25%",
+      "20+ live client portals deployed",
+      "Weekly reporting: 8 hrs → fully automated",
+      "Client churn reduced by 25%",
     ],
   },
   {
@@ -114,12 +114,12 @@ const secondaryCaseStudies = [
     industry: "Consultancy · 28 staff",
     tag: "Data Centralisation",
     tagColor: "text-sky-700 bg-sky-100 border-sky-200 dark:text-sky-300 dark:bg-sky-500/10 dark:border-sky-500/20",
-    headline: "Centralised project margin & utilisation reporting",
+    headline: "Unified project margin and utilisation system across billing, costs, and time",
     description:
-      "Billable hours, project costs, and client revenues lived in three different systems with no joined view. Management couldn't see project margin or team utilisation without a manual weekly pull. We built a central model covering both.",
+      "Billable hours, project costs, and client revenue lived in three separate systems with no joined view. Management had no visibility on project margin or team utilisation without a manual weekly extract. We built a central data model that connects all three and surfaces both in real time.",
     results: [
       "Project margin visible in real time",
-      "Utilisation tracked automatically",
+      "Utilisation tracked automatically across all staff",
       "Weekly management pack: 4 hrs → 20 min",
     ],
   },
@@ -178,19 +178,20 @@ export default function Home() {
 
           {/* Headline */}
           <h1 className="text-5xl md:text-[4.25rem] font-bold leading-[1.08] tracking-tight mb-7 text-slate-900 dark:text-white">
-            Build the reporting and operating layer<br className="hidden sm:block" />{" "}
+            We design the data and operating layer<br className="hidden sm:block" />{" "}
             <span className="gradient-text">your business is missing.</span>
           </h1>
 
           {/* Sub */}
           <p className="text-lg md:text-xl text-slate-600 dark:text-white/55 max-w-2xl mx-auto mb-4 leading-relaxed">
-            We help growing businesses centralise data, automate reporting, and
-            build dashboards and internal systems that support better decisions.
+            Your systems are disconnected. Your data is fragmented. Your team is
+            making decisions without a joined-up view. We fix that — by building
+            the custom data infrastructure and operating systems your business needs.
           </p>
 
           {/* Who it's for */}
           <p className="text-sm text-slate-400 dark:text-white/30 mb-10 max-w-xl mx-auto">
-            For founder-led teams and lean finance functions.
+            For founder-led businesses and lean finance teams who need more than off-the-shelf tools.
           </p>
 
           {/* CTAs */}
@@ -245,11 +246,11 @@ export default function Home() {
             </p>
             <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
               <h2 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight max-w-xl text-slate-900 dark:text-white">
-                Three services.<br />All focused on one outcome.
+                Three capabilities.<br />One purpose — clarity.
               </h2>
               <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed max-w-xs">
-                We help growing businesses centralise data, automate reporting, and
-                build dashboards that support faster, better-informed decisions.
+                We build the data infrastructure and operating systems that give
+                growing businesses a joined-up view of performance, without the enterprise overhead.
               </p>
             </div>
           </div>
@@ -296,8 +297,8 @@ export default function Home() {
 
           <div className="mt-5 p-6 rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm dark:shadow-none">
             <p className="text-sm text-slate-500 dark:text-white/50 max-w-lg leading-relaxed">
-              Most projects combine elements of two or three of these. We scope
-              every engagement individually — no fixed packages, no off-the-shelf solutions.
+              Most engagements combine two or three of these into a single custom system.
+              We scope every project individually — no fixed packages, no template solutions.
             </p>
             <a
               href="#contact"
@@ -320,10 +321,10 @@ export default function Home() {
               How it works
             </p>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-slate-900 dark:text-white">
-              Three steps. Minimal effort from your team.
+              Three stages. Minimal disruption to your team.
             </h2>
             <p className="text-slate-500 dark:text-white/40 text-sm max-w-md mx-auto leading-relaxed">
-              We handle the technical complexity — you get clean data, clear reporting, and better decisions.
+              We handle the full technical build — you stay involved at key decisions and receive a working system you own outright.
             </p>
           </div>
 
@@ -332,9 +333,9 @@ export default function Home() {
               {
                 step: "01",
                 Icon: Database,
-                title: "Extract data",
-                body: "We connect to your systems via APIs and structured exports — pulling sales, inventory, finance, or operational data from wherever it currently lives.",
-                tags: ["API integrations", "Scheduled exports", "Manual uploads"],
+                title: "Connect your systems",
+                body: "We integrate with your existing tools via APIs and structured exports — pulling financial, operational, and commercial data from wherever it currently lives, without disrupting how your team works.",
+                tags: ["API integrations", "Scheduled extracts", "Legacy system connectors"],
                 color:    "border-sky-200 bg-white dark:border-sky-500/25 dark:bg-sky-500/[0.05]",
                 iconBg:   "bg-sky-100 dark:bg-sky-500/15",
                 iconColor:"text-sky-600 dark:text-sky-400",
@@ -343,9 +344,9 @@ export default function Home() {
               {
                 step: "02",
                 Icon: GitMerge,
-                title: "Centralise and structure",
-                body: "All source data lands in a central database — cleaned, deduplicated, and modelled so every report and dashboard draws from the same consistent source.",
-                tags: ["Central database", "Data modelling", "Transformation layer"],
+                title: "Build the data model",
+                body: "All source data is centralised into a structured, version-controlled data model — cleaned, deduplicated, and logically organised so every system built on top draws from the same authoritative source.",
+                tags: ["Central data model", "Transformation layer", "Business logic"],
                 color:    "border-violet-200 bg-white dark:border-violet-500/25 dark:bg-violet-500/[0.05]",
                 iconBg:   "bg-violet-100 dark:bg-violet-500/15",
                 iconColor:"text-violet-600 dark:text-violet-400",
@@ -354,9 +355,9 @@ export default function Home() {
               {
                 step: "03",
                 Icon: BarChart3,
-                title: "Deliver insights",
-                body: "We build the reporting layer on top — dashboards, KPI views, alerts, and management packs — all connected to your live data and always current.",
-                tags: ["Live dashboards", "Automated reports", "KPI tracking"],
+                title: "Deliver your operating layer",
+                body: "We build the custom operating system on top — performance views, exception alerts, automated outputs, and management tools — all wired to live data, built to your business logic, and fully handed over.",
+                tags: ["Custom operating system", "Exception monitoring", "Automated outputs"],
                 color:    "border-emerald-200 bg-white dark:border-emerald-500/25 dark:bg-emerald-500/[0.05]",
                 iconBg:   "bg-emerald-100 dark:bg-emerald-500/15",
                 iconColor:"text-emerald-600 dark:text-emerald-400",
@@ -426,20 +427,20 @@ export default function Home() {
               </p>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-6 text-slate-900 dark:text-white">
                 A small specialist team.<br />
-                Serious about<br />
-                <span className="gradient-text">your data.</span>
+                Built to solve<br />
+                <span className="gradient-text">real business problems.</span>
               </h2>
               <p className="text-slate-600 dark:text-white/45 leading-relaxed mb-5 text-base">
-                Quantyx Advisory is a specialist data consultancy working with
-                growing businesses — typically founder-led SMEs and lean finance
-                teams — who need better reporting and data infrastructure but
-                don't want to hire a full internal data team.
+                Quantyx Advisory is a specialist data and systems consultancy working with
+                growing businesses — typically founder-led SMEs and lean finance teams —
+                who need a proper data and operating infrastructure but don't want to build
+                an internal data team or pay enterprise consultancy rates.
               </p>
               <p className="text-slate-500 dark:text-white/35 leading-relaxed text-sm">
-                We have backgrounds in accountancy, audit, and data analytics.
-                That combination matters: we understand how businesses work,
-                what finance teams actually need, and how to build the technical
-                infrastructure to deliver it.
+                Our backgrounds span accountancy, audit, and data engineering.
+                That combination is deliberate — we understand how businesses work,
+                what finance and operations teams actually need, and how to build
+                the technical systems that deliver it cleanly and without overhead.
               </p>
             </div>
 
@@ -518,7 +519,7 @@ export default function Home() {
             </p>
             <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
-                The systems we build
+                The systems we&apos;ve built
               </h2>
               <p className="text-slate-400 dark:text-white/40 text-sm">
                 Illustrative examples based on real engagement types.
@@ -545,17 +546,19 @@ export default function Home() {
                 </div>
 
                 <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight text-slate-900 dark:text-white">
-                  Financial, stock, and operations —<br className="hidden md:block" /> unified into one layer
+                  A custom financial and operational system —<br className="hidden md:block" /> replacing three disconnected tools
                 </h3>
                 <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-3 max-w-lg">
                   A commercial electrical contractor running invoicing in Xero, stock in
-                  Cin7, and all job, crew, and material tracking manually in Excel —
-                  with no central view of job profitability, crew load, or delivery risk.
+                  Cin7, and all job, crew, and materials tracking manually in Excel — with
+                  no central view of job profitability, crew utilisation, or delivery risk.
+                  Management were making decisions without the numbers.
                 </p>
                 <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-4 max-w-lg">
-                  We centralised all three into a Postgres data model and built two layers
-                  on top: a commercial reporting layer and a live operational layer
-                  covering jobs, labour, crews, and material cost exposure.
+                  We centralised all three into a single Postgres data model and built a
+                  bespoke operating system on top — a commercial layer for finance and
+                  a live operational layer covering job status, labour, crew allocation,
+                  and material cost exposure.
                 </p>
                 <p className="text-xs text-slate-400 dark:text-white/30 mb-7 max-w-lg">
                   Built using real-world system architecture — Xero API, Cin7 API, Postgres (Supabase), structured SQL views.
@@ -619,17 +622,18 @@ export default function Home() {
                 </div>
 
                 <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight text-slate-900 dark:text-white">
-                  WIP, billing, and matter profitability —<br className="hidden md:block" /> unified into one partner view
+                  WIP, billing, and matter margin —<br className="hidden md:block" /> surfaced in a single partner operating view
                 </h3>
                 <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-3 max-w-lg">
                   A mid-sized UK law firm running matters in Clio, invoicing in Xero, and WIP
                   reconciliation manually in Excel — with no view of matter margin, billing
-                  delays, or write-off risk.
+                  delays, write-off risk, or timekeeper efficiency.
                 </p>
                 <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-4 max-w-lg">
-                  We centralised all three into a Postgres data model and built a partner-facing
-                  insight layer covering WIP, realisation rates, timekeeper utilisation, and
-                  billing performance.
+                  We centralised all three into a structured Postgres data model and built a
+                  partner-facing operating layer — covering live WIP, realisation rates,
+                  timekeeper utilisation, billing performance, and matter profitability
+                  in a single view.
                 </p>
                 <p className="text-xs text-slate-400 dark:text-white/30 mb-7 max-w-lg">
                   Built using real-world system architecture — Clio API, Xero API, Postgres (Supabase), structured SQL views.
@@ -728,18 +732,19 @@ export default function Home() {
                 Custom builds
               </div>
               <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.07] tracking-tight mb-6 text-slate-900 dark:text-white">
-                Need more than<br />
-                off-the-shelf?<br />
-                <span className="gradient-text">We build it from scratch.</span>
+                When no tool fits<br />
+                your business model —<br />
+                <span className="gradient-text">we build the system.</span>
               </h2>
               <p className="text-slate-600 dark:text-white/50 text-lg leading-relaxed mb-6 max-w-xl">
-                Off-the-shelf tools have limits. When your business hits those limits —
-                we step in and build exactly what you need from scratch.
+                Off-the-shelf software is designed for the average business. When your
+                operations, workflows, or data model don't fit the template — we design
+                and build an internal system that does.
               </p>
               <p className="text-slate-500 dark:text-white/40 text-base leading-relaxed mb-8 max-w-xl">
-                That might be a custom reporting dashboard, an automated data pipeline,
-                or an internal operating layer that gives your team visibility over jobs,
-                costs, crews, or margins that no SaaS product covers by default.
+                That might be a custom job management and margin system, an automated
+                financial operating layer, or a bespoke internal tool that gives your
+                team visibility over the things no SaaS product was built to track.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-10">
@@ -828,12 +833,12 @@ export default function Home() {
                 Get in touch
               </p>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-slate-900 dark:text-white">
-                Let's talk about<br />your reporting.
+                Let's talk about<br />your data problems.
               </h2>
               <p className="text-slate-600 dark:text-white/45 text-base leading-relaxed mb-8">
-                Book a free 30-minute call. We'll ask about your current
-                setup, understand what's not working, and tell you honestly
-                whether we can help — and how.
+                Book a free 30-minute call. We'll ask about your current setup,
+                understand what's broken or missing, and tell you honestly
+                whether we can help — and what that would look like.
               </p>
               <div className="space-y-3">
                 {[
