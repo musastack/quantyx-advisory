@@ -5,6 +5,7 @@ import { CheckCircle } from "lucide-react";
 
 export default function ContactForm() {
   const [name, setName]       = useState("");
+  const [company, setCompany] = useState("");
   const [email, setEmail]     = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus]   = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -16,7 +17,7 @@ export default function ContactForm() {
     const res = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message }),
+      body: JSON.stringify({ name, company, email, message }),
     });
 
     setStatus(res.ok ? "sent" : "error");
@@ -61,6 +62,17 @@ export default function ContactForm() {
               className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-500/60 text-sm transition-colors"
             />
           </div>
+        </div>
+        <div>
+          <label className="text-xs text-slate-500 dark:text-white/35 block mb-1.5">Company name</label>
+          <input
+            type="text"
+            required
+            placeholder="Acme Ltd"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-500/60 text-sm transition-colors"
+          />
         </div>
         <div>
           <label className="text-xs text-slate-500 dark:text-white/35 block mb-1.5">What are you trying to solve?</label>

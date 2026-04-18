@@ -140,7 +140,7 @@ export default function Home() {
           <Image src="/logo.png" alt="Quantyx Advisory" height={56} width={224} className="object-contain" priority />
           <div className="hidden md:flex items-center gap-8 text-sm text-slate-600 dark:text-white/60">
             <a href="#services"     className="hover:text-slate-900 dark:hover:text-white transition-colors">Services</a>
-            <a href="#how-it-works" className="hover:text-slate-900 dark:hover:text-white transition-colors">How It Works</a>
+            <a href="#how-it-works" className="hover:text-slate-900 dark:hover:text-white transition-colors">How it works</a>
             <a href="#case-studies" className="hover:text-slate-900 dark:hover:text-white transition-colors">Case Studies</a>
             <a href="#about"        className="hover:text-slate-900 dark:hover:text-white transition-colors">About</a>
             <a href="#contact"      className="hover:text-slate-900 dark:hover:text-white transition-colors">Contact</a>
@@ -856,13 +856,30 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="py-8 px-6 border-t border-slate-100 dark:border-white/[0.05] bg-white dark:bg-transparent">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-bold gradient-text">Quantyx Advisory</span>
-          <p className="text-slate-400 dark:text-white/25 text-xs">© 2026 Quantyx Advisory. All rights reserved. · UK</p>
-          <div className="flex gap-6 text-xs text-slate-400 dark:text-white/25">
-            <a href="#" className="hover:text-slate-700 dark:hover:text-white/50 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-slate-700 dark:hover:text-white/50 transition-colors">Terms</a>
+      <footer className="py-10 px-6 border-t border-slate-100 dark:border-white/[0.05] bg-white dark:bg-transparent">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-6">
+            <div>
+              <span className="font-bold gradient-text text-base">Quantyx Advisory</span>
+              <p className="text-xs text-slate-400 dark:text-white/30 mt-1">Specialist data consultancy · UK</p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 text-xs text-slate-400 dark:text-white/30">
+              <a href="mailto:contact@quantyxadvisory.com" className="hover:text-slate-700 dark:hover:text-white/60 transition-colors">
+                contact@quantyxadvisory.com
+              </a>
+              <div className="flex gap-6">
+                <a href="#services"     className="hover:text-slate-700 dark:hover:text-white/60 transition-colors">Services</a>
+                <a href="#case-studies" className="hover:text-slate-700 dark:hover:text-white/60 transition-colors">Case studies</a>
+                <a href="#contact"      className="hover:text-slate-700 dark:hover:text-white/60 transition-colors">Contact</a>
+              </div>
+            </div>
+          </div>
+          <div className="pt-5 border-t border-slate-100 dark:border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-slate-400 dark:text-white/20 text-xs">© 2026 Quantyx Advisory. All rights reserved.</p>
+            <div className="flex gap-6 text-xs text-slate-400 dark:text-white/20">
+              <a href="#" className="hover:text-slate-600 dark:hover:text-white/40 transition-colors">Privacy</a>
+              <a href="#" className="hover:text-slate-600 dark:hover:text-white/40 transition-colors">Terms</a>
+            </div>
           </div>
         </div>
       </footer>

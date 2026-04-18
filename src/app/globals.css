@@ -41,6 +41,8 @@
 /* ── Base ──────────────────────────────────────────────── */
 html {
   color-scheme: light;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* offset for fixed 64px nav */
 }
 html.dark {
   color-scheme: dark;
