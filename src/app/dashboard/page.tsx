@@ -9,7 +9,7 @@ import {
   AlertCircle, Bell, Settings, ArrowLeft, TrendingUp, TrendingDown,
   Users, FileText, BarChart2, Zap, AlertTriangle,
   Download, DollarSign, UserCheck, Clock,
-  ChevronRight, Activity, ArrowRight,
+  ChevronRight, Activity, ArrowRight, Minus,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -94,6 +94,110 @@ const serviceLines = [
   { name: "Property Valuation",     revenue: 1870 },
 ];
 
+// Extended financial metrics Oct–Mar (6 months)
+const financialMetrics = [
+  { month: "Oct", gpM: 60.9, opMargin: 18.2, ebitdaM: 20.7, netProfit: 1540, cash: 4200, workingCapital: 8100, creditorDays: 42 },
+  { month: "Nov", gpM: 60.9, opMargin: 19.1, ebitdaM: 20.7, netProfit: 1620, cash: 4050, workingCapital: 7800, creditorDays: 44 },
+  { month: "Dec", gpM: 60.1, opMargin: 17.8, ebitdaM: 19.6, netProfit: 1480, cash: 3880, workingCapital: 7600, creditorDays: 47 },
+  { month: "Jan", gpM: 60.0, opMargin: 18.5, ebitdaM: 20.3, netProfit: 1550, cash: 3720, workingCapital: 7200, creditorDays: 45 },
+  { month: "Feb", gpM: 60.5, opMargin: 19.8, ebitdaM: 21.0, netProfit: 1680, cash: 3810, workingCapital: 7450, creditorDays: 43 },
+  { month: "Mar", gpM: 60.8, opMargin: 20.9, ebitdaM: 22.1, netProfit: 1790, cash: 3950, workingCapital: 7700, creditorDays: 41 },
+];
+
+// Service line monthly breakdown (Oct–Mar)
+const serviceLineMonthly = [
+  { month: "Oct", CVL: 1340, Admin: 1150, Restructuring: 625, LPA: 490, Creditor: 432, MVL: 398, Other: 895 },
+  { month: "Nov", CVL: 1380, Admin: 1175, Restructuring: 650, LPA: 503, Creditor: 440, MVL: 406, Other: 1006 },
+  { month: "Dec", CVL: 1395, Admin: 1195, Restructuring: 635, LPA: 498, Creditor: 438, MVL: 400, Other: 1109 },
+  { month: "Jan", CVL: 1350, Admin: 1158, Restructuring: 620, LPA: 488, Creditor: 428, MVL: 395, Other: 1051 },
+  { month: "Feb", CVL: 1385, Admin: 1180, Restructuring: 640, LPA: 495, Creditor: 435, MVL: 402, Other: 973  },
+  { month: "Mar", CVL: 1420, Admin: 1210, Restructuring: 658, LPA: 510, Creditor: 442, MVL: 415, Other: 915  },
+];
+
+// P&L detail — Mar 25 vs Feb 25
+const plDetail = [
+  { label: "Revenue",                  curr: 10570, prev: 10510, budget: 11090, isSubtotal: false, isTotal: false, indent: 0 },
+  { label: "Cost of Sales",            curr: 4143,  prev: 4151,  budget: 4210,  isSubtotal: false, isTotal: false, indent: 0 },
+  { label: "Gross Profit",             curr: 6427,  prev: 6359,  budget: 6880,  isSubtotal: true,  isTotal: false, indent: 0 },
+  { label: "Staff Costs",              curr: 2810,  prev: 2830,  budget: 2750,  isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Overhead & Premises",      curr: 580,   prev: 591,   budget: 590,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Technology & Systems",     curr: 220,   prev: 218,   budget: 225,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Professional Fees",        curr: 312,   prev: 295,   budget: 320,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Other Opex",               curr: 169,   prev: 218,   budget: 175,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Total Opex",               curr: 4091,  prev: 4152,  budget: 4060,  isSubtotal: true,  isTotal: false, indent: 0 },
+  { label: "EBITDA",                   curr: 2336,  prev: 2207,  budget: 2820,  isSubtotal: true,  isTotal: false, indent: 0 },
+  { label: "Depreciation & Amort.",    curr: 127,   prev: 125,   budget: 130,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Finance Costs",            curr: 210,   prev: 215,   budget: 210,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Tax Provision",            curr: 209,   prev: 187,   budget: 240,   isSubtotal: false, isTotal: false, indent: 1 },
+  { label: "Net Profit",               curr: 1790,  prev: 1680,  budget: 2240,  isSubtotal: false, isTotal: true,  indent: 0 },
+];
+
+// Balance sheet — Mar 25 vs Feb 25
+const bsAssets = [
+  { label: "Cash & Equivalents",   curr: 3950,   prev: 3810,   group: "current" },
+  { label: "Accounts Receivable",  curr: 89180,  prev: 86380,  group: "current" },
+  { label: "WIP",                  curr: 39120,  prev: 40340,  group: "current" },
+  { label: "Other Current Assets", curr: 2140,   prev: 2090,   group: "current" },
+  { label: "Fixed Assets (net)",   curr: 4820,   prev: 4947,   group: "fixed"   },
+  { label: "Total Assets",         curr: 139210, prev: 137567, group: "total"   },
+];
+const bsLiabilities = [
+  { label: "Accounts Payable",    curr: 4810,  prev: 4920,  group: "current" },
+  { label: "Accruals",            curr: 2840,  prev: 2790,  group: "current" },
+  { label: "Short-term Debt",     curr: 6200,  prev: 6200,  group: "current" },
+  { label: "Other Current Liab.", curr: 1820,  prev: 1780,  group: "current" },
+  { label: "Long-term Debt",      curr: 12400, prev: 12610, group: "long"    },
+  { label: "Total Liabilities",   curr: 28070, prev: 28300, group: "total"   },
+];
+const bsEquity = [
+  { label: "Share Capital",     curr: 5000,   prev: 5000,   group: "equity" },
+  { label: "Retained Earnings", curr: 106140, prev: 104267, group: "equity" },
+  { label: "Total Equity",      curr: 111140, prev: 109267, group: "total"  },
+];
+
+/* ─────────────────────────────────────────────
+   SPARKLINE + TREND BADGE
+───────────────────────────────────────────── */
+
+function Sparkline({ data, up }: { data: number[]; up: boolean }) {
+  if (data.length < 2) return null;
+  const min = Math.min(...data), max = Math.max(...data), range = max - min || 1;
+  const W = 60, H = 24, pad = 2;
+  const pts = data.map((v, i) => {
+    const x = pad + (i / (data.length - 1)) * (W - pad * 2);
+    const y = H - pad - ((v - min) / range) * (H - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  const color = up ? "#10b981" : "#f43f5e";
+  const last = pts.split(" ").at(-1)!.split(",");
+  return (
+    <svg width={W} height={H} className="overflow-visible shrink-0">
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={last[0]} cy={last[1]} r="2.5" fill={color} />
+    </svg>
+  );
+}
+
+function TrendBadge({ values }: { values: number[] }) {
+  const last3 = values.slice(-3);
+  const delta = last3[2] - last3[0];
+  const flat = Math.abs(delta) < 0.4;
+  const up = delta > 0;
+  const cfg = flat
+    ? { cls: "text-slate-500 bg-slate-100 dark:text-white/40 dark:bg-white/[0.06]", icon: <Minus size={9} />, label: "Flat" }
+    : up
+      ? { cls: "text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-500/15", icon: <TrendingUp size={9} />, label: "Improving" }
+      : { cls: "text-rose-700 bg-rose-100 dark:text-rose-300 dark:bg-rose-500/15", icon: <TrendingDown size={9} />, label: "Declining" };
+  return (
+    <div className="flex items-center gap-2 mt-1.5">
+      <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${cfg.cls}`}>
+        {cfg.icon}{cfg.label}
+      </span>
+      <span className="text-[10px] text-slate-400 dark:text-white/25">{last3.map(v => `${v}%`).join(" → ")}</span>
+    </div>
+  );
+}
+
 /* ─────────────────────────────────────────────
    SHARED COMPONENTS
 ───────────────────────────────────────────── */
@@ -106,10 +210,10 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
   );
 }
 
-function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, accent, onDrilldown, drilldownTab }: {
+function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, accent, onDrilldown, sparkData, trend }: {
   label: string; value: string; verdict: string; change: string; up: boolean;
   icon: React.ElementType; color: string; bg: string; accent: string;
-  onDrilldown?: () => void; drilldownTab?: string;
+  onDrilldown?: () => void; sparkData?: number[]; trend?: number[];
 }) {
   return (
     <div
@@ -117,27 +221,23 @@ function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, acc
       onClick={onDrilldown}
     >
       <div className={`h-[3px] ${accent}`} />
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{label}</p>
-          <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}>
-            <Icon size={15} className={color} />
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 flex-1 min-w-0 pr-2">{label}</p>
+          <div className="flex items-center gap-2 shrink-0">
+            {sparkData && <Sparkline data={sparkData} up={up} />}
+            <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center`}>
+              <Icon size={13} className={color} />
+            </div>
           </div>
         </div>
-        <p className="text-[1.9rem] font-bold tracking-tight mb-2 text-slate-900 dark:text-white font-mono leading-none tabular-nums">{value}</p>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          {up
-            ? <TrendingUp  size={10} className="text-emerald-500 shrink-0" />
-            : <TrendingDown size={10} className="text-rose-500 shrink-0" />
-          }
+        <p className="text-[1.65rem] font-bold tracking-tight mb-1.5 text-slate-900 dark:text-white font-mono leading-none tabular-nums">{value}</p>
+        <div className="flex items-center gap-1.5 mb-1">
+          {up ? <TrendingUp size={10} className="text-emerald-500 shrink-0" /> : <TrendingDown size={10} className="text-rose-500 shrink-0" />}
           <span className={`text-[11px] font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{change}</span>
         </div>
         <p className="text-[10.5px] text-slate-500 dark:text-white/35 leading-snug">{verdict}</p>
-        {drilldownTab && (
-          <p className="mt-2 text-[10px] font-semibold text-indigo-500 dark:text-indigo-400/70 flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
-            <ChevronRight size={9} />View {drilldownTab}
-          </p>
-        )}
+        {trend && <TrendBadge values={trend} />}
       </div>
     </div>
   );
@@ -371,73 +471,99 @@ function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }
   const latest    = plData[plData.length - 1];
   const latestRec = recData[recData.length - 1];
   const latestHC  = hcData[hcData.length - 1];
+  const latestFM  = financialMetrics[financialMetrics.length - 1];
   const avgUtil   = utilisationHeatmap.reduce((s, g) => s + g.Mar, 0) / utilisationHeatmap.length;
 
   return (
     <div className="space-y-6">
       <CommandStrip />
 
-      {/* 5 KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* 10 KPI cards — 5 per row */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <KpiCard
-          label="Revenue MTD"
-          value={`£${(latest.revenue / 1000).toFixed(2)}M`}
-          change="–4.6% vs £11.09M target"
-          verdict="£520k below budget — CVL volume softness"
+          label="Revenue MTD" value={`£${(latest.revenue / 1000).toFixed(2)}M`}
+          change="–4.6% vs £11.09M target" verdict="£520k below budget — CVL softness"
           up={false} icon={DollarSign}
-          color="text-rose-600 dark:text-rose-400"
-          bg="bg-rose-100 dark:bg-rose-500/10"
-          accent="bg-rose-500"
+          color="text-rose-600 dark:text-rose-400" bg="bg-rose-100 dark:bg-rose-500/10" accent="bg-rose-500"
+          sparkData={plData.slice(-6).map(d => d.revenue)}
           onDrilldown={() => onTabChange("Financial Performance")}
-          drilldownTab="Financial"
         />
         <KpiCard
-          label="EBITDA Margin"
-          value={`${latest.ebitdaM}%`}
-          change="+1.1pp vs Feb · 12-month best"
-          verdict="Recovery from 18.7% low in Jul 24"
+          label="Gross Margin %" value={`${latestFM.gpM}%`}
+          change="+0.3pp vs Feb" verdict="Stable above 60% for 6 months"
           up={true} icon={TrendingUp}
-          color="text-emerald-600 dark:text-emerald-400"
-          bg="bg-emerald-100 dark:bg-emerald-500/10"
-          accent="bg-emerald-500"
+          color="text-violet-600 dark:text-violet-400" bg="bg-violet-100 dark:bg-violet-500/10" accent="bg-violet-500"
+          sparkData={financialMetrics.map(d => d.gpM)}
+          trend={financialMetrics.slice(-3).map(d => d.gpM)}
+          onDrilldown={() => onTabChange("P&L Deep Dive")}
+        />
+        <KpiCard
+          label="Operating Margin" value={`${latestFM.opMargin}%`}
+          change="+1.1pp vs Feb · 6-month best" verdict="Recovery from 17.8% Dec low"
+          up={true} icon={Activity}
+          color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-100 dark:bg-emerald-500/10" accent="bg-emerald-500"
+          sparkData={financialMetrics.map(d => d.opMargin)}
+          trend={financialMetrics.slice(-3).map(d => d.opMargin)}
+          onDrilldown={() => onTabChange("P&L Deep Dive")}
+        />
+        <KpiCard
+          label="EBITDA Margin" value={`${latest.ebitdaM}%`}
+          change="+1.1pp vs Feb · 12-month best" verdict="Recovery from 18.7% Jul 24 low"
+          up={true} icon={BarChart2}
+          color="text-indigo-600 dark:text-indigo-400" bg="bg-indigo-100 dark:bg-indigo-500/10" accent="bg-indigo-500"
+          sparkData={financialMetrics.map(d => d.ebitdaM)}
+          trend={financialMetrics.slice(-3).map(d => d.ebitdaM)}
           onDrilldown={() => onTabChange("Financial Performance")}
-          drilldownTab="Financial"
         />
         <KpiCard
-          label="Lockup Days"
-          value={`${latestRec.lockup}d`}
-          change="28 days above 90-day target"
-          verdict="Peaked 125d Jan · improving"
+          label="Net Profit" value={`£${(latestFM.netProfit / 1000).toFixed(2)}M`}
+          change="+£110k vs Feb (+6.5%)" verdict="Strongest month since Oct 24"
+          up={true} icon={TrendingUp}
+          color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-100 dark:bg-emerald-500/10" accent="bg-emerald-400"
+          sparkData={financialMetrics.map(d => d.netProfit)}
+          onDrilldown={() => onTabChange("P&L Deep Dive")}
+        />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <KpiCard
+          label="Cash Balance" value={`£${(latestFM.cash / 1000).toFixed(2)}M`}
+          change="+£140k vs Feb" verdict="Recovering from £3.72M Jan low"
+          up={true} icon={DollarSign}
+          color="text-sky-600 dark:text-sky-400" bg="bg-sky-100 dark:bg-sky-500/10" accent="bg-sky-400"
+          sparkData={financialMetrics.map(d => d.cash)}
+          onDrilldown={() => onTabChange("Balance Sheet")}
+        />
+        <KpiCard
+          label="Working Capital" value={`£${(latestFM.workingCapital / 1000).toFixed(1)}M`}
+          change="+£250k vs Feb" verdict="Improving from £7.2M Jan trough"
+          up={true} icon={Zap}
+          color="text-indigo-600 dark:text-indigo-400" bg="bg-indigo-100 dark:bg-indigo-500/10" accent="bg-indigo-400"
+          sparkData={financialMetrics.map(d => d.workingCapital)}
+          onDrilldown={() => onTabChange("Balance Sheet")}
+        />
+        <KpiCard
+          label="Lockup Days" value={`${latestRec.lockup}d`}
+          change="28 days above 90-day target" verdict="Peaked 125d Jan · improving"
           up={false} icon={Clock}
-          color="text-amber-600 dark:text-amber-400"
-          bg="bg-amber-100 dark:bg-amber-500/10"
-          accent="bg-amber-400"
+          color="text-amber-600 dark:text-amber-400" bg="bg-amber-100 dark:bg-amber-500/10" accent="bg-amber-400"
+          sparkData={recData.map(d => d.lockup)}
           onDrilldown={() => onTabChange("Collections & Cash")}
-          drilldownTab="Collections"
         />
         <KpiCard
-          label="Fee Earner Util."
-          value={`${avgUtil.toFixed(1)}%`}
-          change="vs 74.6% target · on track"
-          verdict="5 of 6 grades at or above target"
-          up={true} icon={UserCheck}
-          color="text-indigo-600 dark:text-indigo-400"
-          bg="bg-indigo-100 dark:bg-indigo-500/10"
-          accent="bg-indigo-500"
-          onDrilldown={() => onTabChange("People & Capacity")}
-          drilldownTab="People"
+          label="Debtors 91+ Days" value={`£${(latestRec.aged91 / 1000).toFixed(1)}M`}
+          change="90.4% of debtor book" verdict="Concentration risk — recovery needed"
+          up={false} icon={AlertTriangle}
+          color="text-rose-600 dark:text-rose-400" bg="bg-rose-100 dark:bg-rose-500/10" accent="bg-rose-500"
+          sparkData={recData.map(d => d.aged91 / 1000)}
+          onDrilldown={() => onTabChange("Collections & Cash")}
         />
         <KpiCard
-          label="Headcount"
-          value={`${latestHC.headcount}`}
-          change="+9 in 6 months · stable"
-          verdict={`${latestHC.feeEarners} fee earners · no attrition spike`}
-          up={true} icon={Users}
-          color="text-sky-600 dark:text-sky-400"
-          bg="bg-sky-100 dark:bg-sky-500/10"
-          accent="bg-sky-400"
-          onDrilldown={() => onTabChange("People & Capacity")}
-          drilldownTab="People"
+          label="Creditor Days" value={`${latestFM.creditorDays}d`}
+          change="–2d vs Feb · improving" verdict="Below 45-day benchmark"
+          up={true} icon={FileText}
+          color="text-slate-600 dark:text-slate-400" bg="bg-slate-100 dark:bg-slate-500/10" accent="bg-slate-400"
+          sparkData={financialMetrics.map(d => d.creditorDays)}
+          onDrilldown={() => onTabChange("Balance Sheet")}
         />
       </div>
 
@@ -993,23 +1119,278 @@ function AlertsSection() {
 }
 
 /* ─────────────────────────────────────────────
+   P&L DEEP DIVE SECTION
+───────────────────────────────────────────── */
+
+function PLSection() {
+  const [view, setView] = useState<"table" | "trend">("table");
+  const isIncome = (label: string) => ["Revenue", "Gross Profit", "EBITDA", "Net Profit"].includes(label);
+
+  return (
+    <div className="space-y-5">
+      {/* Summary KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Revenue",      value: "£10.57M", vs: "–4.6% vs budget", sub: "£520k miss · CVL softness",    color: "text-rose-700 dark:text-rose-400",     border: "border-rose-200 dark:border-rose-500/20",     bg: "bg-rose-50 dark:bg-white/[0.025]"    },
+          { label: "Gross Profit", value: "£6.43M",  vs: "+£68k vs Feb",     sub: "60.8% margin",                 color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
+          { label: "EBITDA",       value: "£2.34M",  vs: "+£129k vs Feb",    sub: "22.1% margin · 12-month best", color: "text-emerald-700 dark:text-emerald-300",border: "border-emerald-200 dark:border-emerald-500/20",bg: "bg-emerald-50 dark:bg-white/[0.025]"},
+          { label: "Net Profit",   value: "£1.79M",  vs: "+£110k vs Feb",    sub: "16.9% net margin",             color: "text-violet-700 dark:text-violet-300", border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-white/[0.025]"  },
+        ].map(s => (
+          <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-2">{s.label}</p>
+            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
+            <p className="text-[11px] font-semibold text-slate-600 dark:text-white/50 mt-1">{s.vs}</p>
+            <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">{s.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* View toggle + P&L table */}
+      <Card>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">P&L statement</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Mar 25 vs Feb 25 vs budget · all figures £000</p>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
+            {(["table", "trend"] as const).map(v => (
+              <button key={v} onClick={() => setView(v)}
+                className={`px-3 py-1.5 transition-colors ${view === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>
+                {v === "table" ? "Table" : "Trend"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {view === "table" && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-white/[0.06]">
+                  <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 w-48">Line item</th>
+                  <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 pr-4">Mar 25</th>
+                  <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 pr-4">Feb 25</th>
+                  <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 pr-4">Var £</th>
+                  <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 pr-4">Var %</th>
+                  <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3">Budget</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plDetail.map((row, i) => {
+                  const varAmt = row.curr - row.prev;
+                  const varPct = ((varAmt / row.prev) * 100).toFixed(1);
+                  const budgetVar = row.curr - row.budget;
+                  const goodVar = isIncome(row.label) ? varAmt >= 0 : varAmt <= 0;
+                  const isHighlight = row.isSubtotal || row.isTotal;
+                  return (
+                    <tr key={i} className={`border-b border-slate-100 dark:border-white/[0.04] ${isHighlight ? "bg-slate-50 dark:bg-white/[0.02]" : ""}`}>
+                      <td className={`py-2.5 ${row.indent === 1 ? "pl-4" : ""}`}>
+                        <span className={`${isHighlight ? "font-semibold text-slate-900 dark:text-white" : "text-slate-600 dark:text-white/60"} ${row.isTotal ? "text-[13px]" : ""}`}>
+                          {row.label}
+                        </span>
+                      </td>
+                      <td className={`py-2.5 text-right pr-4 font-mono tabular-nums ${isHighlight ? "font-semibold text-slate-900 dark:text-white" : "text-slate-700 dark:text-white/70"}`}>
+                        {(row.curr / 1000).toFixed(0)}
+                      </td>
+                      <td className="py-2.5 text-right pr-4 font-mono tabular-nums text-slate-400 dark:text-white/30">
+                        {(row.prev / 1000).toFixed(0)}
+                      </td>
+                      <td className={`py-2.5 text-right pr-4 font-mono tabular-nums font-semibold ${goodVar ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        {varAmt >= 0 ? "+" : ""}{(varAmt / 1000).toFixed(0)}
+                      </td>
+                      <td className={`py-2.5 text-right pr-4 font-mono tabular-nums text-[11px] ${goodVar ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        {varAmt >= 0 ? "+" : ""}{varPct}%
+                      </td>
+                      <td className={`py-2.5 text-right font-mono tabular-nums text-[11px] ${budgetVar >= 0 && isIncome(row.label) ? "text-emerald-600 dark:text-emerald-400" : budgetVar < 0 && isIncome(row.label) ? "text-rose-600 dark:text-rose-400" : "text-slate-400 dark:text-white/30"}`}>
+                        {(row.budget / 1000).toFixed(0)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {view === "trend" && (
+          <div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
+                <Tooltip content={<ChartTooltip formatter={v => `£${(v / 1000).toFixed(2)}M`} />} />
+                <Line type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} dot={false} name="Revenue" />
+                <Line type="monotone" dataKey="gp"      stroke="#10b981" strokeWidth={2} dot={false} name="Gross Profit" />
+                <Line type="monotone" dataKey="ebitda"  stroke="#f59e0b" strokeWidth={2} dot={false} name="EBITDA" />
+              </LineChart>
+            </ResponsiveContainer>
+            <div className="flex items-center gap-5 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-[2px] bg-indigo-500 rounded" />Revenue</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-[2px] bg-emerald-500 rounded" />Gross Profit</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-[2px] bg-amber-500 rounded" />EBITDA</span>
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {/* Service line monthly — stacked bar */}
+      <Card>
+        <SectionHeader title="Revenue by service line" sub="Monthly breakdown Oct 2024 – Mar 2025 · £000" badge="6 lines" />
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={serviceLineMonthly} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+            <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
+            <Tooltip content={<ChartTooltip formatter={v => `£${v}k`} />} />
+            <Bar dataKey="CVL"          stackId="a" fill="#6366f1" name="CVL"           radius={[0,0,0,0]} />
+            <Bar dataKey="Admin"        stackId="a" fill="#8b5cf6" name="Administration" />
+            <Bar dataKey="Restructuring"stackId="a" fill="#06b6d4" name="Restructuring"  />
+            <Bar dataKey="LPA"          stackId="a" fill="#10b981" name="LPA"            />
+            <Bar dataKey="Creditor"     stackId="a" fill="#f59e0b" name="Creditor Svcs"  />
+            <Bar dataKey="MVL"          stackId="a" fill="#f43f5e" name="MVL"            />
+            <Bar dataKey="Other"        stackId="a" fill="#94a3b8" name="Other"          radius={[4,4,0,0]} />
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[10px] text-slate-500 dark:text-white/35">
+          {[["CVL","#6366f1"],["Admin","#8b5cf6"],["Restructuring","#06b6d4"],["LPA","#10b981"],["Creditor","#f59e0b"],["MVL","#f43f5e"],["Other","#94a3b8"]].map(([n,c]) => (
+            <span key={n} className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm shrink-0" style={{background:c}} />{n}</span>
+          ))}
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">CVL + Admin = 48% of revenue · Restructuring growing +5% MoM</span>
+        </div>
+      </Card>
+
+      {/* Insights */}
+      <Card>
+        <SectionHeader title="P&L insights" sub="System-generated · March 2025" badge="AI" />
+        <div className="space-y-2.5">
+          <Signal type="info"    title="EBITDA 22.1% — cost discipline driving margin recovery"   detail="Total opex down £61k MoM despite revenue growth. Staff costs reduced £20k. Other opex fell £49k. Margin now above 20% baseline." />
+          <Signal type="alert"   title="Revenue –4.6% vs budget — CVL volume the driver"          detail="Third consecutive miss. YTD shortfall £1.4M. CVL at £1.42M this month — tracking below the £1.6M monthly run rate implied by budget." />
+          <Signal type="info"    title="Net profit £1.79M — strongest month since Oct 24"         detail="16.9% net margin. Revenue recovery + opex discipline = compounding effect. Full-year target achievable if revenue gap closes." />
+          <Signal type="warning" title="Restructuring Advisory growing 5% MoM — monitor capacity" detail="£658k in Mar vs £620k in Jan. Strong insolvency market driving demand. Ensure fee earner capacity is aligned to growth trajectory." />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   BALANCE SHEET SECTION
+───────────────────────────────────────────── */
+
+function BalanceSheetSection() {
+  const fmt = (v: number) => v >= 1000 ? `£${(v / 1000).toFixed(1)}M` : `£${v}k`;
+  const chg = (curr: number, prev: number) => {
+    const d = curr - prev;
+    const pct = ((d / prev) * 100).toFixed(1);
+    return { d, pct, up: d >= 0 };
+  };
+
+  function BSRow({ label, curr, prev, group }: { label: string; curr: number; prev: number; group: string }) {
+    const { d, pct, up } = chg(curr, prev);
+    const isTotal = group === "total";
+    return (
+      <tr className={`border-b border-slate-100 dark:border-white/[0.04] ${isTotal ? "bg-slate-50 dark:bg-white/[0.02]" : ""}`}>
+        <td className={`py-2.5 pl-2 ${isTotal ? "font-semibold text-slate-900 dark:text-white" : "text-slate-600 dark:text-white/60"} text-[12px]`}>{label}</td>
+        <td className={`py-2.5 text-right pr-4 font-mono tabular-nums text-[12px] ${isTotal ? "font-semibold text-slate-900 dark:text-white" : "text-slate-700 dark:text-white/70"}`}>{fmt(curr)}</td>
+        <td className="py-2.5 text-right pr-4 font-mono tabular-nums text-[11px] text-slate-400 dark:text-white/30">{fmt(prev)}</td>
+        <td className={`py-2.5 text-right font-mono tabular-nums text-[11px] font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+          {d >= 0 ? "+" : ""}{fmt(Math.abs(d))}
+        </td>
+        <td className={`py-2.5 text-right pl-4 font-mono tabular-nums text-[10px] ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+          {d >= 0 ? "+" : ""}{pct}%
+        </td>
+      </tr>
+    );
+  }
+
+  function BSBlock({ title, rows }: { title: string; rows: typeof bsAssets }) {
+    return (
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-3 px-2">{title}</p>
+        <table className="w-full text-xs mb-1">
+          <thead>
+            <tr className="border-b border-slate-100 dark:border-white/[0.06]">
+              <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pl-2 w-48">Item</th>
+              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pr-4">Mar 25</th>
+              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pr-4">Feb 25</th>
+              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2">Change</th>
+              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pl-4">%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => <BSRow key={i} {...r} />)}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Assets",    value: "£139.2M", change: "+£1.6M vs Feb", up: true,  color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
+          { label: "Total Equity",    value: "£111.1M", change: "+£1.9M vs Feb", up: true,  color: "text-emerald-700 dark:text-emerald-300",border: "border-emerald-200 dark:border-emerald-500/20",bg: "bg-emerald-50 dark:bg-white/[0.025]"},
+          { label: "Net Debt",        value: "£14.7M",  change: "–£210k vs Feb", up: true,  color: "text-sky-700 dark:text-sky-300",        border: "border-sky-200 dark:border-sky-500/20",       bg: "bg-sky-50 dark:bg-white/[0.025]"     },
+          { label: "Working Capital", value: "£7.7M",   change: "+£250k vs Feb", up: true,  color: "text-violet-700 dark:text-violet-300",  border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-white/[0.025]"  },
+        ].map(s => (
+          <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-2">{s.label}</p>
+            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
+            <div className="flex items-center gap-1 mt-1">
+              {s.up ? <TrendingUp size={10} className="text-emerald-500" /> : <TrendingDown size={10} className="text-rose-500" />}
+              <p className="text-[11px] text-slate-500 dark:text-white/35">{s.change}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Card>
+        <SectionHeader title="Balance sheet" sub="Mar 25 vs Feb 25 · all figures unaudited" />
+        <div className="space-y-6">
+          <BSBlock title="Assets" rows={bsAssets} />
+          <BSBlock title="Liabilities" rows={bsLiabilities} />
+          <BSBlock title="Equity" rows={bsEquity} />
+        </div>
+      </Card>
+
+      <Card>
+        <SectionHeader title="Balance sheet signals" sub="System-generated · March 2025" badge="System" />
+        <div className="space-y-2.5">
+          <Signal type="alert"   title="Accounts receivable £89.2M — up £2.8M MoM (+3.2%)"     detail="Debtor growth outpacing collections. 90% aged 91+ days. Structural collections intervention required." />
+          <Signal type="info"    title="WIP declining — £39.1M vs £40.3M in Feb"                detail="Cases converting to bills. Good operational indicator. The collections pipeline is healthy — the cash is in AR." />
+          <Signal type="info"    title="Total equity £111.1M — strengthening MoM"               detail="Retained earnings +£1.87M in March driven by net profit. Balance sheet healthy with 4x equity/debt ratio." />
+          <Signal type="warning" title="Short-term debt £6.2M — unchanged for 3 months"         detail="Review refinancing options if lockup resolution releases cash. Current facility may be surplus to requirements by Q3." />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
    NAV CONFIG
 ───────────────────────────────────────────── */
 
 const NAV_ITEMS = [
-  { label: "Executive Summary",          icon: BarChart2  },
-  { label: "Financial Performance",      icon: TrendingUp },
-  { label: "Collections & Cash",         icon: DollarSign },
-  { label: "People & Capacity",          icon: Users      },
-  { label: "Risks & Exceptions",         icon: Zap        },
+  { label: "Executive Summary",     icon: BarChart2  },
+  { label: "Financial Performance", icon: TrendingUp },
+  { label: "P&L Deep Dive",         icon: FileText   },
+  { label: "Collections & Cash",    icon: DollarSign },
+  { label: "Balance Sheet",         icon: Activity   },
+  { label: "People & Capacity",     icon: Users      },
+  { label: "Risks & Exceptions",    icon: Zap        },
 ];
 
 const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
-  "Executive Summary":     { title: "Executive summary — March 2025",    sub: "BTG Advisory Group · CEO operating system"                     },
-  "Financial Performance": { title: "Financial performance",             sub: "Revenue, EBITDA, budget vs actual, service lines"              },
-  "Collections & Cash":    { title: "Collections & cash conversion",     sub: "Debtors aging, lockup days, WIP pipeline"                     },
-  "People & Capacity":     { title: "People & capacity",                 sub: "Headcount, fee earners, utilisation heatmap"                  },
-  "Risks & Exceptions":    { title: "Risks & exceptions",                sub: "All system-generated signals and reports"                      },
+  "Executive Summary":     { title: "Executive summary — March 2025",     sub: "BTG Advisory Group · CEO operating system"                     },
+  "Financial Performance": { title: "Financial performance",              sub: "Revenue, EBITDA, budget vs actual, service lines"              },
+  "P&L Deep Dive":         { title: "P&L deep dive",                      sub: "Full income statement · Mar vs Feb vs budget · service line breakdown" },
+  "Collections & Cash":    { title: "Collections & cash conversion",      sub: "Debtors aging, lockup days, WIP pipeline"                     },
+  "Balance Sheet":         { title: "Balance sheet",                      sub: "Assets, liabilities, equity · Mar 25 vs Feb 25"               },
+  "People & Capacity":     { title: "People & capacity",                  sub: "Headcount, fee earners, utilisation heatmap"                  },
+  "Risks & Exceptions":    { title: "Risks & exceptions",                 sub: "All system-generated signals and reports"                     },
 };
 
 /* ─────────────────────────────────────────────
@@ -1130,6 +1511,8 @@ export default function Dashboard() {
         <main className="p-6 lg:p-8 max-w-[1440px]">
           {activeTab === "Executive Summary"     && <OverviewSection onTabChange={setActiveTab} />}
           {activeTab === "Financial Performance" && <FinancialSection  />}
+          {activeTab === "P&L Deep Dive"         && <PLSection         />}
+          {activeTab === "Balance Sheet"          && <BalanceSheetSection />}
           {activeTab === "Collections & Cash"    && <CashSection       />}
           {activeTab === "People & Capacity"     && <PeopleSection     />}
           {activeTab === "Risks & Exceptions"    && <AlertsSection     />}
