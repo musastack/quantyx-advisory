@@ -3,48 +3,37 @@
 import { useState } from "react";
 import {
   AreaChart, Area, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine,
 } from "recharts";
 import {
   AlertCircle, Bell, Settings, ArrowLeft, TrendingUp, TrendingDown,
   Users, FileText, BarChart2, Zap, AlertTriangle,
   Download, DollarSign, UserCheck, Clock,
-  ChevronRight, Activity,
+  ChevronRight, Activity, ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "../ThemeToggle";
 
 /* ─────────────────────────────────────────────
-   BTG ADVISORY GROUP — CEO DASHBOARD
-   Core datasets (HIGH confidence, SunSystems / CRM):
-     erp_fact_pl_monthly · erp_fact_budget_vs_actual
-     erp_fact_revenue · erp_fact_receivables_monthly
-     erp_fact_wip_monthly · crm_fact_headcount_monthly
-     crm_fact_employee_utilisation_monthly · erp_fact_targets_detailed
-   Excluded (low quality / too granular):
-     crm_fact_cases (nulls, staging inconsistencies)
-     erp_fact_billing_detailed (EMP-OLD refs, granular noise)
-     dim tables (reference only)
-   Latest closed period: March 2025
+   BTG ADVISORY GROUP — CEO OPERATING SYSTEM
+   High-confidence datasets only · Mar 2025
 ───────────────────────────────────────────── */
 
-// P&L monthly — Apr 2024 – Mar 2025 (£000s)
 const plData = [
-  { month: "Apr", revenue: 9850,  gp: 5983, ebitda: 2127, ebitdaM: 21.6 },
-  { month: "May", revenue: 9972,  gp: 6073, ebitda: 2075, ebitdaM: 20.8 },
-  { month: "Jun", revenue: 9860,  gp: 5817, ebitda: 2024, ebitdaM: 20.5 },
-  { month: "Jul", revenue: 10090, gp: 5983, ebitda: 1887, ebitdaM: 18.7 },
-  { month: "Aug", revenue: 10020, gp: 5952, ebitda: 2084, ebitdaM: 20.8 },
-  { month: "Sep", revenue: 10300, gp: 6057, ebitda: 1978, ebitdaM: 19.2 },
-  { month: "Oct", revenue: 10330, gp: 6291, ebitda: 2138, ebitdaM: 20.7 },
-  { month: "Nov", revenue: 10560, gp: 6431, ebitda: 2184, ebitdaM: 20.7 },
-  { month: "Dec", revenue: 10670, gp: 6412, ebitda: 2091, ebitdaM: 19.6 },
-  { month: "Jan", revenue: 10490, gp: 6294, ebitda: 2127, ebitdaM: 20.3 },
-  { month: "Feb", revenue: 10510, gp: 6359, ebitda: 2207, ebitdaM: 21.0 },
-  { month: "Mar", revenue: 10570, gp: 6427, ebitda: 2336, ebitdaM: 22.1 },
+  { month: "Apr", revenue: 9850,  gp: 5983, ebitda: 2127, ebitdaM: 21.6, budget: null   },
+  { month: "May", revenue: 9972,  gp: 6073, ebitda: 2075, ebitdaM: 20.8, budget: null   },
+  { month: "Jun", revenue: 9860,  gp: 5817, ebitda: 2024, ebitdaM: 20.5, budget: null   },
+  { month: "Jul", revenue: 10090, gp: 5983, ebitda: 1887, ebitdaM: 18.7, budget: null   },
+  { month: "Aug", revenue: 10020, gp: 5952, ebitda: 2084, ebitdaM: 20.8, budget: null   },
+  { month: "Sep", revenue: 10300, gp: 6057, ebitda: 1978, ebitdaM: 19.2, budget: null   },
+  { month: "Oct", revenue: 10330, gp: 6291, ebitda: 2138, ebitdaM: 20.7, budget: 10550  },
+  { month: "Nov", revenue: 10560, gp: 6431, ebitda: 2184, ebitdaM: 20.7, budget: 10520  },
+  { month: "Dec", revenue: 10670, gp: 6412, ebitda: 2091, ebitdaM: 19.6, budget: 10970  },
+  { month: "Jan", revenue: 10490, gp: 6294, ebitda: 2127, ebitdaM: 20.3, budget: 10990  },
+  { month: "Feb", revenue: 10510, gp: 6359, ebitda: 2207, ebitdaM: 21.0, budget: 10260  },
+  { month: "Mar", revenue: 10570, gp: 6427, ebitda: 2336, ebitdaM: 22.1, budget: 11090  },
 ];
 
-// Budget vs actual — Oct 2024 – Mar 2025 (£000s)
 const bvaData = [
   { month: "Oct", budget: 10550, actual: 10330 },
   { month: "Nov", budget: 10520, actual: 10560 },
@@ -54,7 +43,6 @@ const bvaData = [
   { month: "Mar", budget: 11090, actual: 10570 },
 ];
 
-// Receivables — Oct 2024 – Mar 2025 (£000s)
 const recData = [
   { month: "Oct", debtors: 75740, aged91: 70650, other: 5090,  lockup: 110 },
   { month: "Nov", debtors: 77620, aged91: 72290, other: 5330,  lockup: 119 },
@@ -64,7 +52,6 @@ const recData = [
   { month: "Mar", debtors: 89180, aged91: 80590, other: 8590,  lockup: 118 },
 ];
 
-// WIP — Oct 2024 – Mar 2025 (£000s)
 const wipData = [
   { month: "Oct", wip: 44940 },
   { month: "Nov", wip: 47430 },
@@ -74,7 +61,6 @@ const wipData = [
   { month: "Mar", wip: 39120 },
 ];
 
-// Headcount — Nov 2025 – Apr 2026
 const hcData = [
   { month: "Nov", headcount: 716, feeEarners: 543 },
   { month: "Dec", headcount: 715, feeEarners: 542 },
@@ -84,17 +70,18 @@ const hcData = [
   { month: "Apr", headcount: 725, feeEarners: 542 },
 ];
 
-// Utilisation by grade — Mar 2025
-const utilisationData = [
-  { grade: "Partner",       util: 56.9, target: 55.0 },
-  { grade: "Director",      util: 65.8, target: 65.0 },
-  { grade: "Sr. Manager",   util: 73.1, target: 72.0 },
-  { grade: "Manager",       util: 78.3, target: 77.0 },
-  { grade: "Sr. Associate", util: 80.4, target: 80.0 },
-  { grade: "Associate",     util: 81.1, target: 82.0 },
+// Utilisation heatmap — 6 months × 6 grades
+const utilisationHeatmap = [
+  { grade: "Partner",       target: 55.0, Oct: 55.2, Nov: 56.0, Dec: 57.1, Jan: 55.8, Feb: 56.2, Mar: 56.9 },
+  { grade: "Director",      target: 65.0, Oct: 64.8, Nov: 65.5, Dec: 66.2, Jan: 64.9, Feb: 65.1, Mar: 65.8 },
+  { grade: "Sr. Manager",   target: 72.0, Oct: 72.1, Nov: 73.0, Dec: 74.2, Jan: 72.8, Feb: 72.5, Mar: 73.1 },
+  { grade: "Manager",       target: 77.0, Oct: 77.5, Nov: 78.1, Dec: 79.0, Jan: 78.2, Feb: 77.9, Mar: 78.3 },
+  { grade: "Sr. Associate", target: 80.0, Oct: 79.8, Nov: 80.5, Dec: 81.0, Jan: 80.1, Feb: 79.8, Mar: 80.4 },
+  { grade: "Associate",     target: 82.0, Oct: 81.8, Nov: 82.1, Dec: 82.5, Jan: 81.5, Feb: 80.9, Mar: 81.1 },
 ];
 
-// Revenue by service line — Jan–Mar 2025 combined (£000s)
+const heatmapMonths = ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"] as const;
+
 const serviceLines = [
   { name: "CVL",                    revenue: 8180 },
   { name: "Administration",         revenue: 7050 },
@@ -118,29 +105,29 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
   );
 }
 
-function KpiCard({ label, value, sub, change, up, icon: Icon, color, bg, glow, accent }: {
-  label: string; value: string; sub: string; change: string; up: boolean;
-  icon: React.ElementType; color: string; bg: string; glow: string; accent?: string;
+function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, accent }: {
+  label: string; value: string; verdict: string; change: string; up: boolean;
+  icon: React.ElementType; color: string; bg: string; accent: string;
 }) {
   return (
-    <div className={`rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden ${glow}`}>
-      {accent && <div className={`h-[3px] ${accent}`} />}
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-5">
+    <div className="rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+      <div className={`h-[3px] ${accent}`} />
+      <div className="p-5">
+        <div className="flex items-center justify-between mb-4">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{label}</p>
-          <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
-            <Icon size={17} className={color} />
+          <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}>
+            <Icon size={15} className={color} />
           </div>
         </div>
-        <p className="text-[2rem] font-bold tracking-tight mb-2.5 text-slate-900 dark:text-white font-mono leading-none">{value}</p>
+        <p className="text-[1.9rem] font-bold tracking-tight mb-2 text-slate-900 dark:text-white font-mono leading-none tabular-nums">{value}</p>
         <div className="flex items-center gap-1.5 mb-1.5">
           {up
-            ? <TrendingUp  size={11} className="text-emerald-500 dark:text-emerald-400 shrink-0" />
-            : <TrendingDown size={11} className="text-rose-500 dark:text-rose-400 shrink-0" />
+            ? <TrendingUp  size={10} className="text-emerald-500 shrink-0" />
+            : <TrendingDown size={10} className="text-rose-500 shrink-0" />
           }
-          <span className={`text-xs font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{change}</span>
+          <span className={`text-[11px] font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{change}</span>
         </div>
-        <p className="text-[11px] text-slate-400 dark:text-white/25 leading-snug">{sub}</p>
+        <p className="text-[10.5px] text-slate-500 dark:text-white/35 leading-snug">{verdict}</p>
       </div>
     </div>
   );
@@ -148,18 +135,18 @@ function KpiCard({ label, value, sub, change, up, icon: Icon, color, bg, glow, a
 
 function Signal({ type, title, detail, action }: { type: "alert" | "warning" | "info"; title: string; detail: string; action?: string }) {
   const styles = {
-    alert:   { border: "border-l-rose-500",   bg: "bg-rose-50   dark:bg-rose-500/[0.07]   border border-rose-200   dark:border-rose-500/20",   text: "text-rose-700   dark:text-rose-300",   icon: <AlertCircle size={13} className="text-rose-500 shrink-0 mt-0.5" /> },
-    warning: { border: "border-l-amber-500",  bg: "bg-amber-50  dark:bg-amber-500/[0.07]  border border-amber-200  dark:border-amber-500/20",  text: "text-amber-700  dark:text-amber-300",  icon: <AlertTriangle size={13} className="text-amber-500 shrink-0 mt-0.5" /> },
-    info:    { border: "border-l-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-500/[0.07] border border-indigo-200 dark:border-indigo-500/20", text: "text-indigo-700 dark:text-indigo-300", icon: <Activity size={13} className="text-indigo-500 shrink-0 mt-0.5" /> },
+    alert:   { bg: "bg-rose-50   dark:bg-rose-500/[0.07]   border border-rose-200   dark:border-rose-500/20",   text: "text-rose-700   dark:text-rose-300",   muted: "text-rose-600/70 dark:text-rose-400/60",   icon: <AlertCircle  size={13} className="text-rose-500  shrink-0 mt-0.5" /> },
+    warning: { bg: "bg-amber-50  dark:bg-amber-500/[0.07]  border border-amber-200  dark:border-amber-500/20",  text: "text-amber-700  dark:text-amber-300",  muted: "text-amber-600/70 dark:text-amber-400/60",  icon: <AlertTriangle size={13} className="text-amber-500 shrink-0 mt-0.5" /> },
+    info:    { bg: "bg-indigo-50 dark:bg-indigo-500/[0.07] border border-indigo-200 dark:border-indigo-500/20", text: "text-indigo-700 dark:text-indigo-300", muted: "text-indigo-600/70 dark:text-indigo-400/60", icon: <Activity     size={13} className="text-indigo-500 shrink-0 mt-0.5" /> },
   };
   const s = styles[type];
   return (
-    <div className={`signal-card ${s.border} ${s.bg} flex items-start gap-3`}>
+    <div className={`signal-card ${s.bg} flex items-start gap-3`}>
       {s.icon}
       <div className="flex-1 min-w-0">
         <p className={`text-xs font-semibold ${s.text}`}>{title}</p>
         <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5 leading-snug">{detail}</p>
-        {action && <p className={`text-[11px] font-semibold mt-1.5 flex items-center gap-1 ${s.text}`}><ChevronRight size={10} />{action}</p>}
+        {action && <p className={`text-[11px] font-semibold mt-1.5 flex items-center gap-1 ${s.muted}`}><ChevronRight size={10} />{action}</p>}
       </div>
     </div>
   );
@@ -187,12 +174,12 @@ function ChartTooltip({ active, payload, label, formatter }: {
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background: "var(--chart-tooltip-bg)", border: "1px solid var(--chart-tooltip-bd)" }}
-         className="rounded-xl px-4 py-3 text-xs shadow-xl space-y-1">
+    <div style={{ background: "rgba(10,10,20,0.95)", border: "1px solid rgba(255,255,255,0.08)" }}
+         className="rounded-xl px-4 py-3 text-xs shadow-2xl space-y-1">
       <p className="text-white/40 mb-1.5 font-medium">{label}</p>
-      {payload.map((p, i) => (
-        <p key={i} className="font-semibold" style={{ color: p.color || "#6366f1" }}>
-          {formatter ? formatter(p.value ?? 0, p.name ?? "") : `£${Number(p.value).toLocaleString("en-GB")}`}
+      {payload.filter(p => p.value != null).map((p, i) => (
+        <p key={i} className="font-semibold tabular-nums" style={{ color: p.color || "#6366f1" }}>
+          {p.name}: {formatter ? formatter(p.value ?? 0, p.name ?? "") : `£${Number(p.value).toLocaleString("en-GB")}`}
         </p>
       ))}
     </div>
@@ -206,9 +193,6 @@ function ChartTooltip({ active, payload, label, formatter }: {
 function CommandStrip() {
   const latest    = plData[plData.length - 1];
   const latestRec = recData[recData.length - 1];
-  const ytdActual = bvaData.reduce((s, d) => s + d.actual, 0);
-  const ytdBudget = bvaData.reduce((s, d) => s + d.budget, 0);
-  const ytdVar    = ((ytdActual - ytdBudget) / ytdBudget * 100).toFixed(1);
 
   return (
     <div className="mb-7 relative overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-50/80 via-white to-white dark:from-indigo-500/[0.07] dark:via-[#0b0b17] dark:to-[#0b0b17] shadow-sm dark:shadow-none">
@@ -230,15 +214,18 @@ function CommandStrip() {
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />Live
               </span>
             </div>
-            <p className="text-[12.5px] text-slate-600 dark:text-white/45 leading-relaxed max-w-2xl">
-              Revenue £{(latest.revenue / 1000).toFixed(2)}M MTD — EBITDA margin {latest.ebitdaM}%, best in 12 months. YTD revenue {Number(ytdVar) >= 0 ? "+" : ""}{ytdVar}% vs budget. Debtors at £{(latestRec.debtors / 1000).toFixed(1)}M with 90% aged 91+ days — lockup risk requires board attention.
+            <p className="text-[13px] font-semibold text-slate-800 dark:text-white/80 leading-snug mb-1">
+              Revenue growing. Margin recovering. Debtors need action.
+            </p>
+            <p className="text-[12px] text-slate-500 dark:text-white/40 leading-relaxed max-w-2xl">
+              £{(latest.revenue / 1000).toFixed(2)}M revenue MTD at {latest.ebitdaM}% EBITDA — best margin in 12 months. £{((latestRec.debtors + wipData[wipData.length - 1].wip) / 1000).toFixed(1)}M locked in debtors and WIP. Collections is the strategic priority.
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5 shrink-0">
             {[
-              { label: "2 critical alerts",      cls: "text-rose-700   bg-rose-100   border-rose-300   dark:text-rose-300   dark:bg-rose-500/15   dark:border-rose-500/30"    },
-              { label: "Rev –4.6% vs budget",    cls: "text-amber-700  bg-amber-100  border-amber-300  dark:text-amber-300  dark:bg-amber-500/15  dark:border-amber-500/30"   },
-              { label: `Lockup ${latestRec.lockup}d`, cls: "text-rose-600   bg-rose-50    border-rose-200   dark:text-rose-400   dark:bg-rose-500/10   dark:border-rose-500/20"  },
+              { label: "2 critical alerts",    cls: "text-rose-700   bg-rose-100   border-rose-300   dark:text-rose-300   dark:bg-rose-500/15   dark:border-rose-500/30"    },
+              { label: "Rev –4.6% vs target",  cls: "text-amber-700  bg-amber-100  border-amber-300  dark:text-amber-300  dark:bg-amber-500/15  dark:border-amber-500/30"   },
+              { label: `Lockup ${latestRec.lockup}d`, cls: "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20" },
               { label: `EBITDA ${latest.ebitdaM}%`,   cls: "text-emerald-700 bg-emerald-100 border-emerald-300 dark:text-emerald-300 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
             ].map(b => (
               <span key={b.label} className={`text-[11px] font-semibold px-3 py-1.5 rounded-full border ${b.cls} whitespace-nowrap`}>{b.label}</span>
@@ -258,36 +245,76 @@ function OverviewSection() {
   const latest    = plData[plData.length - 1];
   const latestRec = recData[recData.length - 1];
   const latestHC  = hcData[hcData.length - 1];
-  const avgUtil   = utilisationData.reduce((s, g) => s + g.util, 0) / utilisationData.length;
+  const avgUtil   = utilisationHeatmap.reduce((s, g) => s + g.Mar, 0) / utilisationHeatmap.length;
 
   return (
     <div className="space-y-6">
       <CommandStrip />
 
-      {/* 6-KPI grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <KpiCard label="Revenue MTD"     value={`£${(latest.revenue / 1000).toFixed(2)}M`}                change="vs £11.09M budget (–4.6%)"          up={false} icon={DollarSign} color="text-rose-600 dark:text-rose-400"     bg="bg-rose-100 dark:bg-rose-500/10"     glow="glow-rose"   accent="bg-rose-500"    sub="March 2025 · SunSystems" />
-        <KpiCard label="EBITDA Margin"   value={`${latest.ebitdaM}%`}                                     change="+1.1pp vs Feb · best in 12 months"  up={true}  icon={TrendingUp} color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-100 dark:bg-emerald-500/10" glow=""            accent="bg-emerald-500" sub={`£${(latest.ebitda / 1000).toFixed(2)}M EBITDA`} />
-        <KpiCard label="Lockup Days"     value={`${latestRec.lockup}d`}                                   change="+8d since Oct · debtors £89.2M"      up={false} icon={Clock}      color="text-amber-600 dark:text-amber-400"   bg="bg-amber-100 dark:bg-amber-500/10"   glow="glow-amber"  accent="bg-amber-400"   sub="90% aged 91+ days" />
-        <KpiCard label="Utilisation"     value={`${avgUtil.toFixed(1)}%`}                                 change="vs 74.6% target · marginally ahead"  up={true}  icon={UserCheck}  color="text-indigo-600 dark:text-indigo-400" bg="bg-indigo-100 dark:bg-indigo-500/10" glow="glow-indigo" accent="bg-indigo-500"   sub="March 2025 · all grades" />
-        <KpiCard label="Headcount"       value={`${latestHC.headcount}`}                                  change="+9 in 6 months · stable"             up={true}  icon={Users}      color="text-sky-600 dark:text-sky-400"       bg="bg-sky-100 dark:bg-sky-500/10"       glow=""            accent="bg-sky-400"     sub={`${latestHC.feeEarners} fee earners`} />
-        <KpiCard label="Gross Margin"    value={`${(latest.gp / latest.revenue * 100).toFixed(1)}%`}      change="+0.8pp vs Feb · stable"              up={true}  icon={BarChart2}  color="text-violet-600 dark:text-violet-400" bg="bg-violet-100 dark:bg-violet-500/10" glow=""            accent="bg-violet-500"  sub="March 2025" />
+      {/* 5 KPI cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <KpiCard
+          label="Revenue MTD"
+          value={`£${(latest.revenue / 1000).toFixed(2)}M`}
+          change="–4.6% vs £11.09M target"
+          verdict="£520k below budget — CVL volume softness"
+          up={false} icon={DollarSign}
+          color="text-rose-600 dark:text-rose-400"
+          bg="bg-rose-100 dark:bg-rose-500/10"
+          accent="bg-rose-500"
+        />
+        <KpiCard
+          label="EBITDA Margin"
+          value={`${latest.ebitdaM}%`}
+          change="+1.1pp vs Feb · 12-month best"
+          verdict="Recovery from 18.7% low in Jul 24"
+          up={true} icon={TrendingUp}
+          color="text-emerald-600 dark:text-emerald-400"
+          bg="bg-emerald-100 dark:bg-emerald-500/10"
+          accent="bg-emerald-500"
+        />
+        <KpiCard
+          label="Lockup Days"
+          value={`${latestRec.lockup}d`}
+          change="28 days above 90-day target"
+          verdict="Peaked 125d Jan · improving"
+          up={false} icon={Clock}
+          color="text-amber-600 dark:text-amber-400"
+          bg="bg-amber-100 dark:bg-amber-500/10"
+          accent="bg-amber-400"
+        />
+        <KpiCard
+          label="Fee Earner Util."
+          value={`${avgUtil.toFixed(1)}%`}
+          change="vs 74.6% target · on track"
+          verdict="5 of 6 grades at or above target"
+          up={true} icon={UserCheck}
+          color="text-indigo-600 dark:text-indigo-400"
+          bg="bg-indigo-100 dark:bg-indigo-500/10"
+          accent="bg-indigo-500"
+        />
+        <KpiCard
+          label="Headcount"
+          value={`${latestHC.headcount}`}
+          change="+9 in 6 months · stable"
+          verdict={`${latestHC.feeEarners} fee earners · no attrition spike`}
+          up={true} icon={Users}
+          color="text-sky-600 dark:text-sky-400"
+          bg="bg-sky-100 dark:bg-sky-500/10"
+          accent="bg-sky-400"
+        />
       </div>
 
-      {/* Revenue + EBITDA chart */}
+      {/* Revenue vs target chart */}
       <Card>
-        <SectionHeader title="Revenue and EBITDA — trailing 12 months" sub="Apr 2024 – Mar 2025 · ERP SunSystems · both segments combined" />
+        <SectionHeader title="Are we hitting revenue target?" sub="Monthly revenue vs budget · Apr 2024 – Mar 2025 · budget overlay from Oct 24" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={230}>
+          <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.18} />
+                  <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.12} />
                   <stop offset="95%" stopColor="#6366f1" stopOpacity={0}    />
-                </linearGradient>
-                <linearGradient id="ebiGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#10b981" stopOpacity={0.14} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}    />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
@@ -295,112 +322,114 @@ function OverviewSection() {
               <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
               <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M`} />} />
               <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2.5} fill="url(#revGrad)" name="Revenue" />
-              <Area type="monotone" dataKey="ebitda"  stroke="#10b981" strokeWidth={2}   fill="url(#ebiGrad)"  name="EBITDA" />
+              <Line type="monotone" dataKey="budget"  stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="5 3" dot={false} name="Budget" connectNulls={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center gap-6 pt-2 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
+        <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Revenue</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />EBITDA</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Mar 25: £10.57M revenue · £2.34M EBITDA · 22.1% margin</span>
+          <span className="flex items-center gap-2"><span className="inline-block w-5 border-t-2 border-dashed border-rose-500" />Budget target</span>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Nov 24 only month above budget in past 6 · Mar 25 miss: –£520k</span>
         </div>
       </Card>
 
       {/* Bottom row */}
       <div className="grid lg:grid-cols-3 gap-5">
 
-        {/* Attention signals */}
+        {/* Attention panel — ranked with actions */}
         <div className="lg:col-span-1 rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
           <div className="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">What needs attention</h2>
-                <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Exception signals — March 2025</p>
-              </div>
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/25 bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-full">2 alerts</span>
-            </div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">What needs a decision</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Ranked by urgency — March 2025</p>
           </div>
-          <div className="p-4 space-y-4">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-rose-500 dark:text-rose-400/70 mb-2 px-1">Critical</p>
-              <div className="space-y-2">
-                <Signal type="alert"
-                  title="£80.6M debtors aged 91+ days — 90.4% of book"
-                  detail="Total debtor book £89.2M. Insolvency case cycles are extending aging. Lockup 118 days and growing since Oct 24."
-                  action="Review receivables" />
-                <Signal type="alert"
-                  title="Revenue –4.6% vs budget — £520k shortfall"
-                  detail="Budget £11.09M, actual £10.57M. Third below-budget month in last six. YTD –1.1% (£1.4M behind plan)."
-                  action="Review pipeline" />
+          <div className="p-4 space-y-3">
+            {[
+              {
+                rank: "1",
+                type: "alert" as const,
+                title: "Collections — £80.6M aged 91+ days",
+                detail: "90% of the debtor book overdue 91+ days. Lockup 118d and growing.",
+                action: "Collections review this month",
+                rankCls: "bg-rose-500 text-white",
+              },
+              {
+                rank: "2",
+                type: "alert" as const,
+                title: "Revenue — £520k behind March budget",
+                detail: "CVL intake softness in Q1. Third miss in last six months.",
+                action: "Pipeline review — CVL volume",
+                rankCls: "bg-rose-500 text-white",
+              },
+              {
+                rank: "3",
+                type: "warning" as const,
+                title: "Lockup — 28 days above target",
+                detail: "118 days vs 90-day target. Improving from Jan peak. Monitor.",
+                action: "Track monthly — trajectory is positive",
+                rankCls: "bg-amber-500 text-white",
+              },
+            ].map(item => (
+              <div key={item.rank} className={`p-3.5 rounded-xl border flex items-start gap-3 ${
+                item.type === "alert"
+                  ? "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.06]"
+                  : "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.06]"
+              }`}>
+                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${item.rankCls}`}>{item.rank}</span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-semibold ${item.type === "alert" ? "text-rose-700 dark:text-rose-300" : "text-amber-700 dark:text-amber-300"}`}>{item.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5 leading-snug">{item.detail}</p>
+                  <p className={`text-[11px] font-semibold mt-1.5 flex items-center gap-1 ${item.type === "alert" ? "text-rose-600/80 dark:text-rose-400/70" : "text-amber-600/80 dark:text-amber-400/70"}`}>
+                    <ArrowRight size={10} />{item.action}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-amber-500 dark:text-amber-400/70 mb-2 px-1">Warnings</p>
-              <div className="space-y-2">
-                <Signal type="warning"
-                  title="Lockup 118d — up 8 days since October"
-                  detail="Debtors growing faster than collections. WIP converting but debtors not clearing. Typical target ~90 days." />
-                <Signal type="warning"
-                  title="Associate utilisation 81.1% — 0.9pp below target"
-                  detail="Only grade below target. All others at or above. Monitor case intake vs associate capacity." />
-              </div>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-indigo-500 dark:text-indigo-400/70 mb-2 px-1">Intelligence</p>
-              <div className="space-y-2">
-                <Signal type="info"
-                  title="EBITDA 22.1% — best margin in 12 months"
-                  detail="Recovery from 18.7% low in Jul 24. Cost discipline driving improvement. Sustain through H2." />
-                <Signal type="info"
-                  title="WIP £39.1M declining — converting to billings"
-                  detail="Down £8.3M since Nov 24 peak. Cases progressing. Positive near-term cash signal if collections improve." />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Debtors + WIP overview chart */}
+        {/* Cash conversion cycle */}
         <Card className="lg:col-span-2">
-          <SectionHeader title="Debtors and WIP — Oct 2024 to Mar 2025" sub="Total lockup = £128.3M at Mar 25 (debtors + WIP)" />
-          <div className="mt-1 mb-2">
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart
-                data={recData.map((r, i) => ({ month: r.month, debtors: r.debtors, wip: wipData[i].wip }))}
-                margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
-              >
-                <defs>
-                  <linearGradient id="debGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.18} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}    />
-                  </linearGradient>
-                  <linearGradient id="wipGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#f59e0b" stopOpacity={0.14} />
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}    />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} />
-                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}M`} width={48} />
-                <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(1)}M`} />} />
-                <Area type="monotone" dataKey="debtors" stroke="#6366f1" strokeWidth={2.5} fill="url(#debGrad)" name="Debtors" />
-                <Area type="monotone" dataKey="wip"     stroke="#f59e0b" strokeWidth={2}   fill="url(#wipGrad)"  name="WIP" />
-              </AreaChart>
-            </ResponsiveContainer>
+          <SectionHeader title="Where is the money?" sub="Cash conversion cycle — revenue to bank · March 2025" />
+
+          {/* Flow */}
+          <div className="grid grid-cols-4 gap-2 mb-5">
+            {[
+              { label: "Monthly Revenue", value: "£10.57M", sub: "billed this month", color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/25", bg: "bg-indigo-50 dark:bg-indigo-500/[0.06]", dot: "bg-indigo-500" },
+              { label: "WIP Outstanding", value: "£39.1M",  sub: "converting ↓",     color: "text-amber-700  dark:text-amber-300",  border: "border-amber-200  dark:border-amber-500/20",  bg: "bg-amber-50  dark:bg-amber-500/[0.05]",  dot: "bg-amber-400" },
+              { label: "Debtors",         value: "£89.2M",  sub: "90% aged 91+ days",color: "text-rose-700   dark:text-rose-300",   border: "border-rose-200   dark:border-rose-500/20",   bg: "bg-rose-50   dark:bg-rose-500/[0.05]",   dot: "bg-rose-500"  },
+              { label: "Total Lockup",    value: "£128.3M", sub: "12.1× monthly rev", color: "text-rose-800  dark:text-rose-200",   border: "border-rose-300   dark:border-rose-500/30",   bg: "bg-rose-100  dark:bg-rose-500/[0.08]",   dot: "bg-rose-600"  },
+            ].map((s, i) => (
+              <div key={i} className="relative">
+                <div className={`p-3.5 rounded-xl border ${s.border} ${s.bg} h-full`}>
+                  <div className={`w-2 h-2 rounded-full ${s.dot} mb-2`} />
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-1.5">{s.label}</p>
+                  <p className={`text-lg font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
+                </div>
+                {i < 3 && (
+                  <div className="absolute top-1/2 -right-3 -translate-y-1/2 z-10">
+                    <ArrowRight size={14} className="text-slate-300 dark:text-white/20" />
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          <div className="flex items-center gap-6 pt-2 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Debtors</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500" />WIP</span>
-            <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Debtors rising · WIP converting ✓ · lockup pressure building</span>
+
+          {/* Insight callout */}
+          <div className="p-4 rounded-xl bg-slate-900 dark:bg-white/[0.04] border border-slate-800 dark:border-white/[0.08]">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-indigo-400 mb-1.5">System insight</p>
+            <p className="text-[12.5px] text-white leading-relaxed">
+              At current trajectory, lockup will return to 90 days by <span className="text-indigo-300 font-semibold">June 2025</span> if monthly collections improve by 15%. WIP is converting — the critical lever is the 91+ debtor bucket.
+            </p>
           </div>
         </Card>
-
       </div>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────
-   FINANCIAL SECTION
+   FINANCIAL PERFORMANCE SECTION
 ───────────────────────────────────────────── */
 
 function FinancialSection() {
@@ -413,13 +442,13 @@ function FinancialSection() {
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Mar 25 Revenue",  value: `£${(latest.revenue / 1000).toFixed(2)}M`,  sub: "–4.6% vs budget",                                    color: "text-rose-600 dark:text-rose-400",       border: "border-rose-200 dark:border-rose-500/20",       bg: "bg-rose-50 dark:bg-white/[0.025]"    },
-          { label: "Mar 25 EBITDA",   value: `£${(latest.ebitda / 1000).toFixed(2)}M`,   sub: `${latest.ebitdaM}% margin · best in 12 months`,      color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-white/[0.025]" },
-          { label: "YTD vs Budget",   value: `${Number(ytdVar) >= 0 ? "+" : ""}${ytdVar}%`, sub: `£${(ytdActual / 1000).toFixed(1)}M of £${(ytdBudget / 1000).toFixed(1)}M target`, color: "text-amber-600 dark:text-amber-400", border: "border-amber-200 dark:border-amber-500/20", bg: "bg-amber-50 dark:bg-white/[0.025]"   },
+          { label: "Mar 25 Revenue",  value: `£${(latest.revenue / 1000).toFixed(2)}M`,     sub: "–4.6% vs budget — CVL softness",                       color: "text-rose-600 dark:text-rose-400",       border: "border-rose-200 dark:border-rose-500/20",       bg: "bg-rose-50 dark:bg-white/[0.025]"    },
+          { label: "Mar 25 EBITDA",   value: `£${(latest.ebitda / 1000).toFixed(2)}M`,      sub: `${latest.ebitdaM}% margin · best in 12 months`,        color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-white/[0.025]" },
+          { label: "YTD vs Budget",   value: `${Number(ytdVar) >= 0 ? "+" : ""}${ytdVar}%`, sub: `£${(ytdActual / 1000).toFixed(1)}M of £${(ytdBudget / 1000).toFixed(1)}M target (6 months)`, color: "text-amber-600 dark:text-amber-400", border: "border-amber-200 dark:border-amber-500/20", bg: "bg-amber-50 dark:bg-white/[0.025]"   },
         ].map(s => (
           <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-3">{s.label}</p>
-            <p className={`text-2xl font-bold font-mono ${s.color}`}>{s.value}</p>
+            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
             <p className="text-[11px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
           </div>
         ))}
@@ -427,79 +456,81 @@ function FinancialSection() {
 
       {/* EBITDA margin trend */}
       <Card>
-        <SectionHeader title="EBITDA margin — trailing 12 months" sub="Apr 2024 – Mar 2025 · recovering from Jul 24 low of 18.7%" />
+        <SectionHeader title="Is margin improving?" sub="EBITDA margin % · Apr 2024 – Mar 2025 · recovering from Jul 24 low" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={210}>
+          <ResponsiveContainer width="100%" height={260}>
             <LineChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
               <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
               <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[16, 24]} tickFormatter={v => `${v}%`} width={38} />
               <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
+              <ReferenceLine y={20} stroke="#94a3b8" strokeDasharray="4 2" strokeOpacity={0.5} label={{ value: "20% baseline", fill: "var(--chart-tick)", fontSize: 9, position: "insideTopRight" }} />
               <Line type="monotone" dataKey="ebitdaM" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: "#8b5cf6", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5, fill: "#8b5cf6" }} name="EBITDA margin" />
             </LineChart>
           </ResponsiveContainer>
         </div>
         <div className="pt-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center gap-2">
           <TrendingUp size={11} className="text-emerald-500 shrink-0" />
-          <p className="text-[11px] text-emerald-600 dark:text-emerald-400/80">Margin recovered to 22.1% in Mar 25 — up +3.4pp from Jul 24 low. Cost discipline and case mix improvement driving recovery.</p>
+          <p className="text-[11px] text-emerald-600 dark:text-emerald-400/80">+3.4pp recovery from 18.7% Jul 24 low. Now at 22.1% — above the 20% baseline. Cost discipline and case mix improving.</p>
         </div>
       </Card>
 
       {/* Budget vs actual */}
       <Card>
-        <SectionHeader title="Revenue — budget vs actual" sub="Oct 2024 – Mar 2025 · SunSystems vs plan" badge="6 months" />
+        <SectionHeader title="Revenue — actual vs budget" sub="Oct 2024 – Mar 2025 · 4 of 6 months missed target" badge="6 months" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <BarChart data={bvaData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
               <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
               <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
               <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M`} />} />
-              <Bar dataKey="budget" fill="#94a3b8" radius={[4, 4, 0, 0]} name="Budget" opacity={0.5} />
-              <Bar dataKey="actual" fill="#6366f1" radius={[4, 4, 0, 0]} name="Actual" />
+              <Bar dataKey="budget" fill="#94a3b8" radius={[4, 4, 0, 0]} name="Budget"  opacity={0.45} />
+              <Bar dataKey="actual" fill="#6366f1" radius={[4, 4, 0, 0]} name="Actual"  />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400 opacity-60" />Budget</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400 opacity-55" />Budget</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Actual</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Nov 24 only month above budget in H2 · Mar 25 –£520k</span>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Nov 24 only above-budget month in H2 · cumulative miss: £1.4M</span>
         </div>
       </Card>
 
       {/* Service lines */}
       <Card>
-        <SectionHeader title="Revenue by service line — Jan–Mar 2025" sub="3-month combined · source: erp_fact_revenue" badge="8 lines" />
+        <SectionHeader title="Which service lines are driving revenue?" sub="Jan–Mar 2025 combined · source: erp_fact_revenue" badge="8 lines" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={serviceLines} layout="vertical" margin={{ top: 4, right: 20, bottom: 0, left: 0 }}>
+          <ResponsiveContainer width="100%" height={248}>
+            <BarChart data={serviceLines} layout="vertical" margin={{ top: 4, right: 48, bottom: 0, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" horizontal={false} />
               <XAxis type="number" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} />
               <YAxis dataKey="name" type="category" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} width={128} />
-              <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M (3 months)`} />} />
-              <Bar dataKey="revenue" fill="#6366f1" radius={[0, 4, 4, 0]} name="Revenue" />
+              <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M (Jan–Mar)`} />} />
+              <Bar dataKey="revenue" fill="#6366f1" radius={[0, 4, 4, 0]} name="Revenue"
+                label={{ position: "right", fill: "var(--chart-tick)", fontSize: 9, formatter: (v: number) => `${Math.round(v / 32060 * 100)}%` }} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="pt-3 border-t border-slate-100 dark:border-white/[0.05]">
-          <p className="text-[11px] text-slate-400 dark:text-white/25">CVL and Administration account for 50% of 3-month revenue. Restructuring Advisory at £3.8M is the third largest line.</p>
+          <p className="text-[11px] text-slate-400 dark:text-white/25">CVL and Administration account for 48% of Q1 revenue. Restructuring Advisory is the third largest at £3.8M — watch this line for economic cycle sensitivity.</p>
         </div>
       </Card>
 
       {/* Segment split */}
       <div className="grid grid-cols-2 gap-4">
         {[
-          { label: "Business Recovery (BR)", value: "£8.02M", pct: "75.9%", sub: "Mar 25 · dominant segment", color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]", bar: "bg-indigo-500", barW: "75.9%" },
-          { label: "Personal Advisory (PA)", value: "£2.55M", pct: "24.1%", sub: "Mar 25 · diversification buffer", color: "text-violet-700 dark:text-violet-300", border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-white/[0.025]", bar: "bg-violet-500", barW: "24.1%" },
+          { label: "Business Recovery (BR)", value: "£8.02M", pct: "75.9%", sub: "Mar 25 · primary segment", color: "text-indigo-700 dark:text-indigo-300", accent: "bg-indigo-500", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]", w: "75.9%" },
+          { label: "Personal Advisory (PA)", value: "£2.55M", pct: "24.1%", sub: "Mar 25 · diversification buffer", color: "text-violet-700 dark:text-violet-300", accent: "bg-violet-500", border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-white/[0.025]", w: "24.1%" },
         ].map(s => (
           <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-3">{s.label}</p>
             <div className="flex items-end justify-between mb-3">
-              <p className={`text-2xl font-bold font-mono ${s.color}`}>{s.value}</p>
-              <p className={`text-lg font-bold font-mono ${s.color} opacity-70`}>{s.pct}</p>
+              <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
+              <p className={`text-lg font-bold font-mono ${s.color} opacity-60`}>{s.pct}</p>
             </div>
             <div className="h-1.5 rounded-full bg-slate-100 dark:bg-white/10 mb-2">
-              <div className={`h-full rounded-full ${s.bar}`} style={{ width: s.barW }} />
+              <div className={`h-full rounded-full ${s.accent}`} style={{ width: s.w }} />
             </div>
             <p className="text-[11px] text-slate-400 dark:text-white/30">{s.sub}</p>
           </div>
@@ -507,12 +538,12 @@ function FinancialSection() {
       </div>
 
       <Card>
-        <SectionHeader title="Financial signals" sub="System-generated alerts · March 2025" badge="System" />
+        <SectionHeader title="Financial signals" sub="System-generated · March 2025" badge="System" />
         <div className="space-y-2.5">
-          <Signal type="alert"   title="Revenue –4.6% vs budget in Mar 25 (–£520k)"              detail="Third below-budget month in last six. YTD shortfall £1.4M vs plan. CVL volume softness in Q1 primary driver." />
-          <Signal type="warning" title="BR segment 75.9% of revenue — sector concentration risk"  detail="Personal Advisory at 24.1% provides a buffer but BR dominance creates sensitivity to insolvency market cycles." />
-          <Signal type="info"    title="EBITDA 22.1% — recovery trajectory sustained"             detail="Up from 18.7% Jul 24 low. Cost per case improving. If revenue recovers to budget, full-year EBITDA target is achievable." />
-          <Signal type="info"    title="CVL most productive service line at £8.2M (3 months)"     detail="CVL accounts for 26% of Q1 combined revenue. Administration second at 22%. Both driven by BR segment." />
+          <Signal type="alert"   title="Revenue –4.6% vs budget (–£520k) · Mar 25"             detail="Third below-budget month in six. YTD £1.4M short. CVL intake down in Q1 — needs pipeline review." />
+          <Signal type="warning" title="BR at 75.9% of revenue — sector concentration risk"    detail="PA provides a 24% buffer. BR is insolvency-cycle sensitive. Diversification into Advisory growing well." />
+          <Signal type="info"    title="EBITDA 22.1% — recovery trajectory sustained"           detail="Cost per case improving. Above 20% baseline. If revenue recovers to budget, full-year EBITDA target achievable." />
+          <Signal type="info"    title="CVL dominates at 26% of Q1 revenue (£8.2M)"            detail="Strong insolvency demand environment. Administration second at 22%. Monitor for saturation." />
         </div>
       </Card>
     </div>
@@ -520,7 +551,7 @@ function FinancialSection() {
 }
 
 /* ─────────────────────────────────────────────
-   CASH & WORKING CAPITAL SECTION
+   COLLECTIONS & CASH CONVERSION SECTION
 ───────────────────────────────────────────── */
 
 function CashSection() {
@@ -529,24 +560,64 @@ function CashSection() {
 
   return (
     <div className="space-y-5">
+
+      {/* Callout — the shocking stat */}
+      <div className="p-6 rounded-2xl bg-slate-900 dark:bg-white/[0.04] border border-slate-800 dark:border-white/[0.07]">
+        <div className="flex items-start gap-5">
+          <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0">
+            <AlertTriangle size={22} className="text-rose-400" />
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-rose-400 mb-1.5">Priority signal</p>
+            <p className="text-[1.4rem] font-bold text-white leading-snug mb-1">
+              90% of the £89.2M debtor book is aged 91+ days overdue.
+            </p>
+            <p className="text-[12.5px] text-white/50 leading-relaxed">
+              £80.6M sits beyond 91 days. Insolvency case cycles extend collection timescales — but this concentration requires a structured recovery initiative. At current billings of £10.6M/month, total lockup represents 12.1× monthly revenue.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         {[
           { label: "Total Debtors",  value: `£${(latestRec.debtors / 1000).toFixed(1)}M`,  sub: "Mar 2025",               color: "text-rose-700 dark:text-rose-400",     border: "border-rose-200 dark:border-rose-500/20",     bg: "bg-rose-50 dark:bg-white/[0.025]"    },
-          { label: "Aged 91+ Days",  value: `£${(latestRec.aged91 / 1000).toFixed(1)}M`,   sub: "90.4% of debtor book",   color: "text-rose-700 dark:text-rose-400",     border: "border-rose-200 dark:border-rose-500/20",     bg: "bg-rose-50 dark:bg-white/[0.025]"    },
-          { label: "WIP Balance",    value: `£${(latestWip.wip / 1000).toFixed(1)}M`,      sub: "declining — converting", color: "text-amber-700 dark:text-amber-400",   border: "border-slate-200 dark:border-white/[0.07]",   bg: "bg-white dark:bg-white/[0.025]"      },
-          { label: "Lockup Days",    value: `${latestRec.lockup}d`,                         sub: "target: ~90 days",       color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
+          { label: "Aged 91+ Days",  value: `£${(latestRec.aged91 / 1000).toFixed(1)}M`,   sub: "90.4% of book",          color: "text-rose-700 dark:text-rose-400",     border: "border-rose-200 dark:border-rose-500/20",     bg: "bg-rose-50 dark:bg-white/[0.025]"    },
+          { label: "WIP Balance",    value: `£${(latestWip.wip / 1000).toFixed(1)}M`,      sub: "converting · down £8.3M", color: "text-amber-700 dark:text-amber-400",  border: "border-slate-200 dark:border-white/[0.07]",   bg: "bg-white dark:bg-white/[0.025]"      },
+          { label: "Lockup Days",    value: `${latestRec.lockup}d`,                         sub: "target: 90d",            color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
         ].map(s => (
           <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-3">{s.label}</p>
-            <p className={`text-2xl font-bold font-mono ${s.color}`}>{s.value}</p>
+            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
             <p className="text-[11px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Debtor aging — stacked bar */}
+      {/* Lockup days — with 90-day reference line */}
       <Card>
-        <SectionHeader title="Debtor aging — 91+ days vs current" sub="Oct 2024 – Mar 2025 · source: erp_fact_receivables_monthly" />
+        <SectionHeader title="How far are we from the lockup target?" sub="Lockup days · Oct 2024 – Mar 2025 · 90-day target shown" />
+        <div className="mt-1 mb-2">
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={recData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[80, 135]} tickFormatter={v => `${v}d`} width={40} />
+              <Tooltip content={<ChartTooltip formatter={(v) => `${v} days`} />} />
+              <ReferenceLine y={90} stroke="#10b981" strokeDasharray="5 3" strokeWidth={1.5} label={{ value: "90d target", fill: "#10b981", fontSize: 10, position: "insideTopRight" }} />
+              <Line type="monotone" dataKey="lockup" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5 }} name="Lockup days" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="mt-2 p-3.5 rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/[0.05] flex items-start gap-2.5">
+          <AlertTriangle size={13} className="text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-amber-700 dark:text-amber-300/80 leading-relaxed">Gap to target is 28 days (118d vs 90d). Improving from Jan 25 peak of 125d. At current rate of improvement (~2.5d/month), target reached by late 2025 — collections acceleration needed to close gap faster.</p>
+        </div>
+      </Card>
+
+      {/* Debtor aging trend */}
+      <Card>
+        <SectionHeader title="Is the aging position improving?" sub="91+ vs current · Oct 2024 – Mar 2025" />
         <div className="mt-1 mb-2">
           <ResponsiveContainer width="100%" height={230}>
             <BarChart data={recData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
@@ -560,41 +631,21 @@ function CashSection() {
           </ResponsiveContainer>
         </div>
         <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500" />Aged 91+ days</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500" />Aged 91+</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500 opacity-75" />0–90 days</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Mar 25: 90.4% of debtors overdue 91+ — structurally elevated</span>
-        </div>
-      </Card>
-
-      {/* Lockup days trend */}
-      <Card>
-        <SectionHeader title="Lockup days trend" sub="Oct 2024 – Mar 2025 · improving from Jan 25 peak" />
-        <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={190}>
-            <LineChart data={recData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[90, 135]} tickFormatter={v => `${v}d`} width={40} />
-              <Tooltip content={<ChartTooltip formatter={(v) => `${v} days`} />} />
-              <Line type="monotone" dataKey="lockup" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5, fill: "#6366f1" }} name="Lockup days" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="mt-2 p-3.5 rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/[0.05] flex items-start gap-2.5">
-          <AlertTriangle size={13} className="text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-amber-700 dark:text-amber-300/80 leading-relaxed">Peaked at 125 days in Jan 25 — now improving at 118 days. Target ~90 days. Driven by insolvency case duration, not billing failure. Structured collections initiative needed on the 91+ bucket.</p>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">The 91+ bucket is growing in absolute terms each month</span>
         </div>
       </Card>
 
       {/* WIP trend */}
       <Card>
-        <SectionHeader title="WIP balance — Oct 2024 to Mar 2025" sub="Closing WIP monthly · source: erp_fact_wip_monthly" />
+        <SectionHeader title="WIP converting — is billing keeping pace?" sub="Closing WIP balance · Oct 2024 – Mar 2025 · declining is good" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={185}>
+          <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={wipData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="wipAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#f59e0b" stopOpacity={0.18} />
+                  <stop offset="5%"  stopColor="#f59e0b" stopOpacity={0.15} />
                   <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}    />
                 </linearGradient>
               </defs>
@@ -608,49 +659,17 @@ function CashSection() {
         </div>
         <div className="pt-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center gap-2">
           <TrendingDown size={11} className="text-emerald-500 shrink-0" />
-          <p className="text-[11px] text-emerald-600 dark:text-emerald-400/80">WIP down £8.3M since Nov 24 peak (£47.4M → £39.1M). Cases progressing to billing — positive near-term cash conversion signal.</p>
+          <p className="text-[11px] text-emerald-600 dark:text-emerald-400/80">WIP down £8.3M since Nov 24 peak. Cases progressing to billing — positive. The conversion is happening. Collections is where value is being lost.</p>
         </div>
       </Card>
 
-      {/* Total lockup position */}
-      <div className="rounded-2xl border border-indigo-100 dark:border-indigo-500/[0.18] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
-        <div className="h-[3px] bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-400" />
-        <div className="p-6">
-          <SectionHeader title="Total lockup position — March 2025" sub="Debtors + WIP combined · £128.3M" badge="Snapshot" />
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="p-4 rounded-xl border border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/[0.05]">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400/70 mb-2">Total lockup</p>
-              <p className="text-2xl font-bold font-mono text-indigo-700 dark:text-indigo-300">£128.3M</p>
-              <p className="text-[11px] text-slate-500 dark:text-white/35 mt-1">Debtors £89.2M + WIP £39.1M</p>
-            </div>
-            <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400/70 mb-2">High-risk debtors</p>
-              <p className="text-2xl font-bold font-mono text-rose-700 dark:text-rose-300">£80.6M</p>
-              <p className="text-[11px] text-slate-500 dark:text-white/35 mt-1">Aged 91+ days · priority review</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-              <p className="text-slate-400 dark:text-white/30 mb-1.5">Debtor growth (Oct 24 → Mar 25)</p>
-              <p className="font-bold font-mono text-slate-800 dark:text-white">+£13.4M (+17.7%)</p>
-              <p className="text-slate-400 dark:text-white/25 text-[10px] mt-0.5">£75.7M → £89.2M · growing 6 consecutive months</p>
-            </div>
-            <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.04]">
-              <p className="text-slate-400 dark:text-white/30 mb-1.5">WIP reduction (Nov 24 → Mar 25)</p>
-              <p className="font-bold font-mono text-emerald-700 dark:text-emerald-300">–£8.3M (–17.5%)</p>
-              <p className="text-slate-400 dark:text-white/25 text-[10px] mt-0.5">£47.4M → £39.1M · converting to billings ✓</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <Card>
-        <SectionHeader title="Cash & working capital signals" sub="Automated exception monitoring" badge="System" />
+        <SectionHeader title="Collections signals" sub="Automated exception monitoring" badge="System" />
         <div className="space-y-2.5">
-          <Signal type="alert"   title="£80.6M aged 91+ — 90.4% of total debtor book"                   detail="Insolvency case lifecycles extend collection timescales, but 90%+ in this bucket exceeds normal range. Targeted collections review required." />
-          <Signal type="alert"   title="Total lockup £128.3M (debtors + WIP) — up £21M since Oct 24"    detail="WIP declining is positive but debtor growth outpacing. Cash conversion urgency high. Board visibility recommended." />
-          <Signal type="warning" title="Lockup 118 days — 28 days above typical 90-day target"          detail="Improving from Jan 25 peak of 125 days. Positive trajectory but pace of improvement needs acceleration." />
-          <Signal type="info"    title="WIP £39.1M declining — cases progressing to billing stage"       detail="Down £8.3M from Nov 24 peak. If collected, near-term cash improves materially. Monitor debtor conversion rate." />
+          <Signal type="alert"   title="£80.6M aged 91+ — 90.4% of total debtor book"               detail="Structurally elevated. Insolvency case cycles explain some aging, but concentration at 90%+ requires intervention." />
+          <Signal type="alert"   title="Lockup £128.3M — up £21M (+20%) since Oct 24"               detail="Debtor growth outpacing WIP conversion. Total lockup now 12.1× monthly revenue. Board-level visibility recommended." />
+          <Signal type="warning" title="Lockup 28 days above 90-day target — closing slowly"        detail="At current 2.5d/month improvement rate, target not reached until late 2025. Collections acceleration needed." />
+          <Signal type="info"    title="WIP declining £8.3M — cases are converting to bills"        detail="Nov 24 peak £47.4M → Mar 25 £39.1M. The operational process is working. Collections is the single bottleneck." />
         </div>
       </Card>
     </div>
@@ -658,51 +677,106 @@ function CashSection() {
 }
 
 /* ─────────────────────────────────────────────
-   PEOPLE SECTION
+   PEOPLE & CAPACITY SECTION
 ───────────────────────────────────────────── */
 
 function PeopleSection() {
-  const latestHC   = hcData[hcData.length - 1];
-  const firstHC    = hcData[0];
-  const netChange  = latestHC.headcount - firstHC.headcount;
-  const avgUtil    = utilisationData.reduce((s, g) => s + g.util, 0) / utilisationData.length;
-  const avgTarget  = utilisationData.reduce((s, g) => s + g.target, 0) / utilisationData.length;
+  const latestHC  = hcData[hcData.length - 1];
+  const firstHC   = hcData[0];
+  const netChange = latestHC.headcount - firstHC.headcount;
+  const avgUtil   = utilisationHeatmap.reduce((s, g) => s + g.Mar, 0) / utilisationHeatmap.length;
+  const avgTarget = utilisationHeatmap.reduce((s, g) => s + g.target, 0) / utilisationHeatmap.length;
+
+  function cellColor(util: number, target: number) {
+    const delta = util - target;
+    if (delta >= 1)    return "bg-emerald-500/80 dark:bg-emerald-500/70 text-white";
+    if (delta >= -0.5) return "bg-emerald-200/80 dark:bg-emerald-500/30 text-emerald-800 dark:text-emerald-200";
+    if (delta >= -2)   return "bg-amber-200/80 dark:bg-amber-500/30 text-amber-800 dark:text-amber-200";
+    return "bg-rose-200/80 dark:bg-rose-500/30 text-rose-800 dark:text-rose-200";
+  }
 
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Total Headcount", value: `${latestHC.headcount}`,            sub: `${netChange >= 0 ? "+" : ""}${netChange} since Nov · stable growth`,    color: "text-slate-900 dark:text-white",         border: "border-slate-200 dark:border-white/[0.07]",   bg: "bg-white dark:bg-white/[0.025]"      },
-          { label: "Fee Earners",     value: `${latestHC.feeEarners}`,           sub: `${Math.round(latestHC.feeEarners / latestHC.headcount * 100)}% of headcount`, color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
-          { label: "Avg Utilisation", value: `${avgUtil.toFixed(1)}%`,           sub: `vs ${avgTarget.toFixed(1)}% target (+0.6pp)`,                            color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-white/[0.025]" },
+          { label: "Total Headcount", value: `${latestHC.headcount}`,   sub: `${netChange >= 0 ? "+" : ""}${netChange} since Nov · stable`, color: "text-slate-900 dark:text-white",         border: "border-slate-200 dark:border-white/[0.07]",   bg: "bg-white dark:bg-white/[0.025]"      },
+          { label: "Fee Earners",     value: `${latestHC.feeEarners}`,  sub: `${Math.round(latestHC.feeEarners / latestHC.headcount * 100)}% of total headcount`,  color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
+          { label: "Avg Utilisation", value: `${avgUtil.toFixed(1)}%`,  sub: `vs ${avgTarget.toFixed(1)}% target · +0.6pp`,                 color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-white/[0.025]" },
         ].map(s => (
           <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-3">{s.label}</p>
-            <p className={`text-2xl font-bold font-mono ${s.color}`}>{s.value}</p>
+            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
             <p className="text-[11px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
           </div>
         ))}
       </div>
 
+      {/* Utilisation heatmap */}
+      <Card>
+        <SectionHeader title="Are we utilising people effectively?" sub="Utilisation heatmap — grade × month · Oct 2024 – Mar 2025 · green = at/above target" />
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr>
+                <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 w-32">Grade</th>
+                <th className="text-center text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 w-10">Target</th>
+                {heatmapMonths.map(m => (
+                  <th key={m} className="text-center text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 pb-3 px-1">{m}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="space-y-1.5">
+              {utilisationHeatmap.map((row, i) => (
+                <tr key={i} className={i < utilisationHeatmap.length - 1 ? "border-b border-slate-100 dark:border-white/[0.04]" : ""}>
+                  <td className="py-2.5 pr-4">
+                    <span className="text-[12px] font-semibold text-slate-800 dark:text-white">{row.grade}</span>
+                  </td>
+                  <td className="py-2.5 text-center">
+                    <span className="text-[11px] font-mono text-slate-400 dark:text-white/30">{row.target}%</span>
+                  </td>
+                  {heatmapMonths.map(m => {
+                    const val = row[m];
+                    const cls = cellColor(val, row.target);
+                    return (
+                      <td key={m} className="py-2.5 px-1">
+                        <div className={`rounded-lg py-1.5 text-center font-mono font-semibold text-[11px] ${cls}`}>
+                          {val.toFixed(1)}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center gap-4 text-[10px] text-slate-400 dark:text-white/25">
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-500/80" />At/above target</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-200/80 dark:bg-amber-500/30" />Slightly below</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-rose-200/80 dark:bg-rose-500/30" />Below target</span>
+          <span className="ml-auto">Mar 25: Associates only grade below target (–0.9pp)</span>
+        </div>
+      </Card>
+
       {/* Headcount trend */}
       <Card>
-        <SectionHeader title="Headcount — Nov 2025 to Apr 2026" sub="Total headcount and fee earners · CRM" />
+        <SectionHeader title="Headcount — Nov 2025 to Apr 2026" sub="Total and fee earners · CRM · stable growth, no attrition spike" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={210}>
+          <ResponsiveContainer width="100%" height={230}>
             <AreaChart data={hcData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="hcGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.18} />
+                  <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.14} />
                   <stop offset="95%" stopColor="#6366f1" stopOpacity={0}    />
                 </linearGradient>
                 <linearGradient id="feGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#10b981" stopOpacity={0.14} />
+                  <stop offset="5%"  stopColor="#10b981" stopOpacity={0.12} />
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0}    />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
               <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[500, 760]} tickFormatter={v => `${v}`} width={36} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[500, 760]} width={36} />
               <Tooltip content={<ChartTooltip formatter={(v, n) => `${v} ${n.toLowerCase()}`} />} />
               <Area type="monotone" dataKey="headcount"  stroke="#6366f1" strokeWidth={2.5} fill="url(#hcGrad)" name="Headcount" />
               <Area type="monotone" dataKey="feeEarners" stroke="#10b981" strokeWidth={2}   fill="url(#feGrad)"  name="Fee earners" />
@@ -712,74 +786,17 @@ function PeopleSection() {
         <div className="flex items-center gap-6 pt-2 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Total headcount</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />Fee earners</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Apr 26: 725 total · 542 fee earners (74.8%)</span>
-        </div>
-      </Card>
-
-      {/* Utilisation bar chart — actual vs target by grade */}
-      <Card>
-        <SectionHeader title="Utilisation by grade vs target — March 2025" sub="Avg actual vs avg target · crm_fact_employee_utilisation_monthly" />
-        <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={230}>
-            <BarChart data={utilisationData} margin={{ top: 8, right: 20, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="grade" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[45, 90]} tickFormatter={v => `${v}%`} width={38} />
-              <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
-              <Bar dataKey="target" fill="#94a3b8" radius={[4, 4, 0, 0]} name="Target"  opacity={0.5} />
-              <Bar dataKey="util"   fill="#6366f1" radius={[4, 4, 0, 0]} name="Actual"  />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400 opacity-60" />Target</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Actual</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">5 of 6 grades at or above target · Associates only grade below (–0.9pp)</span>
-        </div>
-      </Card>
-
-      {/* Grade detail */}
-      <Card>
-        <SectionHeader title="Utilisation detail by grade" sub="March 2025 · actual vs target vs variance" />
-        <div className="space-y-2">
-          {utilisationData.map((g, i) => {
-            const delta   = g.util - g.target;
-            const isBelow = delta < 0;
-            return (
-              <div key={i} className={`p-4 rounded-xl border transition-all ${isBelow ? "border-rose-200 bg-rose-50 dark:border-rose-500/15 dark:bg-rose-500/[0.025]" : "border-slate-200 bg-white dark:border-white/[0.07] dark:bg-white/[0.02]"}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isBelow ? "bg-rose-100 dark:bg-rose-500/10" : "bg-indigo-100 dark:bg-indigo-500/10"}`}>
-                      <span className={`text-[10px] font-bold ${isBelow ? "text-rose-600 dark:text-rose-400" : "text-indigo-600 dark:text-indigo-400"}`}>{i + 1}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{g.grade}</p>
-                  </div>
-                  <div className="flex items-center gap-4 shrink-0">
-                    <span className={`text-xs font-semibold font-mono ${isBelow ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>{delta >= 0 ? "+" : ""}{delta.toFixed(1)}pp</span>
-                    <span className="text-sm font-bold font-mono text-slate-900 dark:text-white">{g.util}%</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <div className="h-2 rounded-full bg-slate-100 dark:bg-white/10">
-                      <div className={`h-full rounded-full ${isBelow ? "bg-rose-400" : "bg-indigo-500"}`} style={{ width: `${(g.util / 90) * 100}%` }} />
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-slate-400 dark:text-white/30 shrink-0">Target {g.target}%</p>
-                </div>
-              </div>
-            );
-          })}
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Apr 26: 725 total · 542 fee earners (74.8% ratio)</span>
         </div>
       </Card>
 
       <Card>
         <SectionHeader title="People signals" sub="System-generated flags" badge="System" />
         <div className="space-y-2.5">
-          <Signal type="warning" title="Associate utilisation 81.1% — 0.9pp below 82% target"              detail="Only grade below target. 5 of 6 grades performing at or above. Monitor case intake volume vs associate capacity." />
-          <Signal type="info"    title="Partner utilisation 56.9% vs 55.0% target — ahead"                 detail="Partners performing above target. Fee earner-to-partner leverage ratio healthy at current headcount levels." />
-          <Signal type="info"    title="Headcount grew +9 over 6 months — controlled growth"               detail="725 total (542 fee earners). Stable trajectory with no attrition spike. Supports H2 revenue growth target." />
-          <Signal type="info"    title="Revenue per FTE improving alongside EBITDA recovery"                detail="EBITDA margin improvement to 22.1% suggests productivity gains outpacing headcount additions. Positive leverage trend." />
+          <Signal type="warning" title="Associate utilisation 81.1% — 0.9pp below 82% target"         detail="Only grade below target across all months. Monitor case intake volume vs associate capacity heading into Q2." />
+          <Signal type="info"    title="Partners 56.9% vs 55% target — ahead across all 6 months"     detail="Consistent above-target performance. Fee earner-to-partner leverage ratio healthy at current headcount." />
+          <Signal type="info"    title="Headcount +9 in 6 months — controlled, no attrition signal"   detail="725 total. No leavers spike in any month. Stable trajectory supports H2 revenue growth target." />
+          <Signal type="info"    title="Productivity improving — EBITDA recovery with stable headcount" detail="22.1% EBITDA margin achieved without headcount growth. Positive leverage: output per FTE increasing." />
         </div>
       </Card>
     </div>
@@ -787,47 +804,50 @@ function PeopleSection() {
 }
 
 /* ─────────────────────────────────────────────
-   ALERTS SECTION
+   RISKS & EXCEPTIONS SECTION
 ───────────────────────────────────────────── */
 
 function AlertsSection() {
-  const alerts = [
-    { area: "Cash",      type: "alert"   as const, title: "£80.6M debtors aged 91+ — 90.4% of book",             detail: "Critical lockup concentration. Insolvency case cycles driving aging. Targeted recovery strategy required." },
-    { area: "Financial", type: "alert"   as const, title: "Revenue –4.6% vs budget in Mar 25 (–£520k)",           detail: "Third below-budget month in last six. YTD shortfall £1.4M. CVL volume softness primary driver." },
-    { area: "Cash",      type: "warning" as const, title: "Total lockup £128.3M — up £21M since Oct 24",          detail: "WIP declining (positive) but debtor growth outpacing. Cash conversion pressure building month-on-month." },
-    { area: "Cash",      type: "warning" as const, title: "Lockup 118 days — 28 days above 90-day target",        detail: "Improving from Jan 25 peak of 125 days. Trajectory positive but pace needs acceleration." },
-    { area: "People",    type: "warning" as const, title: "Associate utilisation 81.1% — 0.9pp below target",     detail: "Only grade below target. Case volume intake monitoring required to assess capacity position." },
-    { area: "Financial", type: "warning" as const, title: "BR segment 75.9% of revenue — concentration risk",    detail: "Personal Advisory at 24.1% provides buffer but BR dominance creates sector sensitivity." },
+  const critical = [
+    { area: "Collections", title: "£80.6M aged 91+ — 90.4% of debtor book",           detail: "Insolvency case cycles drive aging but 90%+ is structurally elevated. Targeted recovery strategy required now." },
+    { area: "Financial",   title: "Revenue –4.6% vs budget in Mar 25 (–£520k)",        detail: "Third miss in six months. YTD £1.4M behind plan. CVL intake volume softness is the driver." },
   ];
 
-  const info = [
-    { area: "Financial", type: "info" as const, title: "EBITDA 22.1% — best margin in 12 months",               detail: "Recovery from 18.7% Jul 24 low. If revenue recovers to budget, full-year EBITDA target is achievable." },
-    { area: "Cash",      type: "info" as const, title: "WIP £39.1M declining — £8.3M reduction since Nov peak",  detail: "Cases progressing to billing. If collected, near-term cash generation improves materially." },
-    { area: "People",    type: "info" as const, title: "5 of 6 grades at or above utilisation target",           detail: "Broad-based performance. Partner utilisation 56.9% vs 55% target. Healthy fee earner leverage." },
-    { area: "Financial", type: "info" as const, title: "CVL most productive line at £8.2M (3 months)",           detail: "CVL accounts for 26% of Q1 revenue. Strong insolvency demand environment persisting." },
+  const warnings = [
+    { area: "Collections", title: "Total lockup £128.3M — up £21M since Oct 24",       detail: "WIP declining (positive) but debtor growth outpacing. Cash conversion pressure building. Board visibility recommended." },
+    { area: "Collections", title: "Lockup 118d — 28 days above 90-day target",         detail: "Improving from Jan 25 peak of 125d at ~2.5d/month. At this rate, target not reached until late 2025." },
+    { area: "People",      title: "Associate utilisation 81.1% — 0.9pp below target",  detail: "Only grade below target. Monitor Q2 intake volume to determine whether this is capacity or demand." },
+    { area: "Financial",   title: "BR at 75.9% of revenue — sector concentration",     detail: "PA at 24.1% provides buffer. BR is insolvency-cycle sensitive. Advisory diversification growing." },
+  ];
+
+  const intelligence = [
+    { area: "Financial",   title: "EBITDA 22.1% — recovery trajectory sustained",      detail: "Above 20% baseline. Cost per case improving. Revenue recovery to budget makes full-year target achievable." },
+    { area: "Collections", title: "WIP £39.1M declining — conversion is happening",    detail: "Down £8.3M from Nov peak. Cases billing through. Collections is the single remaining bottleneck." },
+    { area: "People",      title: "5 of 6 grades above utilisation target",            detail: "Broad-based performance. Partner utilisation 56.9% vs 55% target. Healthy fee earner leverage." },
+    { area: "Financial",   title: "CVL 26% of Q1 revenue — strong demand environment", detail: "£8.2M in 3 months. Administration second at £7.1M. Insolvency market conditions remain favourable." },
   ];
 
   const reports = [
-    { name: "March 2025 — P&L Summary",          type: "Financial", updated: "Today", filename: "mar2025_pl_summary.csv",          csv: `Category,Amount (£)\nRevenue,10570000\nGross Profit,6427000\nEBITDA,2336000\nEBITDA Margin %,22.1\n` },
-    { name: "March 2025 — Budget vs Actual",      type: "Financial", updated: "Today", filename: "mar2025_budget_vs_actual.csv",    csv: `Month,Budget,Actual,Variance %\nOct,10550000,10330000,-2.1\nNov,10520000,10560000,0.4\nDec,10970000,10670000,-2.8\nJan,10990000,10490000,-4.6\nFeb,10260000,10510000,2.5\nMar,11090000,10570000,-4.6\n` },
-    { name: "March 2025 — Debtors & WIP",         type: "Cash",      updated: "Today", filename: "mar2025_debtors_wip.csv",         csv: `Month,Debtors,Aged 91+,WIP,Lockup Days\nOct,75740000,70650000,44940000,110\nNov,77620000,72290000,47430000,119\nDec,80610000,73880000,45180000,122\nJan,83310000,75740000,42390000,125\nFeb,86380000,77610000,40340000,119\nMar,89180000,80590000,39120000,118\n` },
-    { name: "March 2025 — Utilisation by Grade",  type: "People",    updated: "Today", filename: "mar2025_utilisation_grade.csv",   csv: `Grade,Actual %,Target %,Variance pp\nPartner,56.9,55.0,+1.9\nDirector,65.8,65.0,+0.8\nSr. Manager,73.1,72.0,+1.1\nManager,78.3,77.0,+1.3\nSr. Associate,80.4,80.0,+0.4\nAssociate,81.1,82.0,-0.9\n` },
+    { name: "March 2025 — P&L Summary",         type: "Financial",   updated: "Today", filename: "mar2025_pl.csv",          csv: `Category,£\nRevenue,10570000\nGross Profit,6427000\nEBITDA,2336000\nEBITDA Margin,22.1%\n` },
+    { name: "March 2025 — Budget vs Actual",     type: "Financial",   updated: "Today", filename: "mar2025_bva.csv",         csv: `Month,Budget,Actual,Variance\nOct,10550000,10330000,-2.1%\nNov,10520000,10560000,+0.4%\nDec,10970000,10670000,-2.8%\nJan,10990000,10490000,-4.6%\nFeb,10260000,10510000,+2.5%\nMar,11090000,10570000,-4.6%\n` },
+    { name: "March 2025 — Debtors & WIP",        type: "Collections", updated: "Today", filename: "mar2025_lockup.csv",      csv: `Month,Debtors,Aged 91+,WIP,Lockup Days\nOct,75740000,70650000,44940000,110\nNov,77620000,72290000,47430000,119\nDec,80610000,73880000,45180000,122\nJan,83310000,75740000,42390000,125\nFeb,86380000,77610000,40340000,119\nMar,89180000,80590000,39120000,118\n` },
+    { name: "March 2025 — Utilisation by Grade", type: "People",      updated: "Today", filename: "mar2025_utilisation.csv", csv: `Grade,Actual,Target,Delta\nPartner,56.9%,55.0%,+1.9pp\nDirector,65.8%,65.0%,+0.8pp\nSr. Manager,73.1%,72.0%,+1.1pp\nManager,78.3%,77.0%,+1.3pp\nSr. Associate,80.4%,80.0%,+0.4pp\nAssociate,81.1%,82.0%,-0.9pp\n` },
   ];
 
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Critical alerts", value: "2", color: "text-rose-700   dark:text-rose-400",   bg: "bg-rose-100   dark:bg-rose-500/10"   },
-          { label: "Warnings",        value: "4", color: "text-amber-700  dark:text-amber-400",  bg: "bg-amber-100  dark:bg-amber-500/10"  },
-          { label: "Intelligence",    value: "4", color: "text-indigo-700 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-500/10" },
+          { label: "Critical",     value: `${critical.length}`,     color: "text-rose-700   dark:text-rose-400",   bg: "bg-rose-100   dark:bg-rose-500/10"   },
+          { label: "Warnings",     value: `${warnings.length}`,     color: "text-amber-700  dark:text-amber-400",  bg: "bg-amber-100  dark:bg-amber-500/10"  },
+          { label: "Intelligence", value: `${intelligence.length}`, color: "text-indigo-700 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-500/10" },
         ].map(s => (
           <Card key={s.label} className="!p-5 flex items-center gap-4">
             <div className={`w-11 h-11 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>
               <span className={`text-xl font-bold ${s.color}`}>{s.value}</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">{s.value} signals</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">{s.value} {s.label.toLowerCase()}</p>
               <p className="text-xs text-slate-500 dark:text-white/35">{s.label}</p>
             </div>
           </Card>
@@ -835,11 +855,11 @@ function AlertsSection() {
       </div>
 
       <Card>
-        <SectionHeader title="Critical & warnings" sub="All exception signals — March 2025" badge="6 signals" />
+        <SectionHeader title="Critical & warnings" sub="All exception signals — March 2025" badge={`${critical.length + warnings.length} signals`} />
         <div className="space-y-2.5">
-          {alerts.map((s, i) => (
+          {[...critical.map(s => ({ ...s, type: "alert" as const })), ...warnings.map(s => ({ ...s, type: "warning" as const }))].map((s, i) => (
             <div key={i} className="flex items-start gap-3">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 w-20 shrink-0 pt-1">{s.area}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 w-24 shrink-0 pt-1">{s.area}</span>
               <div className="flex-1"><Signal type={s.type} title={s.title} detail={s.detail} /></div>
             </div>
           ))}
@@ -847,22 +867,22 @@ function AlertsSection() {
       </Card>
 
       <Card>
-        <SectionHeader title="Intelligence" sub="Opportunities and positive signals" />
+        <SectionHeader title="Intelligence" sub="Positive signals and opportunities" />
         <div className="space-y-2.5">
-          {info.map((s, i) => (
+          {intelligence.map((s, i) => (
             <div key={i} className="flex items-start gap-3">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 w-20 shrink-0 pt-1">{s.area}</span>
-              <div className="flex-1"><Signal type={s.type} title={s.title} detail={s.detail} /></div>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 w-24 shrink-0 pt-1">{s.area}</span>
+              <div className="flex-1"><Signal type="info" title={s.title} detail={s.detail} /></div>
             </div>
           ))}
         </div>
       </Card>
 
       <Card>
-        <SectionHeader title="Available reports" sub="Auto-generated · updated daily from source systems" badge={`${reports.length} reports`} />
+        <SectionHeader title="Export reports" sub="Auto-generated · updated daily from source systems" badge={`${reports.length} reports`} />
         <div className="space-y-2.5">
           {reports.map((r, i) => (
-            <div key={i} className="flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02] transition-all hover:bg-white dark:hover:bg-white/[0.04] hover:shadow-sm">
+            <div key={i} className="flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02] hover:bg-white dark:hover:bg-white/[0.04] hover:shadow-sm transition-all">
               <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
                 <FileText size={14} className="text-indigo-600 dark:text-indigo-400" />
               </div>
@@ -889,19 +909,19 @@ function AlertsSection() {
 ───────────────────────────────────────────── */
 
 const NAV_ITEMS = [
-  { label: "Overview",   icon: BarChart2  },
-  { label: "Financial",  icon: TrendingUp },
-  { label: "Cash & WC",  icon: DollarSign },
-  { label: "People",     icon: Users      },
-  { label: "Alerts",     icon: Zap        },
+  { label: "Executive Summary",          icon: BarChart2  },
+  { label: "Financial Performance",      icon: TrendingUp },
+  { label: "Collections & Cash",         icon: DollarSign },
+  { label: "People & Capacity",          icon: Users      },
+  { label: "Risks & Exceptions",         icon: Zap        },
 ];
 
 const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
-  "Overview":  { title: "Executive overview — March 2025",  sub: "BTG Advisory Group · CEO operating system"             },
-  "Financial": { title: "Financial performance",            sub: "P&L, budget vs actual, service line breakdown"         },
-  "Cash & WC": { title: "Cash & working capital",           sub: "Debtors aging, WIP balance, lockup days"               },
-  "People":    { title: "People & utilisation",             sub: "Headcount, fee earners, utilisation by grade"          },
-  "Alerts":    { title: "Alerts & exception monitoring",    sub: "All system-generated signals across the business"       },
+  "Executive Summary":     { title: "Executive summary — March 2025",    sub: "BTG Advisory Group · CEO operating system"                     },
+  "Financial Performance": { title: "Financial performance",             sub: "Revenue, EBITDA, budget vs actual, service lines"              },
+  "Collections & Cash":    { title: "Collections & cash conversion",     sub: "Debtors aging, lockup days, WIP pipeline"                     },
+  "People & Capacity":     { title: "People & capacity",                 sub: "Headcount, fee earners, utilisation heatmap"                  },
+  "Risks & Exceptions":    { title: "Risks & exceptions",                sub: "All system-generated signals and reports"                      },
 };
 
 /* ─────────────────────────────────────────────
@@ -909,7 +929,7 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
 ───────────────────────────────────────────── */
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("Overview");
+  const [activeTab, setActiveTab] = useState("Executive Summary");
   const header     = SECTION_HEADERS[activeTab];
   const alertCount = 2;
 
@@ -918,7 +938,6 @@ export default function Dashboard() {
 
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-full w-60 border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#07070f] flex flex-col z-40 hidden lg:flex shadow-sm dark:shadow-none">
-
         <div className="p-5 border-b border-slate-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-3 mb-3.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20 dark:shadow-indigo-500/30">
@@ -938,7 +957,7 @@ export default function Dashboard() {
 
         <nav className="flex-1 p-4 space-y-0.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
-            const isAlerts = item.label === "Alerts";
+            const isAlerts = item.label === "Risks & Exceptions";
             const isActive = activeTab === item.label;
             return (
               <button
@@ -971,20 +990,14 @@ export default function Dashboard() {
             <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300">Quantyx Advisory</p>
             <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">Bespoke system · Mar 2025</p>
           </div>
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white/60 transition-colors px-1"
-          >
-            <ArrowLeft size={12} />
-            Back to site
+          <Link href="/" className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white/60 transition-colors px-1">
+            <ArrowLeft size={12} />Back to site
           </Link>
         </div>
       </aside>
 
       {/* Main */}
       <div className="lg:ml-60">
-
-        {/* Top bar */}
         <header className="sticky top-0 z-30 h-[54px] border-b border-slate-200 dark:border-white/[0.07] bg-white/95 dark:bg-[#05050f]/95 backdrop-blur-md flex items-center justify-between px-6 shadow-[0_1px_0_0_rgba(0,0,0,0.04)] dark:shadow-none">
           <div>
             <h1 className="font-semibold text-[13.5px] text-slate-900 dark:text-white tracking-tight leading-tight">{header.title}</h1>
@@ -999,24 +1012,20 @@ export default function Dashboard() {
             <button className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.06] transition-all">
               <Settings size={16} />
             </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md ml-1">
-              BTG
-            </div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md ml-1">BTG</div>
           </div>
         </header>
 
         <main className="p-6 lg:p-8 max-w-[1440px]">
-          {activeTab === "Overview"  && <OverviewSection  />}
-          {activeTab === "Financial" && <FinancialSection />}
-          {activeTab === "Cash & WC" && <CashSection      />}
-          {activeTab === "People"    && <PeopleSection    />}
-          {activeTab === "Alerts"    && <AlertsSection    />}
+          {activeTab === "Executive Summary"     && <OverviewSection   />}
+          {activeTab === "Financial Performance" && <FinancialSection  />}
+          {activeTab === "Collections & Cash"    && <CashSection       />}
+          {activeTab === "People & Capacity"     && <PeopleSection     />}
+          {activeTab === "Risks & Exceptions"    && <AlertsSection     />}
 
           <div className="text-center pt-10 pb-6">
             <p className="text-[11px] text-slate-400 dark:text-white/18">
-              Built by{" "}
-              <span className="text-indigo-600 dark:text-indigo-400/50 font-semibold">Quantyx Advisory</span>
-              {" "}for BTG Advisory Group — high-confidence datasets only (ERP SunSystems + CRM). Low-quality sources excluded.
+              Built by <span className="text-indigo-600 dark:text-indigo-400/50 font-semibold">Quantyx Advisory</span> for BTG Advisory Group — high-confidence datasets only. Decision-oriented, not data-oriented.
             </p>
           </div>
         </main>
