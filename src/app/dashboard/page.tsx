@@ -105,12 +105,16 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
   );
 }
 
-function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, accent }: {
+function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, accent, onDrilldown, drilldownTab }: {
   label: string; value: string; verdict: string; change: string; up: boolean;
   icon: React.ElementType; color: string; bg: string; accent: string;
+  onDrilldown?: () => void; drilldownTab?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+    <div
+      className={`rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden ${onDrilldown ? "cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:shadow-md transition-all" : ""}`}
+      onClick={onDrilldown}
+    >
       <div className={`h-[3px] ${accent}`} />
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
@@ -128,6 +132,11 @@ function KpiCard({ label, value, verdict, change, up, icon: Icon, color, bg, acc
           <span className={`text-[11px] font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{change}</span>
         </div>
         <p className="text-[10.5px] text-slate-500 dark:text-white/35 leading-snug">{verdict}</p>
+        {drilldownTab && (
+          <p className="mt-2 text-[10px] font-semibold text-indigo-500 dark:text-indigo-400/70 flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
+            <ChevronRight size={9} />View {drilldownTab}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -168,6 +177,98 @@ function SectionHeader({ title, sub, badge }: { title: string; sub: string; badg
   );
 }
 
+function ActionLayer({ onTabChange }: { onTabChange: (tab: string) => void }) {
+  const actions = [
+    {
+      rank: 1, type: "critical" as const,
+      area: "Collections",
+      title: "Initiate 91+ debtor recovery programme",
+      detail: "£80.6M aged 91+ (90% of book). Insolvency cycles explain some aging — 90%+ concentration requires a structured recovery initiative now.",
+      owner: "Head of Collections",
+      due: "30 Apr 2025",
+      impact: "£8–12M recoverable",
+      status: "Open",
+      action: "Collections board review",
+      tab: "Collections & Cash",
+    },
+    {
+      rank: 2, type: "critical" as const,
+      area: "Financial",
+      title: "CVL pipeline review — 3rd budget miss in 6 months",
+      detail: "£520k behind March target. YTD shortfall £1.4M. CVL intake softness is the primary driver — BD strategy review required.",
+      owner: "Head of Business Recovery",
+      due: "15 Apr 2025",
+      impact: "£1.4M YTD gap",
+      status: "Open",
+      action: "Pipeline review — CVL BD strategy",
+      tab: "Financial Performance",
+    },
+    {
+      rank: 3, type: "warning" as const,
+      area: "Collections",
+      title: "Lockup 28 days above 90-day target",
+      detail: "118d vs 90d. Improving from Jan 25 peak of 125d at ~2.5d/month. At this rate, target not reached until late 2025.",
+      owner: "CFO",
+      due: "Monthly cadence",
+      impact: "~£3M/month cost of delay",
+      status: "In Progress",
+      action: "Track monthly — accelerate collections",
+      tab: "Collections & Cash",
+    },
+  ];
+
+  const statusStyle: Record<string, string> = {
+    "Open":        "text-rose-700   bg-rose-100   dark:text-rose-300   dark:bg-rose-500/15",
+    "In Progress": "text-amber-700  bg-amber-100  dark:text-amber-300  dark:bg-amber-500/15",
+    "Escalated":   "text-violet-700 bg-violet-100 dark:text-violet-300 dark:bg-violet-500/15",
+  };
+
+  return (
+    <div className="rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+      <div className="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Action layer</h2>
+          <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Prioritised decisions · owner · £ impact · deadline</p>
+        </div>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/25 bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1 rounded-full shrink-0">
+          {actions.filter(a => a.type === "critical").length} critical
+        </span>
+      </div>
+      <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+        {actions.map((item) => (
+          <div key={item.rank} className="p-4 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-start gap-3">
+              <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${item.type === "critical" ? "bg-rose-500 text-white" : "bg-amber-500 text-white"}`}>
+                {item.rank}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <p className={`text-xs font-semibold ${item.type === "critical" ? "text-rose-700 dark:text-rose-300" : "text-amber-700 dark:text-amber-300"}`}>{item.title}</p>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${statusStyle[item.status]}`}>{item.status}</span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-white/40 leading-snug mb-2">{item.detail}</p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] mb-2">
+                  <span className="flex items-center gap-1 text-slate-500 dark:text-white/35"><UserCheck size={9} className="shrink-0" />{item.owner}</span>
+                  <span className="flex items-center gap-1 text-slate-500 dark:text-white/35"><Clock size={9} className="shrink-0" />{item.due}</span>
+                  <span className={`flex items-center gap-1 font-semibold ${item.type === "critical" ? "text-rose-600 dark:text-rose-400" : "text-amber-600 dark:text-amber-400"}`}>
+                    <DollarSign size={9} className="shrink-0" />{item.impact}
+                  </span>
+                </div>
+                <button
+                  onClick={() => onTabChange(item.tab)}
+                  className={`text-[11px] font-semibold flex items-center gap-1 ${item.type === "critical" ? "text-rose-600/80 dark:text-rose-400/70 hover:text-rose-700 dark:hover:text-rose-300" : "text-amber-600/80 dark:text-amber-400/70 hover:text-amber-700 dark:hover:text-amber-300"} transition-colors`}
+                >
+                  <ArrowRight size={10} />{item.action}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ChartTooltip({ active, payload, label, formatter }: {
   active?: boolean; payload?: { value?: number; name?: string; color?: string }[];
   label?: string; formatter?: (v: number, n: string) => string;
@@ -190,7 +291,10 @@ function ChartTooltip({ active, payload, label, formatter }: {
    COMMAND STRIP
 ───────────────────────────────────────────── */
 
+const PERIODS = ["Oct 24", "Nov 24", "Dec 24", "Jan 25", "Feb 25", "Mar 25"] as const;
+
 function CommandStrip() {
+  const [activePeriod, setActivePeriod] = useState<string>("Mar 25");
   const latest    = plData[plData.length - 1];
   const latestRec = recData[recData.length - 1];
 
@@ -211,7 +315,7 @@ function CommandStrip() {
               <span className="text-slate-300 dark:text-white/15 select-none">·</span>
               <span className="text-xs text-slate-400 dark:text-white/35 font-medium">March 2025</span>
               <span className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />Live
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />Live
               </span>
             </div>
             <p className="text-[13px] font-semibold text-slate-800 dark:text-white/80 leading-snug mb-1">
@@ -232,6 +336,27 @@ function CommandStrip() {
             ))}
           </div>
         </div>
+
+        {/* Period selector */}
+        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-indigo-100 dark:border-indigo-500/[0.12]">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 shrink-0">Period</span>
+          <div className="flex flex-wrap gap-1">
+            {PERIODS.map(p => (
+              <button
+                key={p}
+                onClick={() => setActivePeriod(p)}
+                className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all ${
+                  activePeriod === p
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "text-slate-500 dark:text-white/35 hover:text-slate-700 dark:hover:text-white/60 hover:bg-slate-100 dark:hover:bg-white/[0.05]"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Synced today · ERP + CRM · high-confidence data only</span>
+        </div>
       </div>
     </div>
   );
@@ -241,7 +366,7 @@ function CommandStrip() {
    OVERVIEW SECTION
 ───────────────────────────────────────────── */
 
-function OverviewSection() {
+function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
   const latest    = plData[plData.length - 1];
   const latestRec = recData[recData.length - 1];
   const latestHC  = hcData[hcData.length - 1];
@@ -262,6 +387,8 @@ function OverviewSection() {
           color="text-rose-600 dark:text-rose-400"
           bg="bg-rose-100 dark:bg-rose-500/10"
           accent="bg-rose-500"
+          onDrilldown={() => onTabChange("Financial Performance")}
+          drilldownTab="Financial"
         />
         <KpiCard
           label="EBITDA Margin"
@@ -272,6 +399,8 @@ function OverviewSection() {
           color="text-emerald-600 dark:text-emerald-400"
           bg="bg-emerald-100 dark:bg-emerald-500/10"
           accent="bg-emerald-500"
+          onDrilldown={() => onTabChange("Financial Performance")}
+          drilldownTab="Financial"
         />
         <KpiCard
           label="Lockup Days"
@@ -282,6 +411,8 @@ function OverviewSection() {
           color="text-amber-600 dark:text-amber-400"
           bg="bg-amber-100 dark:bg-amber-500/10"
           accent="bg-amber-400"
+          onDrilldown={() => onTabChange("Collections & Cash")}
+          drilldownTab="Collections"
         />
         <KpiCard
           label="Fee Earner Util."
@@ -292,6 +423,8 @@ function OverviewSection() {
           color="text-indigo-600 dark:text-indigo-400"
           bg="bg-indigo-100 dark:bg-indigo-500/10"
           accent="bg-indigo-500"
+          onDrilldown={() => onTabChange("People & Capacity")}
+          drilldownTab="People"
         />
         <KpiCard
           label="Headcount"
@@ -302,6 +435,8 @@ function OverviewSection() {
           color="text-sky-600 dark:text-sky-400"
           bg="bg-sky-100 dark:bg-sky-500/10"
           accent="bg-sky-400"
+          onDrilldown={() => onTabChange("People & Capacity")}
+          drilldownTab="People"
         />
       </div>
 
@@ -336,56 +471,8 @@ function OverviewSection() {
       {/* Bottom row */}
       <div className="grid lg:grid-cols-3 gap-5">
 
-        {/* Attention panel — ranked with actions */}
-        <div className="lg:col-span-1 rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
-          <div className="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
-            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">What needs a decision</h2>
-            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Ranked by urgency — March 2025</p>
-          </div>
-          <div className="p-4 space-y-3">
-            {[
-              {
-                rank: "1",
-                type: "alert" as const,
-                title: "Collections — £80.6M aged 91+ days",
-                detail: "90% of the debtor book overdue 91+ days. Lockup 118d and growing.",
-                action: "Collections review this month",
-                rankCls: "bg-rose-500 text-white",
-              },
-              {
-                rank: "2",
-                type: "alert" as const,
-                title: "Revenue — £520k behind March budget",
-                detail: "CVL intake softness in Q1. Third miss in last six months.",
-                action: "Pipeline review — CVL volume",
-                rankCls: "bg-rose-500 text-white",
-              },
-              {
-                rank: "3",
-                type: "warning" as const,
-                title: "Lockup — 28 days above target",
-                detail: "118 days vs 90-day target. Improving from Jan peak. Monitor.",
-                action: "Track monthly — trajectory is positive",
-                rankCls: "bg-amber-500 text-white",
-              },
-            ].map(item => (
-              <div key={item.rank} className={`p-3.5 rounded-xl border flex items-start gap-3 ${
-                item.type === "alert"
-                  ? "border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/[0.06]"
-                  : "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/[0.06]"
-              }`}>
-                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${item.rankCls}`}>{item.rank}</span>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-semibold ${item.type === "alert" ? "text-rose-700 dark:text-rose-300" : "text-amber-700 dark:text-amber-300"}`}>{item.title}</p>
-                  <p className="text-xs text-slate-500 dark:text-white/40 mt-0.5 leading-snug">{item.detail}</p>
-                  <p className={`text-[11px] font-semibold mt-1.5 flex items-center gap-1 ${item.type === "alert" ? "text-rose-600/80 dark:text-rose-400/70" : "text-amber-600/80 dark:text-amber-400/70"}`}>
-                    <ArrowRight size={10} />{item.action}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Action layer */}
+        <ActionLayer onTabChange={onTabChange} />
 
         {/* Cash conversion cycle */}
         <Card className="lg:col-span-2">
@@ -985,6 +1072,29 @@ export default function Dashboard() {
         </nav>
 
         <div className="p-4 border-t border-slate-100 dark:border-white/[0.05] space-y-3">
+          {/* Data trust layer */}
+          <div className="px-3 py-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06]">
+            <p className="text-[9px] font-semibold text-slate-400 dark:text-white/25 uppercase tracking-widest mb-1.5">Data trust</p>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-500 dark:text-white/35">ERP (P&L)</span>
+                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Today</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-500 dark:text-white/35">CRM (Headcount)</span>
+                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Today</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-500 dark:text-white/35">Debtors ledger</span>
+                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Today</span>
+              </div>
+            </div>
+            <div className="mt-2 pt-2 border-t border-slate-200 dark:border-white/[0.05]">
+              <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-1.5 py-0.5 rounded-md">
+                Demo data
+              </span>
+            </div>
+          </div>
           <div className="px-3 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/[0.08] border border-indigo-100 dark:border-indigo-500/20">
             <p className="text-[9px] font-semibold text-indigo-500 dark:text-indigo-400/70 uppercase tracking-widest mb-0.5">Built by</p>
             <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300">Quantyx Advisory</p>
@@ -1017,7 +1127,7 @@ export default function Dashboard() {
         </header>
 
         <main className="p-6 lg:p-8 max-w-[1440px]">
-          {activeTab === "Executive Summary"     && <OverviewSection   />}
+          {activeTab === "Executive Summary"     && <OverviewSection onTabChange={setActiveTab} />}
           {activeTab === "Financial Performance" && <FinancialSection  />}
           {activeTab === "Collections & Cash"    && <CashSection       />}
           {activeTab === "People & Capacity"     && <PeopleSection     />}
