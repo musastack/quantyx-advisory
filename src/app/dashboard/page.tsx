@@ -12,6 +12,7 @@ import {
   ChevronRight, Activity, ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import ThemeToggle from "../ThemeToggle";
 
 /* ─────────────────────────────────────────────
@@ -1095,10 +1096,10 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
-          <div className="px-3 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/[0.08] border border-indigo-100 dark:border-indigo-500/20">
-            <p className="text-[9px] font-semibold text-indigo-500 dark:text-indigo-400/70 uppercase tracking-widest mb-0.5">Built by</p>
-            <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300">Quantyx Advisory</p>
-            <p className="text-[10px] text-slate-400 dark:text-white/25 mt-0.5">Bespoke system · Mar 2025</p>
+          <div className="px-3 py-3 rounded-xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.07]">
+            <p className="text-[9px] font-semibold text-slate-400 dark:text-white/25 uppercase tracking-widest mb-2">Built by</p>
+            <Image src="/logo.png" alt="Quantyx Advisory" width={120} height={30} className="object-contain dark:brightness-[1.15]" />
+            <p className="text-[10px] text-slate-400 dark:text-white/25 mt-1.5">Bespoke system · Mar 2025</p>
           </div>
           <Link href="/" className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white/60 transition-colors px-1">
             <ArrowLeft size={12} />Back to site
@@ -1133,9 +1134,10 @@ export default function Dashboard() {
           {activeTab === "People & Capacity"     && <PeopleSection     />}
           {activeTab === "Risks & Exceptions"    && <AlertsSection     />}
 
-          <div className="text-center pt-10 pb-6">
+          <div className="flex flex-col items-center gap-2 pt-10 pb-6">
+            <Image src="/logo.png" alt="Quantyx Advisory" width={96} height={24} className="object-contain opacity-40 dark:opacity-25 dark:brightness-[2]" />
             <p className="text-[11px] text-slate-400 dark:text-white/18">
-              Built by <span className="text-indigo-600 dark:text-indigo-400/50 font-semibold">Quantyx Advisory</span> for BTG Advisory Group — high-confidence datasets only. Decision-oriented, not data-oriented.
+              Built for BTG Advisory Group — high-confidence datasets only. Decision-oriented, not data-oriented.
             </p>
           </div>
         </main>
