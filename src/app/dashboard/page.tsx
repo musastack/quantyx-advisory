@@ -10,6 +10,8 @@ import {
   Users, FileText, BarChart2, Zap, AlertTriangle,
   Download, DollarSign, UserCheck, Clock,
   ChevronRight, Activity, ArrowRight, Minus, Layers,
+  Home, ChevronDown, ChevronUp,
+  Printer, Trophy, Sliders, Calendar,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -284,6 +286,8 @@ function TrendBadge({ values }: { values: number[] }) {
 type KpiEntry = typeof kpiData[number];
 
 function RichKpiCard({ k, onDrilldown }: { k: KpiEntry; onDrilldown?: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+
   const statusCfg = {
     green: { dot: "bg-emerald-500", label: "On Track",  text: "text-emerald-700 dark:text-emerald-300", bg: "bg-emerald-100 dark:bg-emerald-500/15" },
     amber: { dot: "bg-amber-400",   label: "Watch",     text: "text-amber-700 dark:text-amber-300",     bg: "bg-amber-100 dark:bg-amber-500/15"    },
@@ -297,67 +301,70 @@ function RichKpiCard({ k, onDrilldown }: { k: KpiEntry; onDrilldown?: () => void
   }[k.trendLabel];
 
   return (
-    <div
-      onClick={onDrilldown}
-      className={`rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden ${onDrilldown ? "cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:shadow-md transition-all" : ""}`}
-    >
+    <div className="rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
       <div className={`h-[3px] ${k.accent}`} />
-      <div className="p-4 space-y-3">
-
-        {/* Row 1: name + status + icon */}
-        <div className="flex items-start justify-between gap-2">
+      {/* Compact view — always visible */}
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className="w-full text-left p-4"
+      >
+        <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex items-center gap-2 min-w-0">
             <div className={`w-7 h-7 rounded-lg ${k.bg} flex items-center justify-center shrink-0`}>
               <k.icon size={13} className={k.color} />
             </div>
             <p className="text-[11px] font-semibold text-slate-700 dark:text-white/70 leading-tight">{k.name}</p>
           </div>
-          <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${statusCfg.text} ${statusCfg.bg}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />{statusCfg.label}
-          </span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md ${statusCfg.text} ${statusCfg.bg}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />{statusCfg.label}
+            </span>
+            {expanded ? <ChevronUp size={12} className="text-slate-400 dark:text-white/30" /> : <ChevronDown size={12} className="text-slate-400 dark:text-white/30" />}
+          </div>
         </div>
-
-        {/* Row 2: current value + sparkline */}
         <div className="flex items-end justify-between">
           <div>
             <p className="text-[1.6rem] font-bold tracking-tight text-slate-900 dark:text-white font-mono leading-none tabular-nums">{k.current}</p>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-[10px] text-slate-400 dark:text-white/30">vs <span className="font-semibold text-slate-500 dark:text-white/45">{k.trend3[1].m} 25:</span> {k.prev}</span>
-              <span className={`text-[11px] font-bold font-mono ${k.pctUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-                {k.absChange}
-              </span>
-              <span className={`text-[10px] font-semibold ${k.pctUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-                ({k.pctChange})
-              </span>
-            </div>
+            <span className={`text-[11px] font-bold font-mono ${k.pctUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+              {k.absChange} ({k.pctChange})
+            </span>
           </div>
           <Sparkline data={[...k.spark]} up={k.pctUp} />
         </div>
+      </button>
 
-        {/* Row 3: target + variance */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/[0.05]">
-          <span className="text-[10px] text-slate-400 dark:text-white/30">Target: <span className="font-semibold text-slate-600 dark:text-white/50">{k.target}</span></span>
-          <span className={`text-[10px] font-semibold ${k.varTargetUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{k.varTarget}</span>
-        </div>
-
-        {/* Row 4: 3-month trend */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-white/30">
-            {k.trend3.map((t, i) => (
-              <span key={i} className="flex items-center gap-0.5">
-                <span className="font-semibold text-slate-600 dark:text-white/50">{t.m}</span> {t.v}
-                {i < k.trend3.length - 1 && <ChevronRight size={8} className="text-slate-300 dark:text-white/15 mx-0.5" />}
-              </span>
-            ))}
+      {/* Expanded detail */}
+      {expanded && (
+        <div className="px-4 pb-4 space-y-3 border-t border-slate-100 dark:border-white/[0.05] pt-3">
+          <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-white/30">
+            <span>vs {k.trend3[1].m} 25:</span>
+            <span className="font-semibold text-slate-500 dark:text-white/45">{k.prev}</span>
           </div>
-          <span className={`inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-md ${trendCfg.cls}`}>
-            {trendCfg.icon}{k.trendLabel}
-          </span>
+          <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-white/[0.05]">
+            <span className="text-[10px] text-slate-400 dark:text-white/30">Target: <span className="font-semibold text-slate-600 dark:text-white/50">{k.target}</span></span>
+            <span className={`text-[10px] font-semibold ${k.varTargetUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{k.varTarget}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-white/30 flex-wrap">
+              {k.trend3.map((t, i) => (
+                <span key={i} className="flex items-center gap-0.5">
+                  <span className="font-semibold text-slate-600 dark:text-white/50">{t.m}</span> {t.v}
+                  {i < k.trend3.length - 1 && <ChevronRight size={8} className="text-slate-300 dark:text-white/15 mx-0.5" />}
+                </span>
+              ))}
+            </div>
+            <span className={`inline-flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${trendCfg.cls}`}>
+              {trendCfg.icon}{k.trendLabel}
+            </span>
+          </div>
+          <p className="text-[10.5px] text-slate-500 dark:text-white/35 leading-snug border-t border-slate-100 dark:border-white/[0.05] pt-2">{k.why}</p>
+          {onDrilldown && (
+            <button onClick={onDrilldown} className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 hover:underline">
+              Deep dive <ArrowRight size={10} />
+            </button>
+          )}
         </div>
-
-        {/* Row 5: WHY explanation */}
-        <p className="text-[10.5px] text-slate-500 dark:text-white/35 leading-snug border-t border-slate-100 dark:border-white/[0.05] pt-2">{k.why}</p>
-      </div>
+      )}
     </div>
   );
 }
@@ -655,6 +662,94 @@ function CommandStrip({ activePeriod, onPeriodChange }: { activePeriod: string; 
 }
 
 /* ─────────────────────────────────────────────
+   HOME / LANDING SECTION
+───────────────────────────────────────────── */
+
+function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
+  const latest = plData[plData.length - 1];
+  const latestRec = recData[recData.length - 1];
+
+  const quickLinks = [
+    { label: "KPI Dashboard",         icon: BarChart2,   color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10", border: "border-indigo-200 dark:border-indigo-500/20", desc: "10 KPIs · filter & drill down" },
+    { label: "Financial Performance",  icon: TrendingUp,  color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10", border: "border-emerald-200 dark:border-emerald-500/20", desc: "Revenue · margin · budget" },
+    { label: "Collections & Cash",     icon: DollarSign,  color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-500/10", border: "border-rose-200 dark:border-rose-500/20", desc: "Debtors · lockup · forecast" },
+    { label: "People & Capacity",      icon: Users,       color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10", border: "border-violet-200 dark:border-violet-500/20", desc: "Utilisation · headcount" },
+    { label: "Service Lines",          icon: Layers,      color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50 dark:bg-cyan-500/10", border: "border-cyan-200 dark:border-cyan-500/20", desc: "Revenue by line · leaderboard" },
+    { label: "Risks & Exceptions",     icon: Zap,         color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10", border: "border-amber-200 dark:border-amber-500/20", desc: "Alerts · insights · actions" },
+    { label: "Reports",                icon: FileText,    color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-50 dark:bg-white/[0.05]", border: "border-slate-200 dark:border-white/[0.08]", desc: "Export financial reports" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome header */}
+      <div className="rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50 via-white to-violet-50/40 dark:from-indigo-500/[0.08] dark:via-[#0b0b17] dark:to-violet-500/[0.04] p-7 shadow-sm dark:shadow-none">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-2">CEO Operating System</p>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-1">Good morning, BTG Advisory Group.</h1>
+            <p className="text-sm text-slate-500 dark:text-white/40 max-w-lg">March 2025 data is live. Revenue growing, margin recovering — debtors need action. Use the links below to navigate to the area you need.</p>
+          </div>
+          <div className="flex flex-col gap-1.5 text-right shrink-0">
+            <span className="text-xs text-slate-400 dark:text-white/30">Last synced: today</span>
+            <div className="flex items-center gap-1.5 justify-end">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Live data</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4 quick stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { label: "Revenue (Mar)", value: `£${(latest.revenue / 1000).toFixed(2)}M`, sub: "–4.6% vs budget", color: "text-rose-600 dark:text-rose-400", dot: "bg-rose-500" },
+          { label: "EBITDA margin", value: `${latest.ebitdaM}%`, sub: "12-month best · improving", color: "text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" },
+          { label: "Total lockup", value: `${latestRec.lockup}d`, sub: "target: 90d · improving", color: "text-amber-600 dark:text-amber-400", dot: "bg-amber-500" },
+          { label: "Critical alerts", value: "2", sub: "collections & revenue", color: "text-rose-700 dark:text-rose-400", dot: "bg-rose-600" },
+        ].map(s => (
+          <div key={s.label} className="p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none">
+            <div className="flex items-center gap-1.5 mb-2">
+              <div className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{s.label}</p>
+            </div>
+            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
+            <p className="text-[11px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation cards */}
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-3">Navigate to</p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {quickLinks.map(item => (
+            <button
+              key={item.label}
+              onClick={() => onTabChange(item.label)}
+              className={`text-left p-4 rounded-2xl border ${item.border} ${item.bg} hover:shadow-md transition-all group`}
+            >
+              <div className={`w-8 h-8 rounded-lg bg-white dark:bg-white/[0.06] flex items-center justify-center mb-3 shadow-sm group-hover:shadow transition-shadow`}>
+                <item.icon size={15} className={item.color} />
+              </div>
+              <p className="text-sm font-semibold text-slate-800 dark:text-white/90 mb-0.5">{item.label}</p>
+              <p className="text-[10px] text-slate-500 dark:text-white/35">{item.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Alert strip */}
+      <div className="space-y-2.5">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Priority signals</p>
+        <Signal type="alert"   title="£80.6M aged 91+ — 90.4% of debtor book" detail="Collections crisis. Structured recovery initiative required." action="Go to Collections & Cash" />
+        <Signal type="alert"   title="Revenue –4.6% vs budget in Mar 25 (–£520k)" detail="Third consecutive budget miss. CVL softness is the driver." action="Go to Financial Performance" />
+        <Signal type="warning" title="Lockup 118d — 28 days above 90-day target" detail="Improving from Jan 25 peak of 125d. At current rate, target late 2025." action="Go to Collections & Cash" />
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
    OVERVIEW SECTION
 ───────────────────────────────────────────── */
 
@@ -669,9 +764,7 @@ function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         {kpiData.slice(0, 5).map((k, i) => (
           <RichKpiCard key={i} k={k}
-            onDrilldown={() => onTabChange(
-              i <= 1 ? "Financial Movements" : i === 2 ? "Financial Movements" : i === 3 ? "Financial Performance" : "Financial Movements"
-            )}
+            onDrilldown={() => onTabChange("Financial Performance")}
           />
         ))}
       </div>
@@ -803,6 +896,8 @@ function FinancialSection() {
   const ytdActual = bvaData.reduce((s, d) => s + d.actual, 0);
   const ytdBudget = bvaData.reduce((s, d) => s + d.budget, 0);
   const ytdVar    = ((ytdActual - ytdBudget) / ytdBudget * 100).toFixed(1);
+  const [ebitdaView, setEbitdaView] = useState<"line" | "bar" | "area">("line");
+  const [bvaView, setBvaView] = useState<"bar" | "line">("bar");
 
   return (
     <div className="space-y-5">
@@ -822,17 +917,52 @@ function FinancialSection() {
 
       {/* EBITDA margin trend */}
       <Card>
-        <SectionHeader title="Is margin improving?" sub="EBITDA margin % · Apr 2024 – Mar 2025 · recovering from Jul 24 low" />
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Is margin improving?</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">EBITDA margin % · Apr 2024 – Mar 2025 · recovering from Jul 24 low</p>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
+            {(["line", "bar", "area"] as const).map(v => (
+              <button key={v} onClick={() => setEbitdaView(v)} className={`px-3 py-1.5 transition-colors capitalize ${ebitdaView === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>{v}</button>
+            ))}
+          </div>
+        </div>
         <div className="mt-1 mb-2">
           <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[16, 24]} tickFormatter={v => `${v}%`} width={38} />
-              <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
-              <ReferenceLine y={20} stroke="#94a3b8" strokeDasharray="4 2" strokeOpacity={0.5} label={{ value: "20% baseline", fill: "var(--chart-tick)", fontSize: 9, position: "insideTopRight" }} />
-              <Line type="monotone" dataKey="ebitdaM" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: "#8b5cf6", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5, fill: "#8b5cf6" }} name="EBITDA margin" />
-            </LineChart>
+            {ebitdaView === "line" ? (
+              <LineChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[16, 24]} tickFormatter={v => `${v}%`} width={38} />
+                <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
+                <ReferenceLine y={20} stroke="#94a3b8" strokeDasharray="4 2" strokeOpacity={0.5} label={{ value: "20% baseline", fill: "var(--chart-tick)", fontSize: 9, position: "insideTopRight" }} />
+                <Line type="monotone" dataKey="ebitdaM" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: "#8b5cf6", r: 3.5, strokeWidth: 0 }} activeDot={{ r: 5 }} name="EBITDA %" />
+              </LineChart>
+            ) : ebitdaView === "bar" ? (
+              <BarChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[16, 24]} tickFormatter={v => `${v}%`} width={38} />
+                <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
+                <ReferenceLine y={20} stroke="#94a3b8" strokeDasharray="4 2" strokeOpacity={0.5} />
+                <Bar dataKey="ebitdaM" fill="#8b5cf6" radius={[4,4,0,0]} name="EBITDA %" />
+              </BarChart>
+            ) : (
+              <AreaChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <defs>
+                  <linearGradient id="ebitdaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[16, 24]} tickFormatter={v => `${v}%`} width={38} />
+                <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
+                <Area type="monotone" dataKey="ebitdaM" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#ebitdaGrad)" name="EBITDA %" />
+              </AreaChart>
+            )}
           </ResponsiveContainer>
         </div>
         <div className="pt-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center gap-2">
@@ -843,17 +973,38 @@ function FinancialSection() {
 
       {/* Budget vs actual */}
       <Card>
-        <SectionHeader title="Revenue — actual vs budget" sub="Oct 2024 – Mar 2025 · 4 of 6 months missed target" badge="6 months" />
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Revenue — actual vs budget</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Oct 2024 – Mar 2025 · 4 of 6 months missed target</p>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
+            {(["bar", "line"] as const).map(v => (
+              <button key={v} onClick={() => setBvaView(v)} className={`px-3 py-1.5 transition-colors capitalize ${bvaView === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>{v}</button>
+            ))}
+          </div>
+        </div>
         <div className="mt-1 mb-2">
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={bvaData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
-              <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M`} />} />
-              <Bar dataKey="budget" fill="#94a3b8" radius={[4, 4, 0, 0]} name="Budget"  opacity={0.45} />
-              <Bar dataKey="actual" fill="#6366f1" radius={[4, 4, 0, 0]} name="Actual"  />
-            </BarChart>
+            {bvaView === "bar" ? (
+              <BarChart data={bvaData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
+                <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M`} />} />
+                <Bar dataKey="budget" fill="#94a3b8" radius={[4, 4, 0, 0]} name="Budget" opacity={0.45} />
+                <Bar dataKey="actual" fill="#6366f1" radius={[4, 4, 0, 0]} name="Actual" />
+              </BarChart>
+            ) : (
+              <LineChart data={bvaData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
+                <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M`} />} />
+                <Line type="monotone" dataKey="budget" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 3" dot={false} name="Budget" />
+                <Line type="monotone" dataKey="actual" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3 }} name="Actual" />
+              </LineChart>
+            )}
           </ResponsiveContainer>
         </div>
         <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
@@ -923,6 +1074,24 @@ function FinancialSection() {
 function CashSection() {
   const latestRec = recData[recData.length - 1];
   const latestWip = wipData[wipData.length - 1];
+  const [forecastPeriod, setForecastPeriod] = useState<"6M" | "12M">("6M");
+  const [debtorDays, setDebtorDays] = useState(118);
+  const [collectionImprovement, setCollectionImprovement] = useState(2.5); // days/month improvement
+  const [monthlyRevenue, setMonthlyRevenue] = useState(10.57); // £M
+
+  const forecastMonths = forecastPeriod === "6M" ? 6 : 12;
+  const forecastData = Array.from({ length: forecastMonths }, (_, i) => {
+    const month = i + 1;
+    const projLockup = Math.max(90, debtorDays - collectionImprovement * month);
+    const projDebtors = monthlyRevenue * projLockup;
+    const projCashCollected = Math.max(0, (latestRec.debtors / 1000) - projDebtors + monthlyRevenue * month);
+    return {
+      month: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"][i] + " 25",
+      lockup: Math.round(projLockup),
+      debtors: Math.round(projDebtors * 1000),
+      cashFlow: Math.round(projCashCollected * 1000),
+    };
+  });
 
   return (
     <div className="space-y-5">
@@ -1038,6 +1207,80 @@ function CashSection() {
           <Signal type="info"    title="WIP declining £8.3M — cases are converting to bills"        detail="Nov 24 peak £47.4M → Mar 25 £39.1M. The operational process is working. Collections is the single bottleneck." />
         </div>
       </Card>
+
+      {/* Forecasted cashflow */}
+      <Card>
+        <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Forecasted cashflow</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Based on current debtor days, collection rate, and average billing</p>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
+            {(["6M", "12M"] as const).map(v => (
+              <button key={v} onClick={() => setForecastPeriod(v)} className={`px-3 py-1.5 transition-colors ${forecastPeriod === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>{v}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Settings panel */}
+        <div className="mb-5 p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02]">
+          <div className="flex items-center gap-1.5 mb-3">
+            <Sliders size={11} className="text-slate-400 dark:text-white/30" />
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Forecast assumptions — adjust to model scenarios</p>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-white/40 block mb-1.5">Current debtor days: <span className="text-indigo-600 dark:text-indigo-400">{debtorDays}d</span></label>
+              <input type="range" min={60} max={180} value={debtorDays} onChange={e => setDebtorDays(Number(e.target.value))} className="w-full accent-indigo-600 h-1.5" />
+            </div>
+            <div>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-white/40 block mb-1.5">Monthly improvement: <span className="text-indigo-600 dark:text-indigo-400">{collectionImprovement}d/mo</span></label>
+              <input type="range" min={0} max={10} step={0.5} value={collectionImprovement} onChange={e => setCollectionImprovement(Number(e.target.value))} className="w-full accent-indigo-600 h-1.5" />
+            </div>
+            <div>
+              <label className="text-[10px] font-semibold text-slate-500 dark:text-white/40 block mb-1.5">Monthly billing: <span className="text-indigo-600 dark:text-indigo-400">£{monthlyRevenue.toFixed(1)}M</span></label>
+              <input type="range" min={8} max={14} step={0.1} value={monthlyRevenue} onChange={e => setMonthlyRevenue(Number(e.target.value))} className="w-full accent-indigo-600 h-1.5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Forecast chart */}
+        <ResponsiveContainer width="100%" height={220}>
+          <LineChart data={forecastData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+            <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} />
+            <YAxis yAxisId="left" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}d`} width={36} domain={[80, 140]} />
+            <YAxis yAxisId="right" orientation="right" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}M`} width={44} />
+            <Tooltip content={<ChartTooltip formatter={(v, n) => n === "Lockup days" ? `${v}d` : `£${(Number(v) / 1000).toFixed(1)}M`} />} />
+            <ReferenceLine yAxisId="left" y={90} stroke="#10b981" strokeDasharray="5 3" strokeWidth={1.5} label={{ value: "90d target", fill: "#10b981", fontSize: 9, position: "insideTopRight" }} />
+            <Line yAxisId="left" type="monotone" dataKey="lockup" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3 }} name="Lockup days" />
+            <Line yAxisId="right" type="monotone" dataKey="debtors" stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="4 2" dot={false} name="Debtors £" />
+          </LineChart>
+        </ResponsiveContainer>
+
+        {/* Forecast table summary */}
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-slate-100 dark:border-white/[0.06]">
+                <th className="text-left pb-2 text-[9px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25">Month</th>
+                {forecastData.map(d => <th key={d.month} className="text-right pb-2 text-[9px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25">{d.month}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-slate-100 dark:border-white/[0.04]">
+                <td className="py-2 text-slate-500 dark:text-white/40">Lockup days</td>
+                {forecastData.map(d => <td key={d.month} className={`py-2 text-right font-mono font-semibold tabular-nums ${d.lockup <= 90 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{d.lockup}d</td>)}
+              </tr>
+              <tr>
+                <td className="py-2 text-slate-500 dark:text-white/40">Debtors</td>
+                {forecastData.map(d => <td key={d.month} className="py-2 text-right font-mono tabular-nums text-slate-600 dark:text-white/60">£{(d.debtors / 1000).toFixed(0)}M</td>)}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[10px] text-slate-400 dark:text-white/25 mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.05]">Forecast based on current trajectory + your assumptions above. Adjust the sliders to model different scenarios.</p>
+      </Card>
     </div>
   );
 }
@@ -1052,6 +1295,15 @@ function PeopleSection() {
   const netChange = latestHC.headcount - firstHC.headcount;
   const avgUtil   = utilisationHeatmap.reduce((s, g) => s + g.Mar, 0) / utilisationHeatmap.length;
   const avgTarget = utilisationHeatmap.reduce((s, g) => s + g.target, 0) / utilisationHeatmap.length;
+  const [utilView, setUtilView] = useState<"heatmap" | "bar" | "table">("heatmap");
+  const [hcView, setHcView] = useState<"area" | "bar">("area");
+
+  const utilBarData = utilisationHeatmap.map(g => ({
+    grade: g.grade.replace("Sr. ", "Sr."),
+    actual: g.Mar,
+    target: g.target,
+    delta: g.Mar - g.target,
+  }));
 
   function cellColor(util: number, target: number) {
     const delta = util - target;
@@ -1077,10 +1329,71 @@ function PeopleSection() {
         ))}
       </div>
 
-      {/* Utilisation heatmap */}
+      {/* Utilisation chart */}
       <Card>
-        <SectionHeader title="Are we utilising people effectively?" sub="Utilisation heatmap — grade × month · Oct 2024 – Mar 2025 · green = at/above target" />
-        <div className="overflow-x-auto">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Are we utilising people effectively?</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Utilisation by grade · Oct 2024 – Mar 2025 · green = at/above target</p>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
+            {(["heatmap", "bar", "table"] as const).map(v => (
+              <button key={v} onClick={() => setUtilView(v)} className={`px-3 py-1.5 transition-colors capitalize ${utilView === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>{v}</button>
+            ))}
+          </div>
+        </div>
+
+        {utilView === "bar" && (
+          <div className="mb-4">
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={utilBarData} layout="vertical" margin={{ top: 4, right: 60, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" horizontal={false} />
+                <XAxis type="number" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} domain={[40, 90]} />
+                <YAxis dataKey="grade" type="category" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} width={88} />
+                <Tooltip content={<ChartTooltip formatter={(v) => `${v}%`} />} />
+                <Bar dataKey="target" fill="#94a3b8" radius={[0,4,4,0]} name="Target" opacity={0.4} />
+                <Bar dataKey="actual" fill="#10b981" radius={[0,4,4,0]} name="Actual"
+                  label={{ position: "right", fill: "var(--chart-tick)", fontSize: 9, formatter: (v: number) => `${v.toFixed(1)}%` } as any} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {utilView === "table" && (
+          <div className="mb-4 overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-slate-100 dark:border-white/[0.06]">
+                  <th className="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Grade</th>
+                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Target</th>
+                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Mar 25</th>
+                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">vs Target</th>
+                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">6M Avg</th>
+                </tr>
+              </thead>
+              <tbody>
+                {utilisationHeatmap.map((row, i) => {
+                  const monthVals = heatmapMonths.map(m => row[m]);
+                  const avg = monthVals.reduce((s, v) => s + v, 0) / monthVals.length;
+                  const delta = row.Mar - row.target;
+                  return (
+                    <tr key={i} className="border-b border-slate-100 dark:border-white/[0.04]">
+                      <td className="py-2.5 font-semibold text-slate-800 dark:text-white/80">{row.grade}</td>
+                      <td className="py-2.5 text-right font-mono tabular-nums text-slate-500 dark:text-white/40">{row.target}%</td>
+                      <td className={`py-2.5 text-right font-mono tabular-nums font-semibold ${delta >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{row.Mar}%</td>
+                      <td className={`py-2.5 text-right font-mono tabular-nums text-[10px] ${delta >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{delta >= 0 ? "+" : ""}{delta.toFixed(1)}pp</td>
+                      <td className="py-2.5 text-right font-mono tabular-nums text-slate-500 dark:text-white/40">{avg.toFixed(1)}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Heatmap — original view, shown when utilView === "heatmap" */}
+        {utilView === "heatmap" && (
+        <><div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr>
@@ -1122,14 +1435,25 @@ function PeopleSection() {
           <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-rose-200/80 dark:bg-rose-500/30" />Below target</span>
           <span className="ml-auto">Mar 25: Associates only grade below target (–0.9pp)</span>
         </div>
+        </>)}
       </Card>
 
       {/* Headcount trend */}
       <Card>
-        <SectionHeader title="Headcount — Nov 2025 to Apr 2026" sub="Total and fee earners · CRM · stable growth, no attrition spike" />
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Headcount — Nov 2025 to Apr 2026</h2>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Total and fee earners · CRM · stable growth, no attrition spike</p>
+          </div>
+          <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
+            {(["area", "bar"] as const).map(v => (
+              <button key={v} onClick={() => setHcView(v)} className={`px-3 py-1.5 transition-colors capitalize ${hcView === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>{v}</button>
+            ))}
+          </div>
+        </div>
         <div className="mt-1 mb-2">
           <ResponsiveContainer width="100%" height={230}>
-            <AreaChart data={hcData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+            {hcView === "area" ? (<AreaChart data={hcData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="hcGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.14} />
@@ -1146,7 +1470,15 @@ function PeopleSection() {
               <Tooltip content={<ChartTooltip formatter={(v, n) => `${v} ${n.toLowerCase()}`} />} />
               <Area type="monotone" dataKey="headcount"  stroke="#6366f1" strokeWidth={2.5} fill="url(#hcGrad)" name="Headcount" />
               <Area type="monotone" dataKey="feeEarners" stroke="#10b981" strokeWidth={2}   fill="url(#feGrad)"  name="Fee earners" />
-            </AreaChart>
+            </AreaChart>) : (
+            <BarChart data={hcData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} domain={[500, 760]} width={36} />
+              <Tooltip content={<ChartTooltip formatter={(v, n) => `${v} ${n.toLowerCase()}`} />} />
+              <Bar dataKey="headcount"  fill="#6366f1" radius={[4,4,0,0]} name="Headcount" />
+              <Bar dataKey="feeEarners" fill="#10b981" radius={[4,4,0,0]} name="Fee earners" />
+            </BarChart>)}
           </ResponsiveContainer>
         </div>
         <div className="flex items-center gap-6 pt-2 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
@@ -1173,7 +1505,7 @@ function PeopleSection() {
    RISKS & EXCEPTIONS SECTION
 ───────────────────────────────────────────── */
 
-function AlertsSection() {
+function AlertsSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
   const critical = [
     { area: "Collections", title: "£80.6M aged 91+ — 90.4% of debtor book",           detail: "Insolvency case cycles drive aging but 90%+ is structurally elevated. Targeted recovery strategy required now." },
     { area: "Financial",   title: "Revenue –4.6% vs budget in Mar 25 (–£520k)",        detail: "Third miss in six months. YTD £1.4M behind plan. CVL intake volume softness is the driver." },
@@ -1200,8 +1532,26 @@ function AlertsSection() {
     { name: "March 2025 — Utilisation by Grade", type: "People",      updated: "Today", filename: "mar2025_utilisation.csv", csv: `Grade,Actual,Target,Delta\nPartner,56.9%,55.0%,+1.9pp\nDirector,65.8%,65.0%,+0.8pp\nSr. Manager,73.1%,72.0%,+1.1pp\nManager,78.3%,77.0%,+1.3pp\nSr. Associate,80.4%,80.0%,+0.4pp\nAssociate,81.1%,82.0%,-0.9pp\n` },
   ];
 
+  const insights = [
+    { num: "01", type: "critical" as const, title: "Collections crisis: £80.6M stuck in 91+ days — cash conversion at structural risk", cause: "Insolvency case cycles extend collection timescales, but 90.4% of the debtor book aged beyond 91 days is structural, not cyclical. AR grew +£2.8M in March alone with no offsetting collection acceleration.", impact: "At current trajectory, total lockup reaches £135M+ by June 2025. Each additional month of 91+ growth costs approximately £3M in working capital availability." },
+    { num: "02", type: "warning"  as const, title: "Revenue £1.4M below YTD budget — CVL volume the single biggest risk", cause: "CVL intake has been soft for 3 consecutive months. Budget assumed £1.6M/month from CVL; actual is averaging £1.38M. The shortfall of £220k/month is consistent, not one-off.", impact: "If CVL run rate doesn't recover by Q2 FY26, the full-year revenue miss will widen to £2.4–2.8M. EBITDA impact at current margins: approximately £500–600k below full-year target." },
+    { num: "03", type: "positive" as const, title: "Operating margin hit 20.9% — 3-month recovery trend is real and accelerating", cause: "Total opex fell £61k MoM (staff –£20k, contractors –£48k, premises –£11k) against flat revenue. The 18.5% → 19.8% → 20.9% trend represents 2.4pp recovery in 3 months.", impact: "If this margin trajectory holds, the firm is on track to reach the 22.0% target by May 2025. Each additional percentage point = approximately £106k/month of EBITDA improvement." },
+    { num: "04", type: "positive" as const, title: "WIP declining to £39.1M — operational billing pipeline is healthy", cause: "WIP fell from £47.4M (Nov peak) to £39.1M in March — a £8.3M reduction in 4 months. Cases are progressing to billing stage. The conversion pipeline is functioning correctly.", impact: "If the remaining £39.1M WIP converts at the historical rate, it would add approximately £13M of revenue over the next 90 days. Collections is the single constraint on cash conversion." },
+    { num: "05", type: "warning"  as const, title: "Contractor cost reduction saves £48k but creates capacity risk heading into Q2", cause: "Two fixed-term contractors rolled off in February and were not replaced. Combined saving: £48k/month. However, these contractors supported case administration in CVL and Administration — the two highest-revenue lines.", impact: "If CVL and Administration case volumes increase (as expected), the firm may face a capacity constraint by May–June 2025. A hire decision now would take 6–8 weeks to operationalise." },
+  ];
+
+  const typeCfg = {
+    critical: { bar: "bg-rose-500",    badge: "bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-300 dark:border-rose-500/25",    label: "Critical"  },
+    warning:  { bar: "bg-amber-400",   badge: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/25",  label: "Watch"     },
+    positive: { bar: "bg-emerald-500", badge: "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/25", label: "Positive" },
+  };
+
   return (
     <div className="space-y-5">
+
+      {/* Action layer at top */}
+      <ActionLayer onTabChange={onTabChange} />
+
       <div className="grid grid-cols-3 gap-4">
         {[
           { label: "Critical",     value: `${critical.length}`,     color: "text-rose-700   dark:text-rose-400",   bg: "bg-rose-100   dark:bg-rose-500/10"   },
@@ -1266,6 +1616,176 @@ function AlertsSection() {
           ))}
         </div>
       </Card>
+
+      {/* Deep insights */}
+      <Card>
+        <SectionHeader title="Key financial insights" sub="System-generated · cause + impact analysis · March 2025" badge="5 insights" />
+        <div className="space-y-3">
+          {insights.map((ins, i) => {
+            const cfg = typeCfg[ins.type];
+            return (
+              <div key={i} className="rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] overflow-hidden">
+                <div className={`h-[2px] ${cfg.bar}`} />
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-[1.4rem] font-black text-slate-100 dark:text-white/10 leading-none font-mono shrink-0 select-none">{ins.num}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start gap-2 mb-2">
+                        <p className="font-semibold text-[12.5px] text-slate-900 dark:text-white leading-snug flex-1">{ins.title}</p>
+                        <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border shrink-0 ${cfg.badge}`}>{cfg.label}</span>
+                      </div>
+                      <div className="grid lg:grid-cols-2 gap-2">
+                        <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-1">Cause</p>
+                          <p className="text-[11px] text-slate-600 dark:text-white/60 leading-relaxed">{ins.cause}</p>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-white/[0.025] border border-slate-100 dark:border-white/[0.05]">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-1">Impact</p>
+                          <p className="text-[11px] text-slate-600 dark:text-white/60 leading-relaxed">{ins.impact}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   REPORTS SECTION
+───────────────────────────────────────────── */
+
+function ReportsSection() {
+  const [printMode, setPrintMode] = useState(false);
+
+  const reportDefs = [
+    {
+      name: "March 2025 — P&L Summary", type: "Financial", filename: "mar2025_pl.csv",
+      csv: `Category,£000\nRevenue,10570\nCost of Sales,4143\nGross Profit,6427\nTotal Opex,4091\nEBITDA,2336\nEBITDA Margin,22.1%\nDepreciation,127\nFinance Costs,210\nTax Provision,209\nNet Profit,1790\n`,
+    },
+    {
+      name: "March 2025 — Budget vs Actual", type: "Financial", filename: "mar2025_bva.csv",
+      csv: `Month,Budget £000,Actual £000,Variance £000,Variance %\nOct,10550,10330,-220,-2.1%\nNov,10520,10560,+40,+0.4%\nDec,10970,10670,-300,-2.8%\nJan,10990,10490,-500,-4.6%\nFeb,10260,10510,+250,+2.5%\nMar,11090,10570,-520,-4.6%\n`,
+    },
+    {
+      name: "March 2025 — Debtors & Lockup", type: "Collections", filename: "mar2025_lockup.csv",
+      csv: `Month,Total Debtors £000,Aged 91+ £000,WIP £000,Lockup Days\nOct,75740,70650,44940,110\nNov,77620,72290,47430,119\nDec,80610,73880,45180,122\nJan,83310,75740,42390,125\nFeb,86380,77610,40340,119\nMar,89180,80590,39120,118\n`,
+    },
+    {
+      name: "March 2025 — Utilisation by Grade", type: "People", filename: "mar2025_utilisation.csv",
+      csv: `Grade,Target %,Oct %,Nov %,Dec %,Jan %,Feb %,Mar %,vs Target\nPartner,55.0,55.2,56.0,57.1,55.8,56.2,56.9,+1.9pp\nDirector,65.0,64.8,65.5,66.2,64.9,65.1,65.8,+0.8pp\nSr. Manager,72.0,72.1,73.0,74.2,72.8,72.5,73.1,+1.1pp\nManager,77.0,77.5,78.1,79.0,78.2,77.9,78.3,+1.3pp\nSr. Associate,80.0,79.8,80.5,81.0,80.1,79.8,80.4,+0.4pp\nAssociate,82.0,81.8,82.1,82.5,81.5,80.9,81.1,-0.9pp\n`,
+    },
+    {
+      name: "March 2025 — Service Line Revenue", type: "Financial", filename: "mar2025_servicelines.csv",
+      csv: `Service Line,Oct £000,Nov £000,Dec £000,Jan £000,Feb £000,Mar £000,MoM %,6M Total £000\nCVL,1340,1380,1395,1350,1385,1420,+2.5%,8270\nAdministration,1150,1175,1195,1158,1180,1210,+2.5%,7068\nRestructuring,625,650,635,620,640,658,+2.8%,3828\nLPA Receivership,490,503,498,488,495,510,+3.0%,2984\nCreditor Svcs,432,440,438,428,435,442,+1.6%,2615\nMVL,398,406,400,395,402,415,+3.2%,2416\nOther,895,1006,1109,1051,973,915,-6.0%,5949\n`,
+    },
+  ];
+
+  function downloadCsv(r: typeof reportDefs[0]) {
+    const b = new Blob([r.csv], { type: "text/csv" });
+    const u = URL.createObjectURL(b);
+    const a = document.createElement("a");
+    a.href = u; a.download = r.filename; a.click();
+    URL.revokeObjectURL(u);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Financial reports</h2>
+          <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Auto-generated · updated daily · formatted for financial accounting</p>
+        </div>
+        <button
+          onClick={() => setPrintMode(p => !p)}
+          className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white border border-slate-200 dark:border-white/[0.08] px-3 py-1.5 rounded-lg transition-colors"
+        >
+          <Printer size={12} /> {printMode ? "Normal view" : "Print view"}
+        </button>
+      </div>
+
+      {/* P&L Report */}
+      <div className={`rounded-2xl border ${printMode ? "border-slate-400 bg-white dark:bg-white text-slate-900" : "border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17]"} shadow-sm overflow-hidden`}>
+        {printMode && (
+          <div className="px-8 py-5 border-b border-slate-200 flex items-start justify-between">
+            <div>
+              <p className="text-lg font-bold text-slate-900">BTG Advisory Group</p>
+              <p className="text-sm text-slate-600">Profit & Loss Statement — March 2025</p>
+              <p className="text-xs text-slate-400 mt-0.5">Prepared by: CEO Operating System · Confidential</p>
+            </div>
+            <div className="text-right text-xs text-slate-500">
+              <p>Period: March 2025</p>
+              <p>Prepared: {new Date().toLocaleDateString("en-GB")}</p>
+            </div>
+          </div>
+        )}
+        <div className={printMode ? "px-8 py-4" : "px-6 py-5"}>
+          {!printMode && <SectionHeader title="P&L Statement — March 2025" sub="vs February 2025 vs budget · £000" badge="Financial" />}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-white/[0.08]">
+                  <th className="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Line Item</th>
+                  <th className="text-right pb-3 pr-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Mar 25 £000</th>
+                  <th className="text-right pb-3 pr-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Feb 25 £000</th>
+                  <th className="text-right pb-3 pr-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Budget £000</th>
+                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">vs Budget</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plDetail.map((row, i) => {
+                  const isIncome = ["Revenue", "Gross Profit", "EBITDA", "Net Profit"].includes(row.label);
+                  const budgetVar = row.curr - row.budget;
+                  const goodVar = isIncome ? budgetVar >= 0 : budgetVar <= 0;
+                  return (
+                    <tr key={i} className={`${row.isTotal ? "border-t-2 border-slate-300 dark:border-white/[0.15]" : row.isSubtotal ? "border-t border-slate-200 dark:border-white/[0.08]" : ""} ${i < plDetail.length - 1 ? "border-b border-slate-100 dark:border-white/[0.04]" : ""}`}>
+                      <td className={`py-2.5 ${row.indent > 0 ? "pl-5" : ""} ${row.isSubtotal || row.isTotal ? "font-bold text-slate-900 dark:text-white" : "text-slate-700 dark:text-white/70"}`}>{row.label}</td>
+                      <td className={`py-2.5 text-right pr-4 font-mono tabular-nums ${row.isSubtotal || row.isTotal ? "font-bold text-slate-900 dark:text-white" : "text-slate-700 dark:text-white/70"}`}>{(row.curr / 1000).toFixed(0)}</td>
+                      <td className="py-2.5 text-right pr-4 font-mono tabular-nums text-[11px] text-slate-500 dark:text-white/40">{(row.prev / 1000).toFixed(0)}</td>
+                      <td className="py-2.5 text-right pr-4 font-mono tabular-nums text-[11px] text-slate-400 dark:text-white/30">{(row.budget / 1000).toFixed(0)}</td>
+                      <td className={`py-2.5 text-right font-mono tabular-nums text-[11px] font-semibold ${goodVar ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        {budgetVar >= 0 ? "+" : ""}{(budgetVar / 1000).toFixed(0)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="px-6 py-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center justify-between">
+          <p className="text-[10px] text-slate-400 dark:text-white/25">All figures in £000 · Source: ERP system · High-confidence data only</p>
+          <button onClick={() => downloadCsv(reportDefs[0])} className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+            <Download size={12} /> Export CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Other available reports */}
+      <Card>
+        <SectionHeader title="Available reports" sub="Export CSV · updated daily" badge={`${reportDefs.length} reports`} />
+        <div className="space-y-2">
+          {reportDefs.map((r, i) => (
+            <div key={i} className="flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-slate-50 dark:bg-white/[0.02] hover:bg-white dark:hover:bg-white/[0.04] hover:shadow-sm transition-all">
+              <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center shrink-0">
+                <FileText size={14} className="text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">{r.name}</p>
+                <p className="text-xs text-slate-500 dark:text-white/35">{r.type} · Updated today</p>
+              </div>
+              <button onClick={() => downloadCsv(r)} className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-white/35 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0">
+                <Download size={13} /> Export
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
@@ -1290,7 +1810,7 @@ const slLines = [
 ];
 
 function ServiceLineDeepSection() {
-  const [view, setView]           = useState<"table" | "stacked" | "trend" | "mix">("table");
+  const [view, setView]           = useState<"table" | "stacked" | "trend" | "mix" | "leaderboard">("table");
   const [activeLine, setActiveLine] = useState<string | null>(null);
   const totalPerMonth = slMonths.map((_, mi) => slLines.reduce((s, l) => s + l.data[mi], 0));
 
@@ -1345,7 +1865,7 @@ function ServiceLineDeepSection() {
             <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Oct 2024 – Mar 2025 · £000</p>
           </div>
           <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
-            {(["table", "stacked", "trend", "mix"] as const).map(v => (
+            {(["table", "stacked", "trend", "mix", "leaderboard"] as const).map(v => (
               <button key={v} onClick={() => { setView(v); setActiveLine(null); }}
                 className={`px-3 py-1.5 transition-colors capitalize ${view === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>
                 {v}
@@ -1544,6 +2064,48 @@ function ServiceLineDeepSection() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* LEADERBOARD */}
+        {view === "leaderboard" && (
+          <div className="space-y-2">
+            {[...slLines]
+              .sort((a, b) => b.data[5] - a.data[5])
+              .map((sl, rank) => {
+                const mom = ((sl.data[5] - sl.data[4]) / sl.data[4] * 100);
+                const sixTotal = sl.data.reduce((s, v) => s + v, 0);
+                const share = (sl.data[5] / slLines.reduce((s, l) => s + l.data[5], 0) * 100);
+                const vsTarget = sl.data[5] - sl.target;
+                return (
+                  <div key={sl.name} className="flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.02]">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-sm" style={{ background: sl.color + "22", color: sl.color }}>
+                      {rank + 1}
+                    </div>
+                    <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: sl.color }} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-white/90">{sl.name}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-white/30">{share.toFixed(1)}% of revenue</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-bold font-mono tabular-nums text-slate-900 dark:text-white">£{(sl.data[5]/1000).toFixed(2)}M</p>
+                      <p className="text-[10px] text-slate-400 dark:text-white/30">Mar 25</p>
+                    </div>
+                    <div className="text-right shrink-0 w-16">
+                      <p className={`text-xs font-bold font-mono tabular-nums ${mom >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{mom >= 0 ? "+" : ""}{mom.toFixed(1)}%</p>
+                      <p className="text-[10px] text-slate-400 dark:text-white/30">MoM</p>
+                    </div>
+                    <div className="text-right shrink-0 w-16">
+                      <p className={`text-xs font-bold font-mono tabular-nums ${vsTarget >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{vsTarget >= 0 ? "+" : ""}£{Math.abs(vsTarget)}k</p>
+                      <p className="text-[10px] text-slate-400 dark:text-white/30">vs target</p>
+                    </div>
+                    <div className="text-right shrink-0 w-20">
+                      <p className="text-xs font-mono tabular-nums text-slate-500 dark:text-white/40">£{(sixTotal/1000).toFixed(1)}M</p>
+                      <p className="text-[10px] text-slate-400 dark:text-white/30">6M total</p>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         )}
       </Card>
@@ -2073,25 +2635,25 @@ function PLSection() {
 ───────────────────────────────────────────── */
 
 const NAV_ITEMS = [
+  { label: "Home",                   icon: Home       },
   { label: "KPI Dashboard",          icon: BarChart2  },
-  { label: "Service Lines",          icon: Layers     },
-  { label: "Financial Movements",    icon: FileText   },
-  { label: "Insights",               icon: Activity   },
   { label: "Financial Performance",  icon: TrendingUp },
   { label: "Collections & Cash",     icon: DollarSign },
   { label: "People & Capacity",      icon: Users      },
+  { label: "Service Lines",          icon: Layers     },
   { label: "Risks & Exceptions",     icon: Zap        },
+  { label: "Reports",                icon: FileText   },
 ];
 
 const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
-  "KPI Dashboard":          { title: "KPI dashboard — March 2025",          sub: "BTG Advisory Group · 10 KPIs · all fields · March 2025"              },
-  "Service Lines":          { title: "Service line revenue",                sub: "Monthly breakdown · growth rates · contribution % · Oct–Mar 2025"    },
-  "Financial Movements":    { title: "Key financial movements",             sub: "Mar 25 vs Feb 25 · driver breakdown · 10 line items with explanation" },
-  "Insights":               { title: "Key financial insights",              sub: "5 system-generated insights · cause + impact analysis · March 2025"   },
-  "Financial Performance":  { title: "Financial performance",               sub: "Revenue, EBITDA, budget vs actual, service lines"                     },
-  "Collections & Cash":     { title: "Collections & cash conversion",       sub: "Debtors aging, lockup days, WIP pipeline"                            },
-  "People & Capacity":      { title: "People & capacity",                   sub: "Headcount, fee earners, utilisation heatmap"                         },
-  "Risks & Exceptions":     { title: "Risks & exceptions",                  sub: "All system-generated signals and reports"                            },
+  "Home":                   { title: "BTG Advisory Group",                  sub: "CEO operating system · March 2025 · high-confidence data only"       },
+  "KPI Dashboard":          { title: "KPI dashboard — March 2025",          sub: "BTG Advisory Group · 10 KPIs · filter, expand, drill down"           },
+  "Financial Performance":  { title: "Financial performance",               sub: "Revenue, EBITDA, budget vs actual · multiple chart views"            },
+  "Collections & Cash":     { title: "Collections & cash conversion",       sub: "Debtors aging, lockup days, WIP pipeline · 6 & 12 month forecast"   },
+  "People & Capacity":      { title: "People & capacity",                   sub: "Headcount, fee earners, utilisation · heatmap & bar chart views"     },
+  "Service Lines":          { title: "Service line revenue",                sub: "Monthly breakdown · growth rates · contribution % · leaderboard"     },
+  "Risks & Exceptions":     { title: "Risks & exceptions",                  sub: "Critical signals · insights · action items · all system flags"       },
+  "Reports":                { title: "Financial reports",                   sub: "Export-ready · formatted for financial accounting · updated daily"   },
 };
 
 /* ─────────────────────────────────────────────
@@ -2099,7 +2661,7 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
 ───────────────────────────────────────────── */
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("KPI Dashboard");
+  const [activeTab, setActiveTab] = useState("Home");
   const header     = SECTION_HEADERS[activeTab];
   const alertCount = 2;
 
@@ -2210,14 +2772,14 @@ export default function Dashboard() {
         </header>
 
         <main className="p-6 lg:p-8 max-w-[1440px]">
-          {activeTab === "KPI Dashboard"         && <OverviewSection onTabChange={setActiveTab} />}
+          {activeTab === "Home"                  && <HomeSection       onTabChange={setActiveTab} />}
+          {activeTab === "KPI Dashboard"         && <OverviewSection   onTabChange={setActiveTab} />}
+          {activeTab === "Financial Performance" && <FinancialSection  />}
+          {activeTab === "Collections & Cash"    && <CashSection       />}
+          {activeTab === "People & Capacity"     && <PeopleSection     />}
           {activeTab === "Service Lines"         && <ServiceLineDeepSection />}
-          {activeTab === "Financial Movements"   && <FinancialMovementsSection />}
-          {activeTab === "Insights"              && <InsightsSection    />}
-          {activeTab === "Financial Performance" && <FinancialSection   />}
-          {activeTab === "Collections & Cash"    && <CashSection        />}
-          {activeTab === "People & Capacity"     && <PeopleSection      />}
-          {activeTab === "Risks & Exceptions"    && <AlertsSection      />}
+          {activeTab === "Risks & Exceptions"    && <AlertsSection     onTabChange={setActiveTab} />}
+          {activeTab === "Reports"               && <ReportsSection    />}
 
           <div className="flex flex-col items-center gap-2 pt-10 pb-6">
             <Image src="/logo.png" alt="Quantyx Advisory" width={96} height={24} className="object-contain opacity-40 dark:opacity-25 dark:brightness-[2]" />
