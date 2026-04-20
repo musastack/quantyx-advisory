@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  AreaChart, Area, BarChart, Bar,
+  AreaChart, Area, BarChart, Bar, ComposedChart, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine,
 } from "recharts";
 import {
@@ -343,7 +343,7 @@ function RichKpiCard({ k, onDrilldown }: { k: KpiEntry; onDrilldown?: () => void
           <div>
             <p className="text-[1.6rem] font-bold tracking-tight text-slate-900 dark:text-white font-mono leading-none tabular-nums">{k.current}</p>
             <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-[10px] text-slate-400 dark:text-white/30">vs {k.prev}</span>
+              <span className="text-[10px] text-slate-400 dark:text-white/30">vs <span className="font-semibold text-slate-500 dark:text-white/45">{k.trend3[1].m} 25:</span> {k.prev}</span>
               <span className={`text-[11px] font-bold font-mono ${k.pctUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                 {k.absChange}
               </span>
@@ -579,10 +579,23 @@ function ChartTooltip({ active, payload, label, formatter }: {
 
 const PERIODS = ["Oct 24", "Nov 24", "Dec 24", "Jan 25", "Feb 25", "Mar 25"] as const;
 
-function CommandStrip() {
-  const [activePeriod, setActivePeriod] = useState<string>("Mar 25");
-  const latest    = plData[plData.length - 1];
-  const latestRec = recData[recData.length - 1];
+const PERIOD_MONTH_NAMES: Record<string, string> = {
+  "Oct 24": "October 2024", "Nov 24": "November 2024", "Dec 24": "December 2024",
+  "Jan 25": "January 2025", "Feb 25": "February 2025", "Mar 25": "March 2025",
+};
+
+function CommandStrip({ activePeriod, onPeriodChange }: { activePeriod: string; onPeriodChange: (p: string) => void }) {
+  const periodIdx  = PERIODS.indexOf(activePeriod as typeof PERIODS[number]);
+  const plIdx      = 6 + periodIdx; // plData[0-5]=Apr-Sep, plData[6-11]=Oct-Mar
+  const selectedPl  = plData[Math.min(plIdx, plData.length - 1)];
+  const selectedRec = recData[Math.min(periodIdx, recData.length - 1)];
+  const selectedWip = wipData[Math.min(periodIdx, wipData.length - 1)];
+  const budgetRow   = bvaData[periodIdx];
+  const revVar      = budgetRow
+    ? ((selectedPl.revenue - budgetRow.budget) / budgetRow.budget * 100).toFixed(1)
+    : null;
+  const monthName   = PERIOD_MONTH_NAMES[activePeriod] ?? activePeriod;
+  const isLatest    = activePeriod === "Mar 25";
 
   return (
     <div className="mb-7 relative overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-r from-indigo-50/80 via-white to-white dark:from-indigo-500/[0.07] dark:via-[#0b0b17] dark:to-[#0b0b17] shadow-sm dark:shadow-none">
@@ -599,24 +612,38 @@ function CommandStrip() {
               </div>
               <span className="font-bold text-slate-900 dark:text-white text-[13px] tracking-tight">BTG Advisory Group</span>
               <span className="text-slate-300 dark:text-white/15 select-none">·</span>
-              <span className="text-xs text-slate-400 dark:text-white/35 font-medium">March 2025</span>
-              <span className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />Live
-              </span>
+              <span className="text-xs text-slate-400 dark:text-white/35 font-medium">{monthName}</span>
+              {isLatest && (
+                <span className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />Live
+                </span>
+              )}
+              {!isLatest && (
+                <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                  Historical snapshot
+                </span>
+              )}
             </div>
             <p className="text-[13px] font-semibold text-slate-800 dark:text-white/80 leading-snug mb-1">
-              Revenue growing. Margin recovering. Debtors need action.
+              {isLatest ? "Revenue growing. Margin recovering. Debtors need action." : `Snapshot · ${monthName}`}
             </p>
             <p className="text-[12px] text-slate-500 dark:text-white/40 leading-relaxed max-w-2xl">
-              £{(latest.revenue / 1000).toFixed(2)}M revenue MTD at {latest.ebitdaM}% EBITDA — best margin in 12 months. £{((latestRec.debtors + wipData[wipData.length - 1].wip) / 1000).toFixed(1)}M locked in debtors and WIP. Collections is the strategic priority.
+              £{(selectedPl.revenue / 1000).toFixed(2)}M revenue at {selectedPl.ebitdaM}% EBITDA.{" "}
+              £{((selectedRec.debtors + selectedWip.wip) / 1000).toFixed(1)}M locked in debtors and WIP.{" "}
+              {revVar !== null ? `Revenue ${Number(revVar) >= 0 ? "+" : ""}${revVar}% vs budget.` : "No budget data for this period."}
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5 shrink-0">
             {[
-              { label: "2 critical alerts",    cls: "text-rose-700   bg-rose-100   border-rose-300   dark:text-rose-300   dark:bg-rose-500/15   dark:border-rose-500/30"    },
-              { label: "Rev –4.6% vs target",  cls: "text-amber-700  bg-amber-100  border-amber-300  dark:text-amber-300  dark:bg-amber-500/15  dark:border-amber-500/30"   },
-              { label: `Lockup ${latestRec.lockup}d`, cls: "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20" },
-              { label: `EBITDA ${latest.ebitdaM}%`,   cls: "text-emerald-700 bg-emerald-100 border-emerald-300 dark:text-emerald-300 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
+              ...(isLatest ? [{ label: "2 critical alerts", cls: "text-rose-700 bg-rose-100 border-rose-300 dark:text-rose-300 dark:bg-rose-500/15 dark:border-rose-500/30" }] : []),
+              ...(revVar !== null ? [{
+                label: `Rev ${Number(revVar) >= 0 ? "+" : ""}${revVar}% vs budget`,
+                cls: Number(revVar) >= 0
+                  ? "text-emerald-700 bg-emerald-100 border-emerald-300 dark:text-emerald-300 dark:bg-emerald-500/15 dark:border-emerald-500/30"
+                  : "text-amber-700 bg-amber-100 border-amber-300 dark:text-amber-300 dark:bg-amber-500/15 dark:border-amber-500/30",
+              }] : []),
+              { label: `Lockup ${selectedRec.lockup}d`, cls: "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20" },
+              { label: `EBITDA ${selectedPl.ebitdaM}%`, cls: "text-emerald-700 bg-emerald-100 border-emerald-300 dark:text-emerald-300 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
             ].map(b => (
               <span key={b.label} className={`text-[11px] font-semibold px-3 py-1.5 rounded-full border ${b.cls} whitespace-nowrap`}>{b.label}</span>
             ))}
@@ -630,7 +657,7 @@ function CommandStrip() {
             {PERIODS.map(p => (
               <button
                 key={p}
-                onClick={() => setActivePeriod(p)}
+                onClick={() => onPeriodChange(p)}
                 className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg transition-all ${
                   activePeriod === p
                     ? "bg-indigo-600 text-white shadow-sm"
@@ -653,15 +680,11 @@ function CommandStrip() {
 ───────────────────────────────────────────── */
 
 function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
-  const latest    = plData[plData.length - 1];
-  const latestRec = recData[recData.length - 1];
-  const latestHC  = hcData[hcData.length - 1];
-  const latestFM  = financialMetrics[financialMetrics.length - 1];
-  const avgUtil   = utilisationHeatmap.reduce((s, g) => s + g.Mar, 0) / utilisationHeatmap.length;
+  const [activePeriod, setActivePeriod] = useState<string>("Mar 25");
 
   return (
     <div className="space-y-6">
-      <CommandStrip />
+      <CommandStrip activePeriod={activePeriod} onPeriodChange={setActivePeriod} />
 
       {/* 10 Rich KPI cards — all 11 required fields each */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -685,29 +708,63 @@ function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }
 
       {/* Revenue vs target chart */}
       <Card>
-        <SectionHeader title="Are we hitting revenue target?" sub="Monthly revenue vs budget · Apr 2024 – Mar 2025 · budget overlay from Oct 24" />
+        <SectionHeader title="Are we hitting revenue target?" sub="Monthly revenue vs budget · Apr 2024 – Mar 2025 · green = above budget · red = below budget" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#6366f1" stopOpacity={0.12} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0}    />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+          <ResponsiveContainer width="100%" height={280}>
+            <ComposedChart data={plData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52} />
+              <YAxis
+                tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false}
+                tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={52}
+                domain={[9000, 12000]}
+              />
               <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(2)}M`} />} />
-              <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2.5} fill="url(#revGrad)" name="Revenue" />
-              <Line type="monotone" dataKey="budget"  stroke="#f43f5e" strokeWidth={1.5} strokeDasharray="5 3" dot={false} name="Budget" connectNulls={false} />
-            </AreaChart>
+              <Bar dataKey="revenue" name="Revenue" radius={[4, 4, 0, 0]} maxBarSize={38}>
+                {plData.map((entry, i) => {
+                  const hasBudget = entry.budget != null;
+                  const above = hasBudget && entry.revenue >= (entry.budget ?? 0);
+                  return (
+                    <Cell
+                      key={i}
+                      fill={!hasBudget ? "#818cf8" : above ? "#10b981" : "#f43f5e"}
+                      fillOpacity={!hasBudget ? 0.55 : 0.85}
+                    />
+                  );
+                })}
+              </Bar>
+              <Line
+                type="monotone" dataKey="budget" stroke="#64748b" strokeWidth={2}
+                strokeDasharray="6 3" dot={false} name="Budget" connectNulls={false}
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
+        {/* Variance summary row — Oct to Mar */}
+        <div className="grid grid-cols-6 gap-1.5 mb-3">
+          {bvaData.map((d) => {
+            const diff = d.actual - d.budget;
+            const pct  = ((diff / d.budget) * 100).toFixed(1);
+            const pos  = diff >= 0;
+            return (
+              <div key={d.month} className={`rounded-lg p-2 text-center border ${pos ? "border-emerald-200 dark:border-emerald-500/25 bg-emerald-50 dark:bg-emerald-500/[0.06]" : "border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]"}`}>
+                <p className="text-[9px] font-semibold text-slate-400 dark:text-white/30 mb-0.5">{d.month}</p>
+                <p className={`text-[11px] font-bold font-mono tabular-nums ${pos ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}`}>
+                  {pos ? "+" : ""}{(diff / 1000).toFixed(0)}k
+                </p>
+                <p className={`text-[9px] font-semibold ${pos ? "text-emerald-600/70 dark:text-emerald-400/60" : "text-rose-600/70 dark:text-rose-400/60"}`}>
+                  {pos ? "+" : ""}{pct}%
+                </p>
+              </div>
+            );
+          })}
+        </div>
         <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />Revenue</span>
-          <span className="flex items-center gap-2"><span className="inline-block w-5 border-t-2 border-dashed border-rose-500" />Budget target</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Nov 24 only month above budget in past 6 · Mar 25 miss: –£520k</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-400 opacity-60" />No budget (Apr–Sep)</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />Above budget</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500" />Below budget</span>
+          <span className="flex items-center gap-2 ml-1"><span className="inline-block w-5 border-t-2 border-dashed border-slate-500" />Budget target</span>
+          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">Nov 24 only above-budget month · cumulative miss Oct–Mar: –£1.4M</span>
         </div>
       </Card>
 
