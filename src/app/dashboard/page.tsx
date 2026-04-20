@@ -237,27 +237,6 @@ const plDetail = [
 ];
 
 // Balance sheet — Mar 25 vs Feb 25
-const bsAssets = [
-  { label: "Cash & Equivalents",   curr: 3950,   prev: 3810,   group: "current" },
-  { label: "Accounts Receivable",  curr: 89180,  prev: 86380,  group: "current" },
-  { label: "WIP",                  curr: 39120,  prev: 40340,  group: "current" },
-  { label: "Other Current Assets", curr: 2140,   prev: 2090,   group: "current" },
-  { label: "Fixed Assets (net)",   curr: 4820,   prev: 4947,   group: "fixed"   },
-  { label: "Total Assets",         curr: 139210, prev: 137567, group: "total"   },
-];
-const bsLiabilities = [
-  { label: "Accounts Payable",    curr: 4810,  prev: 4920,  group: "current" },
-  { label: "Accruals",            curr: 2840,  prev: 2790,  group: "current" },
-  { label: "Short-term Debt",     curr: 6200,  prev: 6200,  group: "current" },
-  { label: "Other Current Liab.", curr: 1820,  prev: 1780,  group: "current" },
-  { label: "Long-term Debt",      curr: 12400, prev: 12610, group: "long"    },
-  { label: "Total Liabilities",   curr: 28070, prev: 28300, group: "total"   },
-];
-const bsEquity = [
-  { label: "Share Capital",     curr: 5000,   prev: 5000,   group: "equity" },
-  { label: "Retained Earnings", curr: 106140, prev: 104267, group: "equity" },
-  { label: "Total Equity",      curr: 111140, prev: 109267, group: "total"  },
-];
 
 /* ─────────────────────────────────────────────
    SPARKLINE + TREND BADGE
@@ -700,7 +679,7 @@ function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }
         {kpiData.slice(5).map((k, i) => (
           <RichKpiCard key={i} k={k}
             onDrilldown={() => onTabChange(
-              i === 0 ? "Balance Sheet" : i === 1 ? "Balance Sheet" : i === 2 ? "Collections & Cash" : i === 3 ? "Collections & Cash" : "Balance Sheet"
+              i === 0 ? "Financial Performance" : i === 1 ? "Financial Performance" : i === 2 ? "Collections & Cash" : i === 3 ? "Collections & Cash" : "Financial Performance"
             )}
           />
         ))}
@@ -2088,96 +2067,6 @@ function PLSection() {
    BALANCE SHEET SECTION
 ───────────────────────────────────────────── */
 
-function BalanceSheetSection() {
-  const fmt = (v: number) => v >= 1000 ? `£${(v / 1000).toFixed(1)}M` : `£${v}k`;
-  const chg = (curr: number, prev: number) => {
-    const d = curr - prev;
-    const pct = ((d / prev) * 100).toFixed(1);
-    return { d, pct, up: d >= 0 };
-  };
-
-  function BSRow({ label, curr, prev, group }: { label: string; curr: number; prev: number; group: string }) {
-    const { d, pct, up } = chg(curr, prev);
-    const isTotal = group === "total";
-    return (
-      <tr className={`border-b border-slate-100 dark:border-white/[0.04] ${isTotal ? "bg-slate-50 dark:bg-white/[0.02]" : ""}`}>
-        <td className={`py-2.5 pl-2 ${isTotal ? "font-semibold text-slate-900 dark:text-white" : "text-slate-600 dark:text-white/60"} text-[12px]`}>{label}</td>
-        <td className={`py-2.5 text-right pr-4 font-mono tabular-nums text-[12px] ${isTotal ? "font-semibold text-slate-900 dark:text-white" : "text-slate-700 dark:text-white/70"}`}>{fmt(curr)}</td>
-        <td className="py-2.5 text-right pr-4 font-mono tabular-nums text-[11px] text-slate-400 dark:text-white/30">{fmt(prev)}</td>
-        <td className={`py-2.5 text-right font-mono tabular-nums text-[11px] font-semibold ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-          {d >= 0 ? "+" : ""}{fmt(Math.abs(d))}
-        </td>
-        <td className={`py-2.5 text-right pl-4 font-mono tabular-nums text-[10px] ${up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-          {d >= 0 ? "+" : ""}{pct}%
-        </td>
-      </tr>
-    );
-  }
-
-  function BSBlock({ title, rows }: { title: string; rows: typeof bsAssets }) {
-    return (
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-3 px-2">{title}</p>
-        <table className="w-full text-xs mb-1">
-          <thead>
-            <tr className="border-b border-slate-100 dark:border-white/[0.06]">
-              <th className="text-left text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pl-2 w-48">Item</th>
-              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pr-4">Mar 25</th>
-              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pr-4">Feb 25</th>
-              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2">Change</th>
-              <th className="text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 pb-2 pl-4">%</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => <BSRow key={i} {...r} />)}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-5">
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Total Assets",    value: "£139.2M", change: "+£1.6M vs Feb", up: true,  color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
-          { label: "Total Equity",    value: "£111.1M", change: "+£1.9M vs Feb", up: true,  color: "text-emerald-700 dark:text-emerald-300",border: "border-emerald-200 dark:border-emerald-500/20",bg: "bg-emerald-50 dark:bg-white/[0.025]"},
-          { label: "Net Debt",        value: "£14.7M",  change: "–£210k vs Feb", up: true,  color: "text-sky-700 dark:text-sky-300",        border: "border-sky-200 dark:border-sky-500/20",       bg: "bg-sky-50 dark:bg-white/[0.025]"     },
-          { label: "Working Capital", value: "£7.7M",   change: "+£250k vs Feb", up: true,  color: "text-violet-700 dark:text-violet-300",  border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-white/[0.025]"  },
-        ].map(s => (
-          <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-2">{s.label}</p>
-            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
-            <div className="flex items-center gap-1 mt-1">
-              {s.up ? <TrendingUp size={10} className="text-emerald-500" /> : <TrendingDown size={10} className="text-rose-500" />}
-              <p className="text-[11px] text-slate-500 dark:text-white/35">{s.change}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <Card>
-        <SectionHeader title="Balance sheet" sub="Mar 25 vs Feb 25 · all figures unaudited" />
-        <div className="space-y-6">
-          <BSBlock title="Assets" rows={bsAssets} />
-          <BSBlock title="Liabilities" rows={bsLiabilities} />
-          <BSBlock title="Equity" rows={bsEquity} />
-        </div>
-      </Card>
-
-      <Card>
-        <SectionHeader title="Balance sheet signals" sub="System-generated · March 2025" badge="System" />
-        <div className="space-y-2.5">
-          <Signal type="alert"   title="Accounts receivable £89.2M — up £2.8M MoM (+3.2%)"     detail="Debtor growth outpacing collections. 90% aged 91+ days. Structural collections intervention required." />
-          <Signal type="info"    title="WIP declining — £39.1M vs £40.3M in Feb"                detail="Cases converting to bills. Good operational indicator. The collections pipeline is healthy — the cash is in AR." />
-          <Signal type="info"    title="Total equity £111.1M — strengthening MoM"               detail="Retained earnings +£1.87M in March driven by net profit. Balance sheet healthy with 4x equity/debt ratio." />
-          <Signal type="warning" title="Short-term debt £6.2M — unchanged for 3 months"         detail="Review refinancing options if lockup resolution releases cash. Current facility may be surplus to requirements by Q3." />
-        </div>
-      </Card>
-    </div>
-  );
-}
 
 /* ─────────────────────────────────────────────
    NAV CONFIG
@@ -2190,7 +2079,6 @@ const NAV_ITEMS = [
   { label: "Insights",               icon: Activity   },
   { label: "Financial Performance",  icon: TrendingUp },
   { label: "Collections & Cash",     icon: DollarSign },
-  { label: "Balance Sheet",          icon: BarChart2  },
   { label: "People & Capacity",      icon: Users      },
   { label: "Risks & Exceptions",     icon: Zap        },
 ];
@@ -2202,7 +2090,6 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
   "Insights":               { title: "Key financial insights",              sub: "5 system-generated insights · cause + impact analysis · March 2025"   },
   "Financial Performance":  { title: "Financial performance",               sub: "Revenue, EBITDA, budget vs actual, service lines"                     },
   "Collections & Cash":     { title: "Collections & cash conversion",       sub: "Debtors aging, lockup days, WIP pipeline"                            },
-  "Balance Sheet":          { title: "Balance sheet",                       sub: "Assets, liabilities, equity · Mar 25 vs Feb 25"                      },
   "People & Capacity":      { title: "People & capacity",                   sub: "Headcount, fee earners, utilisation heatmap"                         },
   "Risks & Exceptions":     { title: "Risks & exceptions",                  sub: "All system-generated signals and reports"                            },
 };
@@ -2329,7 +2216,6 @@ export default function Dashboard() {
           {activeTab === "Insights"              && <InsightsSection    />}
           {activeTab === "Financial Performance" && <FinancialSection   />}
           {activeTab === "Collections & Cash"    && <CashSection        />}
-          {activeTab === "Balance Sheet"         && <BalanceSheetSection />}
           {activeTab === "People & Capacity"     && <PeopleSection      />}
           {activeTab === "Risks & Exceptions"    && <AlertsSection      />}
 
