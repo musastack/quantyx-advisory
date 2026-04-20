@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  AreaChart, Area, BarChart, Bar, ComposedChart, Cell,
+  AreaChart, Area, BarChart, Bar, ComposedChart, Cell, PieChart, Pie,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine,
 } from "recharts";
 import {
@@ -1311,17 +1311,44 @@ const slLines = [
 ];
 
 function ServiceLineDeepSection() {
-  const [view, setView] = useState<"table" | "chart">("table");
+  const [view, setView]           = useState<"table" | "stacked" | "trend" | "mix">("table");
+  const [activeLine, setActiveLine] = useState<string | null>(null);
   const totalPerMonth = slMonths.map((_, mi) => slLines.reduce((s, l) => s + l.data[mi], 0));
+
+  // Trend data: one object per month with each service line as a key
+  const trendData = slMonths.map((m, mi) => {
+    const row: Record<string, string | number> = { month: m };
+    slLines.forEach(sl => { row[sl.name] = sl.data[mi]; });
+    return row;
+  });
+
+  // Donut mix data for Mar 25
+  const mixData   = slLines.map(sl => ({ name: sl.name, value: sl.data[5], color: sl.color }));
+  const totalMar  = slLines.reduce((s, l) => s + l.data[5], 0);
+
+  // Monthly momentum matrix (MoM % changes Nov–Mar)
+  const momMonths = slMonths.slice(1);
+  const momMatrix = slLines.map(sl => ({
+    name: sl.name, color: sl.color,
+    moms: slMonths.slice(1).map((_, i) => (sl.data[i + 1] - sl.data[i]) / sl.data[i] * 100),
+  }));
+
+  function momColor(v: number) {
+    if (v >= 2)    return "bg-emerald-500/80 dark:bg-emerald-500/70 text-white";
+    if (v >= 0)    return "bg-emerald-200/70 dark:bg-emerald-500/25 text-emerald-800 dark:text-emerald-200";
+    if (v >= -2)   return "bg-amber-200/70 dark:bg-amber-500/25 text-amber-800 dark:text-amber-200";
+    return "bg-rose-200/70 dark:bg-rose-500/25 text-rose-800 dark:text-rose-200";
+  }
 
   return (
     <div className="space-y-5">
+
       {/* Summary KPI strip */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Top line — CVL",      value: "£1.42M",  sub: "+2.5% MoM · 25.6% of revenue",     color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
-          { label: "Fastest growth",      value: "Restructuring", sub: "+2.8% MoM · trend 625→658 in 6 months", color: "text-cyan-700 dark:text-cyan-300", border: "border-cyan-200 dark:border-cyan-500/20", bg: "bg-cyan-50 dark:bg-white/[0.025]"  },
-          { label: "Concentration risk",  value: "CVL + Admin",  sub: "48% of total revenue — sector exposure", color: "text-rose-700 dark:text-rose-400",  border: "border-rose-200 dark:border-rose-500/20",   bg: "bg-rose-50 dark:bg-white/[0.025]"    },
+          { label: "Top line — CVL",     value: "£1.42M",       sub: "+2.5% MoM · 25.6% of revenue",            color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
+          { label: "Fastest growth",     value: "Restructuring", sub: "+2.8% MoM · trend 625→658 in 6 months",  color: "text-cyan-700 dark:text-cyan-300",     border: "border-cyan-200 dark:border-cyan-500/20",     bg: "bg-cyan-50 dark:bg-white/[0.025]"    },
+          { label: "Concentration risk", value: "CVL + Admin",   sub: "48% of total revenue — sector exposure",  color: "text-rose-700 dark:text-rose-400",     border: "border-rose-200 dark:border-rose-500/20",     bg: "bg-rose-50 dark:bg-white/[0.025]"    },
         ].map(s => (
           <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-2">{s.label}</p>
@@ -1331,15 +1358,16 @@ function ServiceLineDeepSection() {
         ))}
       </div>
 
+      {/* Main view card — 4 tabs */}
       <Card>
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Revenue by service line</h2>
-            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Oct 2024 – Mar 2025 · £000 · MoM growth · contribution %</p>
+            <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Oct 2024 – Mar 2025 · £000</p>
           </div>
           <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
-            {(["table","chart"] as const).map(v => (
-              <button key={v} onClick={() => setView(v)}
+            {(["table", "stacked", "trend", "mix"] as const).map(v => (
+              <button key={v} onClick={() => { setView(v); setActiveLine(null); }}
                 className={`px-3 py-1.5 transition-colors capitalize ${view === v ? "bg-indigo-600 text-white" : "text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/[0.04]"}`}>
                 {v}
               </button>
@@ -1347,6 +1375,7 @@ function ServiceLineDeepSection() {
           </div>
         </div>
 
+        {/* TABLE */}
         {view === "table" && (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -1355,22 +1384,22 @@ function ServiceLineDeepSection() {
                   <th className="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 w-32">Service Line</th>
                   {slMonths.map(m => <th key={m} className="text-right pb-3 pr-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{m}</th>)}
                   <th className="text-right pb-3 pr-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">MoM %</th>
-                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Share %</th>
+                  <th className="text-right pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Share</th>
                   <th className="text-right pb-3 pl-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Trend</th>
                 </tr>
               </thead>
               <tbody>
                 {slLines.map((sl, i) => {
-                  const mom = (((sl.data[5] - sl.data[4]) / sl.data[4]) * 100).toFixed(1);
-                  const share = ((sl.data[5] / totalPerMonth[5]) * 100).toFixed(1);
-                  const momNum = parseFloat(mom);
-                  const sixMonthDelta = sl.data[5] - sl.data[0];
-                  const trendDir = sixMonthDelta > 20 ? "Growing" : sixMonthDelta < -20 ? "Declining" : "Flat";
-                  const trendCls = trendDir === "Growing" ? "text-emerald-600 dark:text-emerald-400" : trendDir === "Declining" ? "text-rose-600 dark:text-rose-400" : "text-slate-500 dark:text-white/40";
+                  const mom       = (((sl.data[5] - sl.data[4]) / sl.data[4]) * 100).toFixed(1);
+                  const share     = ((sl.data[5] / totalPerMonth[5]) * 100).toFixed(1);
+                  const momNum    = parseFloat(mom);
+                  const sixDelta  = sl.data[5] - sl.data[0];
+                  const trendDir  = sixDelta > 20 ? "Growing" : sixDelta < -20 ? "Declining" : "Flat";
+                  const trendCls  = trendDir === "Growing" ? "text-emerald-600 dark:text-emerald-400" : trendDir === "Declining" ? "text-rose-600 dark:text-rose-400" : "text-slate-500 dark:text-white/40";
                   return (
                     <tr key={i} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                      <td className="py-2.5 font-semibold text-slate-800 dark:text-white/80 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: sl.color }} />{sl.name}
+                      <td className="py-2.5 font-semibold text-slate-800 dark:text-white/80">
+                        <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm shrink-0" style={{ background: sl.color }} />{sl.name}</span>
                       </td>
                       {sl.data.map((v, mi) => (
                         <td key={mi} className="py-2.5 text-right pr-2 font-mono tabular-nums text-slate-600 dark:text-white/60">{v}</td>
@@ -1399,26 +1428,241 @@ function ServiceLineDeepSection() {
           </div>
         )}
 
-        {view === "chart" && (
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={serviceLineMonthly} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
-              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
-              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(1)}M`} width={52} />
-              <Tooltip content={<ChartTooltip formatter={v => `£${v}k`} />} />
-              <Bar dataKey="CVL" stackId="a" fill="#6366f1" name="CVL" />
-              <Bar dataKey="Admin" stackId="a" fill="#8b5cf6" name="Administration" />
-              <Bar dataKey="Restructuring" stackId="a" fill="#06b6d4" name="Restructuring" />
-              <Bar dataKey="LPA" stackId="a" fill="#10b981" name="LPA" />
-              <Bar dataKey="Creditor" stackId="a" fill="#f59e0b" name="Creditor" />
-              <Bar dataKey="MVL" stackId="a" fill="#f43f5e" name="MVL" />
-              <Bar dataKey="Other" stackId="a" fill="#94a3b8" name="Other" radius={[4,4,0,0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        {/* STACKED BAR */}
+        {view === "stacked" && (
+          <>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={serviceLineMonthly} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v/1000).toFixed(1)}M`} width={52} />
+                <Tooltip content={<ChartTooltip formatter={v => `£${v}k`} />} />
+                <Bar dataKey="CVL"          stackId="a" fill="#6366f1" name="CVL" />
+                <Bar dataKey="Admin"        stackId="a" fill="#8b5cf6" name="Administration" />
+                <Bar dataKey="Restructuring" stackId="a" fill="#06b6d4" name="Restructuring" />
+                <Bar dataKey="LPA"          stackId="a" fill="#10b981" name="LPA" />
+                <Bar dataKey="Creditor"     stackId="a" fill="#f59e0b" name="Creditor" />
+                <Bar dataKey="MVL"          stackId="a" fill="#f43f5e" name="MVL" />
+                <Bar dataKey="Other"        stackId="a" fill="#94a3b8" name="Other" radius={[4,4,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.05]">
+              {slLines.map(sl => (
+                <span key={sl.name} className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-white/35">
+                  <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: sl.color }} />{sl.name}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* TREND LINES — click legend to focus */}
+        {view === "trend" && (
+          <>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {slLines.map(sl => (
+                <button
+                  key={sl.name}
+                  onClick={() => setActiveLine(activeLine === sl.name ? null : sl.name)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all ${
+                    activeLine === sl.name
+                      ? "text-white border-transparent shadow-sm"
+                      : activeLine
+                        ? "text-slate-400 dark:text-white/25 border-slate-200 dark:border-white/[0.07]"
+                        : "text-slate-600 dark:text-white/60 border-slate-200 dark:border-white/[0.07] hover:border-slate-300 dark:hover:border-white/15 bg-white dark:bg-transparent"
+                  }`}
+                  style={activeLine === sl.name ? { background: sl.color, borderColor: sl.color } : {}}
+                >
+                  <span className="w-2 h-2 rounded-full" style={{ background: activeLine === sl.name ? "rgba(255,255,255,0.8)" : sl.color }} />
+                  {sl.name}
+                </button>
+              ))}
+              {activeLine && (
+                <button onClick={() => setActiveLine(null)} className="text-[11px] text-slate-400 dark:text-white/25 hover:text-slate-600 dark:hover:text-white/50 px-2 transition-colors">
+                  Clear
+                </button>
+              )}
+            </div>
+            <p className="text-[10px] text-slate-400 dark:text-white/25 mb-3">Click a line to focus · hover for values</p>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={trendData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+                <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${v}k`} width={52} />
+                <Tooltip content={<ChartTooltip formatter={v => `£${v}k`} />} />
+                {slLines.map(sl => (
+                  <Line
+                    key={sl.name}
+                    dataKey={sl.name}
+                    stroke={sl.color}
+                    strokeWidth={activeLine === sl.name ? 3 : activeLine ? 1 : 2}
+                    strokeOpacity={activeLine && activeLine !== sl.name ? 0.18 : 1}
+                    dot={activeLine === sl.name ? { fill: sl.color, r: 4, strokeWidth: 0 } : false as any}
+                    activeDot={activeLine && activeLine !== sl.name ? false as any : { r: 5, fill: sl.color, strokeWidth: 0 }}
+                    name={sl.name}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </>
+        )}
+
+        {/* MIX — donut + share bars */}
+        {view === "mix" && (
+          <div className="grid grid-cols-2 gap-6 items-center">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-3 text-center">Mar 25 revenue mix</p>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie
+                    data={mixData}
+                    cx="50%" cy="50%"
+                    innerRadius={65} outerRadius={105}
+                    paddingAngle={2}
+                    dataKey="value"
+                    onClick={(_, index) => setActiveLine(mixData[index].name === activeLine ? null : mixData[index].name)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {mixData.map((entry, i) => (
+                      <Cell
+                        key={i}
+                        fill={entry.color}
+                        fillOpacity={activeLine === entry.name ? 1 : activeLine ? 0.22 : 0.85}
+                        stroke="none"
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<ChartTooltip formatter={v => `£${(Number(v)/1000).toFixed(2)}M`} />} />
+                </PieChart>
+              </ResponsiveContainer>
+              <p className="text-[10px] text-slate-400 dark:text-white/25 text-center mt-1">Click a segment to highlight</p>
+            </div>
+            <div className="space-y-1.5">
+              {mixData.map(d => {
+                const pct = (d.value / totalMar * 100).toFixed(1);
+                const isActive = activeLine === d.name;
+                return (
+                  <button
+                    key={d.name}
+                    onClick={() => setActiveLine(activeLine === d.name ? null : d.name)}
+                    className="w-full text-left p-2.5 rounded-xl border transition-all"
+                    style={isActive
+                      ? { borderColor: d.color + "50", background: d.color + "12" }
+                      : { borderColor: "transparent" }}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[11px] font-semibold text-slate-700 dark:text-white/70 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: d.color }} />
+                        {d.name}
+                      </span>
+                      <span className="text-[11px] font-bold font-mono text-slate-800 dark:text-white/80 tabular-nums">{pct}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-slate-100 dark:bg-white/[0.08]">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: d.color }} />
+                    </div>
+                    <p className="text-[10px] text-slate-400 dark:text-white/25 mt-1 tabular-nums font-mono">£{(d.value/1000).toFixed(2)}M</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
       </Card>
 
-      {/* 3 specific insights */}
+      {/* vs Target — bullet chart */}
+      <Card>
+        <SectionHeader title="Performance vs target" sub="Mar 25 actual as % of 6-month run-rate target · gap in £000" />
+        <div className="space-y-3.5 mt-1">
+          {slLines.map(sl => {
+            const pct = sl.data[5] / sl.target * 100;
+            const gap = sl.data[5] - sl.target;
+            const over = gap >= 0;
+            return (
+              <div key={sl.name} className="flex items-center gap-4">
+                <div className="w-28 shrink-0 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: sl.color }} />
+                  <span className="text-[11px] font-semibold text-slate-700 dark:text-white/70 truncate">{sl.name}</span>
+                </div>
+                <div className="flex-1 relative h-5 rounded-lg bg-slate-100 dark:bg-white/[0.07] overflow-hidden">
+                  <div
+                    className="h-full rounded-lg transition-all duration-700"
+                    style={{ width: `${Math.min(pct, 100)}%`, background: sl.color, opacity: over ? 0.9 : 0.65 }}
+                  />
+                </div>
+                <div className="w-12 text-right shrink-0">
+                  <span className="text-[11px] font-bold font-mono tabular-nums text-slate-700 dark:text-white/70">{pct.toFixed(0)}%</span>
+                </div>
+                <div className="w-20 text-right shrink-0">
+                  <span className={`text-[11px] font-semibold font-mono tabular-nums ${over ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                    {over ? "+" : ""}£{Math.abs(gap)}k
+                  </span>
+                </div>
+                <div className="w-16 text-right shrink-0">
+                  <span className="text-[10px] text-slate-400 dark:text-white/25 font-mono">tgt £{sl.target}k</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.05] flex items-center gap-3 text-[11px] text-slate-400 dark:text-white/25">
+          <div className="flex items-center gap-1.5"><span className="inline-block w-8 h-2.5 rounded bg-indigo-400 opacity-70" />Full colour = above target</div>
+          <div className="flex items-center gap-1.5"><span className="inline-block w-8 h-2.5 rounded bg-rose-400 opacity-50" />Faded = below target</div>
+          <span className="ml-auto">All lines currently tracking below 6-month targets · CVL largest absolute gap at –£80k</span>
+        </div>
+      </Card>
+
+      {/* Monthly momentum heatmap */}
+      <Card>
+        <SectionHeader title="Monthly momentum" sub="MoM % change by service line · Nov 2024 – Mar 2025" />
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr>
+                <th className="text-left pb-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 w-36">Service Line</th>
+                {momMonths.map(m => (
+                  <th key={m} className="text-center pb-3 px-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{m}</th>
+                ))}
+                <th className="text-right pb-3 pl-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">6m Δ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {momMatrix.map((row, i) => {
+                const sixM = (slLines[i].data[5] - slLines[i].data[0]) / slLines[i].data[0] * 100;
+                return (
+                  <tr key={i} className={i < momMatrix.length - 1 ? "border-b border-slate-100 dark:border-white/[0.04]" : ""}>
+                    <td className="py-2.5 pr-4">
+                      <span className="text-[12px] font-semibold text-slate-800 dark:text-white flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: row.color }} />
+                        {row.name}
+                      </span>
+                    </td>
+                    {row.moms.map((v, mi) => (
+                      <td key={mi} className="py-2.5 px-1">
+                        <div className={`rounded-lg py-1.5 text-center font-mono font-semibold text-[10px] ${momColor(v)}`}>
+                          {v >= 0 ? "+" : ""}{v.toFixed(1)}%
+                        </div>
+                      </td>
+                    ))}
+                    <td className="py-2.5 pl-4 text-right">
+                      <span className={`text-[11px] font-bold font-mono tabular-nums ${sixM >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        {sixM >= 0 ? "+" : ""}{sixM.toFixed(1)}%
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.05] flex flex-wrap items-center gap-4 text-[10px] text-slate-400 dark:text-white/25">
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-500/80" />≥ +2%</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-200/70 dark:bg-emerald-500/25" />0 – 2%</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-200/70 dark:bg-amber-500/25" />–2 – 0%</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-rose-200/70 dark:bg-rose-500/25" />Below –2%</span>
+        </div>
+      </Card>
+
+      {/* Insights */}
       <Card>
         <SectionHeader title="Service line insights" sub="System-generated · March 2025" badge="3 insights" />
         <div className="space-y-2.5">
