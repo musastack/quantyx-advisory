@@ -666,94 +666,175 @@ function CommandStrip({ activePeriod, onPeriodChange }: { activePeriod: string; 
 ───────────────────────────────────────────── */
 
 function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const dateStr = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const latest = plData[plData.length - 1];
   const latestRec = recData[recData.length - 1];
 
-  const quickLinks = [
-    { label: "KPI Dashboard",         icon: BarChart2,   color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10", border: "border-indigo-200 dark:border-indigo-500/20", desc: "10 KPIs · filter & drill down" },
-    { label: "Financial Performance",  icon: TrendingUp,  color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-500/10", border: "border-emerald-200 dark:border-emerald-500/20", desc: "Revenue · margin · budget" },
-    { label: "Collections & Cash",     icon: DollarSign,  color: "text-rose-600 dark:text-rose-400", bg: "bg-rose-50 dark:bg-rose-500/10", border: "border-rose-200 dark:border-rose-500/20", desc: "Debtors · lockup · forecast" },
-    { label: "People & Capacity",      icon: Users,       color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10", border: "border-violet-200 dark:border-violet-500/20", desc: "Utilisation · headcount" },
-    { label: "Service Lines",          icon: Layers,      color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50 dark:bg-cyan-500/10", border: "border-cyan-200 dark:border-cyan-500/20", desc: "Revenue by line · leaderboard" },
-    { label: "Risks & Exceptions",     icon: Zap,         color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10", border: "border-amber-200 dark:border-amber-500/20", desc: "Alerts · insights · actions" },
-    { label: "Reports",                icon: FileText,    color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-50 dark:bg-white/[0.05]", border: "border-slate-200 dark:border-white/[0.08]", desc: "Export financial reports" },
-    { label: "P&L Analysis",           icon: FileText,    color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10", border: "border-violet-200 dark:border-violet-500/20", desc: "P&L statement · movements · drivers" },
-    { label: "Key Insights",           icon: Trophy,      color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10", border: "border-amber-200 dark:border-amber-500/20", desc: "5 insights · cause & impact" },
+  const healthScore = 67;
+  const healthColor = "text-amber-600 dark:text-amber-400";
+  const healthBg = "border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-amber-500/[0.06]";
+  const healthLabel = "Watch";
+
+  const navSections = [
+    { label: "KPI Dashboard",         icon: BarChart2,  color: "text-indigo-600 dark:text-indigo-400",  bg: "bg-indigo-50 dark:bg-indigo-500/10",  border: "border-indigo-200 dark:border-indigo-500/20",  desc: "10 KPIs · trend · drill down"    },
+    { label: "Financial Performance",  icon: TrendingUp, color: "text-emerald-600 dark:text-emerald-400",bg: "bg-emerald-50 dark:bg-emerald-500/10",border: "border-emerald-200 dark:border-emerald-500/20",desc: "Revenue · margin · budget"        },
+    { label: "Collections & Cash",     icon: DollarSign, color: "text-rose-600 dark:text-rose-400",     bg: "bg-rose-50 dark:bg-rose-500/10",      border: "border-rose-200 dark:border-rose-500/20",      desc: "Debtors · lockup · forecast"    },
+    { label: "People & Capacity",      icon: Users,      color: "text-cyan-600 dark:text-cyan-400",     bg: "bg-cyan-50 dark:bg-cyan-500/10",      border: "border-cyan-200 dark:border-cyan-500/20",      desc: "Utilisation · headcount"            },
+    { label: "Service Lines",          icon: Layers,     color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10",  border: "border-violet-200 dark:border-violet-500/20",  desc: "Revenue by line · leaderboard"      },
+    { label: "Key Insights",           icon: Trophy,     color: "text-amber-600 dark:text-amber-400",   bg: "bg-amber-50 dark:bg-amber-500/10",    border: "border-amber-200 dark:border-amber-500/20",    desc: "5 insights · cause & impact"        },
+    { label: "Risks & Exceptions",     icon: Zap,        color: "text-rose-600 dark:text-rose-400",     bg: "bg-rose-50 dark:bg-rose-500/10",      border: "border-rose-200 dark:border-rose-500/20",      desc: "All signals · critical flags"        },
+    { label: "Reports",                icon: FileText,   color: "text-slate-600 dark:text-slate-400",   bg: "bg-slate-50 dark:bg-white/[0.05]",    border: "border-slate-200 dark:border-white/[0.08]",    desc: "Export · CSV · print view"      },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Welcome header */}
-      <div className="rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50 via-white to-violet-50/40 dark:from-indigo-500/[0.08] dark:via-[#0b0b17] dark:to-violet-500/[0.04] p-7 shadow-sm dark:shadow-none">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-2">CEO Operating System</p>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-1">{(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, BTG Advisory Group.</h1>
-            <p className="text-sm text-slate-500 dark:text-white/40 max-w-lg">March 2025 data is live. Revenue growing, margin recovering — debtors need action. Use the links below to navigate to the area you need.</p>
+    <div className="space-y-5">
+
+      {/* CEO Daily Brief Banner */}
+      <div className="rounded-2xl border border-indigo-200 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50/90 via-white to-violet-50/30 dark:from-indigo-500/[0.08] dark:via-[#0b0b17] dark:to-violet-500/[0.04] p-7 shadow-sm dark:shadow-none relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-l from-violet-50/60 to-transparent dark:from-violet-500/[0.03] dark:to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-indigo-300/60 via-violet-300/30 to-transparent dark:from-indigo-500/35 dark:via-violet-500/15 dark:to-transparent" />
+        <div className="relative flex items-start justify-between gap-6 flex-wrap">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-400 mb-2.5">CEO Daily Brief · March 2025</p>
+            <h1 className="text-[1.7rem] font-bold tracking-tight text-slate-900 dark:text-white mb-3">{greeting}, BTG Advisory Group.</h1>
+            <p className="text-[13.5px] text-slate-600 dark:text-white/55 max-w-2xl leading-relaxed">
+              Revenue is{" "}
+              <span className="font-semibold text-rose-600 dark:text-rose-400">£520k below March budget</span>
+              {" "}— the third consecutive miss, driven by CVL intake softness.
+              EBITDA has recovered to{" "}
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">22.1%</span>
+              , the best level in 12 months.{" "}
+              <span className="font-semibold text-rose-600 dark:text-rose-400">£80.6M sits aged 91+ days</span>
+              {" "}and requires immediate board-level intervention.
+            </p>
           </div>
-          <div className="flex flex-col gap-1.5 text-right shrink-0">
-            <span className="text-xs text-slate-400 dark:text-white/30">Last synced: today</span>
-            <div className="flex items-center gap-1.5 justify-end">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Live data</span>
+          <div className="shrink-0 flex flex-col items-end gap-3">
+            <div className="text-right">
+              <p className="text-[11px] text-slate-400 dark:text-white/30">{dateStr}</p>
+              <div className="flex items-center gap-1.5 justify-end mt-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Live · synced today</span>
+              </div>
+            </div>
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${healthBg}`}>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-white/30 mb-0.5">Business Health</p>
+                <p className={`text-[10px] font-bold ${healthColor}`}>{healthLabel}</p>
+              </div>
+              <div className="flex items-baseline gap-0.5">
+                <span className={`text-[2.2rem] font-black font-mono tabular-nums leading-none ${healthColor}`}>{healthScore}</span>
+                <span className="text-[12px] text-slate-400 dark:text-white/30 font-mono">/100</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 4 quick stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* 5 Key Metrics Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
-          { label: "Revenue (Mar)", value: `£${(latest.revenue / 1000).toFixed(2)}M`, sub: "–4.6% vs budget", color: "text-rose-600 dark:text-rose-400", dot: "bg-rose-500" },
-          { label: "EBITDA margin", value: `${latest.ebitdaM}%`, sub: "12-month best · improving", color: "text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" },
-          { label: "Total lockup", value: `${latestRec.lockup}d`, sub: "target: 90d · improving", color: "text-amber-600 dark:text-amber-400", dot: "bg-amber-500" },
-          { label: "Critical alerts", value: "2", sub: "collections & revenue", color: "text-rose-700 dark:text-rose-400", dot: "bg-rose-600" },
-        ].map(s => (
-          <div key={s.label} className="p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none">
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">{s.label}</p>
+          { label: "Revenue",       value: `£${(latest.revenue / 1000).toFixed(2)}M`, change: "–4.6% vs budget", up: false, dot: "bg-rose-500",    sub: "Mar 2025"       },
+          { label: "EBITDA Margin", value: `${latest.ebitdaM}%`,                           change: "12-month best",    up: true,  dot: "bg-emerald-500", sub: "recovering"     },
+          { label: "Cash Balance",  value: "£3.95M",                                    change: "+£140k MoM",      up: true,  dot: "bg-sky-500",     sub: "improving"      },
+          { label: "Lockup Days",   value: `${latestRec.lockup}d`,                         change: "28d above target", up: false, dot: "bg-amber-500",   sub: "target: 90d"    },
+          { label: "Net Profit",    value: "£1.79M",                                    change: "+£110k MoM",     up: true,  dot: "bg-violet-500",  sub: "best since Oct" },
+        ].map((m, i) => (
+          <div key={i} className="p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none">
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${m.dot} shrink-0`} />
+              <p className="text-[9.5px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30">{m.label}</p>
             </div>
-            <p className={`text-2xl font-bold font-mono tabular-nums ${s.color}`}>{s.value}</p>
-            <p className="text-[11px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
+            <p className="text-[1.45rem] font-bold font-mono tabular-nums leading-none mb-1.5 text-slate-900 dark:text-white">{m.value}</p>
+            <div className="flex items-center gap-1 mb-0.5">
+              {m.up ? <TrendingUp size={9} className="text-emerald-500 shrink-0" /> : <TrendingDown size={9} className="text-rose-500 shrink-0" />}
+              <p className={`text-[10.5px] font-semibold ${m.up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{m.change}</p>
+            </div>
+            <p className="text-[10px] text-slate-400 dark:text-white/25">{m.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Navigation cards */}
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-3">Navigate to</p>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {quickLinks.map(item => (
-            <button
-              key={item.label}
-              onClick={() => onTabChange(item.label)}
-              className={`text-left p-4 rounded-2xl border ${item.border} ${item.bg} hover:shadow-md transition-all group`}
-            >
-              <div className={`w-8 h-8 rounded-lg bg-white dark:bg-white/[0.06] flex items-center justify-center mb-3 shadow-sm group-hover:shadow transition-shadow`}>
-                <item.icon size={15} className={item.color} />
+      {/* Critical Actions — CEO decision panel */}
+      <div className="rounded-2xl border-2 border-rose-200 dark:border-rose-500/30 bg-white dark:bg-[#0b0b17] overflow-hidden shadow-sm dark:shadow-none">
+        <div className="px-5 py-4 bg-rose-50 dark:bg-rose-500/[0.06] border-b-2 border-rose-200 dark:border-rose-500/20 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-rose-500 flex items-center justify-center shrink-0 shadow-sm shadow-rose-500/30">
+              <AlertCircle size={14} className="text-white" />
+            </div>
+            <div>
+              <p className="text-[12.5px] font-bold text-rose-800 dark:text-rose-200 tracking-tight">2 decisions required from you today</p>
+              <p className="text-[10px] text-rose-600/70 dark:text-rose-400/60">Prioritised by £ impact · owner assigned · deadline set</p>
+            </div>
+          </div>
+          <button onClick={() => onTabChange("Risks & Exceptions")} className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1 hover:underline shrink-0">
+            View all <ChevronRight size={11} />
+          </button>
+        </div>
+        <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+          {[
+            {
+              rank: 1,
+              title: "Initiate 91+ debtor recovery programme",
+              detail: "£80.6M aged 91+ — 90.4% of the debtor book. Insolvency cycles explain some aging but this concentration is structural and requires a board-level recovery initiative.",
+              owner: "Head of Collections",
+              due: "30 Apr 2025",
+              impact: "£8–12M recoverable",
+              tab: "Collections & Cash",
+            },
+            {
+              rank: 2,
+              title: "CVL pipeline review — 3rd consecutive budget miss",
+              detail: "£520k behind March target. YTD shortfall £1.4M. CVL intake softness is consistent and not one-off — BD strategy requires review.",
+              owner: "Head of Business Recovery",
+              due: "15 Apr 2025",
+              impact: "£1.4M YTD gap",
+              tab: "Financial Performance",
+            },
+          ].map((a, i) => (
+            <div key={i} className="p-5 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+              <span className="w-6 h-6 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{a.rank}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-semibold text-slate-900 dark:text-white leading-snug mb-1.5">{a.title}</p>
+                <p className="text-[11.5px] text-slate-500 dark:text-white/40 leading-relaxed mb-3">{a.detail}</p>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10.5px]">
+                  <span className="flex items-center gap-1.5 text-slate-500 dark:text-white/35"><UserCheck size={9} className="shrink-0" />{a.owner}</span>
+                  <span className="flex items-center gap-1.5 text-slate-500 dark:text-white/35"><Clock size={9} className="shrink-0" />Due {a.due}</span>
+                  <span className="flex items-center gap-1.5 font-semibold text-rose-600 dark:text-rose-400"><DollarSign size={9} className="shrink-0" />{a.impact}</span>
+                  <button onClick={() => onTabChange(a.tab)} className="ml-auto flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+                    Deep dive <ArrowRight size={9} />
+                  </button>
+                </div>
               </div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-white/90 mb-0.5">{item.label}</p>
-              <p className="text-[10px] text-slate-500 dark:text-white/35">{item.desc}</p>
-            </button>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Alert strip */}
-      <div className="space-y-2.5">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30">Priority signals</p>
-        <Signal type="alert"   title="£80.6M aged 91+ — 90.4% of debtor book" detail="Collections crisis. Structured recovery initiative required." action="Go to Collections & Cash" />
-        <Signal type="alert"   title="Revenue –4.6% vs budget in Mar 25 (–£520k)" detail="Third consecutive budget miss. CVL softness is the driver." action="Go to Financial Performance" />
-        <Signal type="warning" title="Lockup 118d — 28 days above 90-day target" detail="Improving from Jan 25 peak of 125d. At current rate, target late 2025." action="Go to Collections & Cash" />
+      {/* Navigate to sections */}
+      <div>
+        <p className="text-[9.5px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-white/30 mb-3">Navigate to</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
+          {navSections.map(item => (
+            <button
+              key={item.label}
+              onClick={() => onTabChange(item.label)}
+              className={`text-left p-4 rounded-xl border ${item.border} ${item.bg} hover:shadow-md transition-all group`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-white dark:bg-white/[0.06] flex items-center justify-center mb-3 shadow-sm group-hover:shadow-md transition-shadow">
+                <item.icon size={14} className={item.color} />
+              </div>
+              <p className="text-[12px] font-semibold text-slate-800 dark:text-white/90 mb-0.5 leading-snug">{item.label}</p>
+              <p className="text-[9.5px] text-slate-500 dark:text-white/35">{item.desc}</p>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
-/* ─────────────────────────────────────────────
-   OVERVIEW SECTION
-───────────────────────────────────────────── */
 
 function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
   const [activePeriod, setActivePeriod] = useState<string>("Mar 25");
@@ -761,6 +842,23 @@ function OverviewSection({ onTabChange }: { onTabChange: (tab: string) => void }
   return (
     <div className="space-y-6">
       <CommandStrip activePeriod={activePeriod} onPeriodChange={setActivePeriod} />
+
+      {/* Executive Summary Strip */}
+      <div className="grid grid-cols-3 gap-4 mb-1">
+        {[
+          { label: "Situation",  text: "Revenue £520k below March budget (3rd miss). EBITDA 22.1% — best in 12 months. 2 critical actions required.", color: "border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/[0.05]", dot: "bg-rose-500" },
+          { label: "Momentum",   text: "Margin trajectory positive (+3.4pp since Jul 24 low). WIP converting. Cost discipline working. Cash improving MoM.", color: "border-emerald-200 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/[0.05]", dot: "bg-emerald-500" },
+          { label: "Risk",       text: "£80.6M aged 91+ (90% of book). Lockup 28 days above target. Contractor reduction creates Q2 capacity risk.", color: "border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/[0.05]", dot: "bg-amber-500" },
+        ].map((s, i) => (
+          <div key={i} className={`p-4 rounded-xl border ${s.color}`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${s.dot} shrink-0`} />
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-white/35">{s.label}</p>
+            </div>
+            <p className="text-[11.5px] text-slate-600 dark:text-white/60 leading-snug">{s.text}</p>
+          </div>
+        ))}
+      </div>
 
       {/* 10 Rich KPI cards — all 11 required fields each */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -2627,9 +2725,7 @@ function PLSection() {
   );
 }
 
-/* ─────────────────────────────────────────────
-   BALANCE SHEET SECTION
-───────────────────────────────────────────── */
+
 
 
 /* ─────────────────────────────────────────────
@@ -2643,7 +2739,6 @@ const NAV_ITEMS = [
   { label: "Collections & Cash",     icon: DollarSign },
   { label: "People & Capacity",      icon: Users      },
   { label: "Service Lines",          icon: Layers     },
-  { label: "P&L Analysis",           icon: FileText   },
   { label: "Key Insights",           icon: Trophy     },
   { label: "Risks & Exceptions",     icon: Zap        },
   { label: "Reports",                icon: FileText   },
@@ -2657,7 +2752,6 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
   "People & Capacity":      { title: "People & capacity",                   sub: "Headcount, fee earners, utilisation · heatmap & bar chart views"     },
   "Service Lines":          { title: "Service line revenue",                sub: "Monthly breakdown · growth rates · contribution % · leaderboard"     },
   "Risks & Exceptions":     { title: "Risks & exceptions",                  sub: "Critical signals · insights · action items · all system flags"       },
-  "P&L Analysis":           { title: "P&L analysis & financial movements",    sub: "Statement · driver breakdown · month-on-month changes · Mar 2025"     },
   "Key Insights":           { title: "Key financial insights",                sub: "5 system-generated insights · cause + impact analysis · Mar 2025"     },
   "Reports":                { title: "Financial reports",                   sub: "Export-ready · formatted for financial accounting · updated daily"   },
 };
@@ -2750,10 +2844,10 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
-          <div className="px-3 py-3 rounded-xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.07]">
-            <p className="text-[9px] font-semibold text-slate-400 dark:text-white/25 uppercase tracking-widest mb-2">Built by</p>
+          <div className="px-3 py-3 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-500/[0.08] dark:to-violet-500/[0.04] border border-indigo-200 dark:border-indigo-500/20">
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-indigo-500 dark:text-indigo-400 mb-2">Powered by</p>
             <Image src="/logo.png" alt="Quantyx Advisory" width={120} height={30} className="object-contain dark:brightness-[1.15]" />
-            <p className="text-[10px] text-slate-400 dark:text-white/25 mt-1.5">Bespoke system · Mar 2025</p>
+            <p className="text-[10px] text-indigo-600/60 dark:text-indigo-400/50 mt-1.5 font-medium">CEO Operating System · v2.0</p>
           </div>
           <Link href="/" className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white/60 transition-colors px-1">
             <ArrowLeft size={12} />Back to site
@@ -2766,7 +2860,7 @@ export default function Dashboard() {
         <header className="sticky top-0 z-30 h-[54px] border-b border-slate-200 dark:border-white/[0.07] bg-white/95 dark:bg-[#05050f]/95 backdrop-blur-md flex items-center justify-between px-6 shadow-[0_1px_0_0_rgba(0,0,0,0.04)] dark:shadow-none">
           <div>
             <h1 className="font-semibold text-[13.5px] text-slate-900 dark:text-white tracking-tight leading-tight">{header.title}</h1>
-            <p className="text-[10.5px] text-slate-400 dark:text-white/28 leading-tight mt-0.5">{header.sub}</p>
+            <p className="text-[10.5px] text-slate-400 dark:text-white/28 leading-tight mt-0.5">{header.sub} · {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p>
           </div>
           <div className="flex items-center gap-1.5">
             <button
@@ -2799,7 +2893,6 @@ export default function Dashboard() {
           {activeTab === "Service Lines"         && <ServiceLineDeepSection />}
           {activeTab === "Risks & Exceptions"    && <AlertsSection     onTabChange={setActiveTab} />}
           {activeTab === "Reports"               && <ReportsSection    />}
-          {activeTab === "P&L Analysis"          && <div className="space-y-8"><PLSection /><FinancialMovementsSection /></div>}
           {activeTab === "Key Insights"          && <InsightsSection />}
 
           <div className="flex flex-col items-center gap-2 pt-10 pb-6">
