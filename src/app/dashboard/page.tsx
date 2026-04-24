@@ -677,6 +677,8 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
     { label: "Service Lines",          icon: Layers,      color: "text-cyan-600 dark:text-cyan-400", bg: "bg-cyan-50 dark:bg-cyan-500/10", border: "border-cyan-200 dark:border-cyan-500/20", desc: "Revenue by line · leaderboard" },
     { label: "Risks & Exceptions",     icon: Zap,         color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10", border: "border-amber-200 dark:border-amber-500/20", desc: "Alerts · insights · actions" },
     { label: "Reports",                icon: FileText,    color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-50 dark:bg-white/[0.05]", border: "border-slate-200 dark:border-white/[0.08]", desc: "Export financial reports" },
+    { label: "P&L Analysis",           icon: FileText,    color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-500/10", border: "border-violet-200 dark:border-violet-500/20", desc: "P&L statement · movements · drivers" },
+    { label: "Key Insights",           icon: Trophy,      color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10", border: "border-amber-200 dark:border-amber-500/20", desc: "5 insights · cause & impact" },
   ];
 
   return (
@@ -686,7 +688,7 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-2">CEO Operating System</p>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-1">Good morning, BTG Advisory Group.</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-1">{(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, BTG Advisory Group.</h1>
             <p className="text-sm text-slate-500 dark:text-white/40 max-w-lg">March 2025 data is live. Revenue growing, margin recovering — debtors need action. Use the links below to navigate to the area you need.</p>
           </div>
           <div className="flex flex-col gap-1.5 text-right shrink-0">
@@ -1086,7 +1088,7 @@ function CashSection() {
     const projDebtors = monthlyRevenue * projLockup;
     const projCashCollected = Math.max(0, (latestRec.debtors / 1000) - projDebtors + monthlyRevenue * month);
     return {
-      month: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"][i] + " 25",
+      month: ["Apr 25","May 25","Jun 25","Jul 25","Aug 25","Sep 25","Oct 25","Nov 25","Dec 25","Jan 26","Feb 26","Mar 26"][i],
       lockup: Math.round(projLockup),
       debtors: Math.round(projDebtors * 1000),
       cashFlow: Math.round(projCashCollected * 1000),
@@ -1442,7 +1444,7 @@ function PeopleSection() {
       <Card>
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Headcount — Nov 2025 to Apr 2026</h2>
+            <h2 className="font-semibold text-[15px] tracking-tight text-slate-900 dark:text-white">Headcount — Nov 2024 to Apr 2025</h2>
             <p className="text-xs text-slate-400 dark:text-white/30 mt-0.5">Total and fee earners · CRM · stable growth, no attrition spike</p>
           </div>
           <div className="flex rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden text-[11px] font-semibold">
@@ -2613,7 +2615,7 @@ function PLSection() {
 
       {/* Insights */}
       <Card>
-        <SectionHeader title="P&L insights" sub="System-generated · March 2025" badge="AI" />
+        <SectionHeader title="P&L insights" sub="System-generated · March 2025" badge="System" />
         <div className="space-y-2.5">
           <Signal type="info"    title="EBITDA 22.1% — cost discipline driving margin recovery"   detail="Total opex down £61k MoM despite revenue growth. Staff costs reduced £20k. Other opex fell £49k. Margin now above 20% baseline." />
           <Signal type="alert"   title="Revenue –4.6% vs budget — CVL volume the driver"          detail="Third consecutive miss. YTD shortfall £1.4M. CVL at £1.42M this month — tracking below the £1.6M monthly run rate implied by budget." />
@@ -2641,6 +2643,8 @@ const NAV_ITEMS = [
   { label: "Collections & Cash",     icon: DollarSign },
   { label: "People & Capacity",      icon: Users      },
   { label: "Service Lines",          icon: Layers     },
+  { label: "P&L Analysis",           icon: FileText   },
+  { label: "Key Insights",           icon: Trophy     },
   { label: "Risks & Exceptions",     icon: Zap        },
   { label: "Reports",                icon: FileText   },
 ];
@@ -2653,6 +2657,8 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
   "People & Capacity":      { title: "People & capacity",                   sub: "Headcount, fee earners, utilisation · heatmap & bar chart views"     },
   "Service Lines":          { title: "Service line revenue",                sub: "Monthly breakdown · growth rates · contribution % · leaderboard"     },
   "Risks & Exceptions":     { title: "Risks & exceptions",                  sub: "Critical signals · insights · action items · all system flags"       },
+  "P&L Analysis":           { title: "P&L analysis & financial movements",    sub: "Statement · driver breakdown · month-on-month changes · Mar 2025"     },
+  "Key Insights":           { title: "Key financial insights",                sub: "5 system-generated insights · cause + impact analysis · Mar 2025"     },
   "Reports":                { title: "Financial reports",                   sub: "Export-ready · formatted for financial accounting · updated daily"   },
 };
 
@@ -2662,6 +2668,7 @@ const SECTION_HEADERS: Record<string, { title: string; sub: string }> = {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("Home");
+  const [mobileOpen, setMobileOpen] = useState(false);
   const header     = SECTION_HEADERS[activeTab];
   const alertCount = 2;
 
@@ -2669,7 +2676,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#05050f] text-slate-900 dark:text-white">
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-60 border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#07070f] flex flex-col z-40 hidden lg:flex shadow-sm dark:shadow-none">
+      {mobileOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileOpen(false)} />
+      )}
+      <aside className={`fixed left-0 top-0 h-full w-60 border-r border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#07070f] flex flex-col z-50 shadow-sm dark:shadow-none transition-transform duration-300 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
         <div className="p-5 border-b border-slate-100 dark:border-white/[0.06]">
           <div className="flex items-center gap-3 mb-3.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20 dark:shadow-indigo-500/30">
@@ -2694,7 +2704,7 @@ export default function Dashboard() {
             return (
               <button
                 key={item.label}
-                onClick={() => setActiveTab(item.label)}
+                onClick={() => { setActiveTab(item.label); setMobileOpen(false); }}
                 className={`relative w-full text-left px-3 py-2.5 rounded-xl transition-all text-sm flex items-center justify-between gap-2 ${
                   isActive
                     ? "bg-indigo-50 text-indigo-700 font-semibold dark:bg-indigo-500/[0.14] dark:text-indigo-300"
@@ -2759,6 +2769,15 @@ export default function Dashboard() {
             <p className="text-[10.5px] text-slate-400 dark:text-white/28 leading-tight mt-0.5">{header.sub}</p>
           </div>
           <div className="flex items-center gap-1.5">
+            <button
+              className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.06] transition-all lg:hidden"
+              onClick={() => setMobileOpen(o => !o)}
+              aria-label="Open menu"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <line x1="2" y1="4" x2="14" y2="4" /><line x1="2" y1="8" x2="14" y2="8" /><line x1="2" y1="12" x2="14" y2="12" />
+              </svg>
+            </button>
             <ThemeToggle />
             <button className="relative p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.06] transition-all">
               <Bell size={16} />
@@ -2767,7 +2786,7 @@ export default function Dashboard() {
             <button className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.06] transition-all">
               <Settings size={16} />
             </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md ml-1">BTG</div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md ml-1">CEO</div>
           </div>
         </header>
 
@@ -2780,11 +2799,13 @@ export default function Dashboard() {
           {activeTab === "Service Lines"         && <ServiceLineDeepSection />}
           {activeTab === "Risks & Exceptions"    && <AlertsSection     onTabChange={setActiveTab} />}
           {activeTab === "Reports"               && <ReportsSection    />}
+          {activeTab === "P&L Analysis"          && <div className="space-y-8"><PLSection /><FinancialMovementsSection /></div>}
+          {activeTab === "Key Insights"          && <InsightsSection />}
 
           <div className="flex flex-col items-center gap-2 pt-10 pb-6">
             <Image src="/logo.png" alt="Quantyx Advisory" width={96} height={24} className="object-contain opacity-40 dark:opacity-25 dark:brightness-[2]" />
             <p className="text-[11px] text-slate-400 dark:text-white/18">
-              Built for BTG Advisory Group — high-confidence datasets only. Decision-oriented, not data-oriented.
+              Quantyx Advisory · CEO Operating System · Demo environment · High-confidence data only.
             </p>
           </div>
         </main>
