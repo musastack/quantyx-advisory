@@ -96,6 +96,20 @@ const serviceLines = [
   { name: "Property Valuation",     revenue: 1870 },
 ];
 
+// Waterfall P&L bridge — Mar 25 (£000)
+const waterfallData = [
+  { name: "Revenue",      base: 0,    amount: 10570, type: "positive" },
+  { name: "Cost of Sales",base: 6427, amount: 4143,  type: "negative" },
+  { name: "Gross Profit", base: 0,    amount: 6427,  type: "total"    },
+  { name: "Staff Costs",  base: 3617, amount: 2810,  type: "negative" },
+  { name: "Overhead",     base: 3037, amount: 580,   type: "negative" },
+  { name: "Technology",   base: 2817, amount: 220,   type: "negative" },
+  { name: "Other Opex",   base: 2336, amount: 481,   type: "negative" },
+  { name: "EBITDA",       base: 0,    amount: 2336,  type: "total"    },
+  { name: "D&A + Tax",    base: 1790, amount: 546,   type: "negative" },
+  { name: "Net Profit",   base: 0,    amount: 1790,  type: "total"    },
+];
+
 // All 10 KPI cards — full spec data (all 11 required fields each)
 const kpiData = [
   {
@@ -699,30 +713,58 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
   return (
     <div className="space-y-6">
 
-      {/* Period header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none p-6">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-[1.5rem] font-bold tracking-tight text-slate-900 dark:text-white mb-1">BTG Advisory Group</h1>
-            <p className="text-[13px] text-slate-500 dark:text-white/40">Management Dashboard · March 2025</p>
+      {/* Executive banner */}
+      <div className="relative overflow-hidden rounded-2xl" style={{ background: "linear-gradient(135deg, #08080f 0%, #0c0c20 100%)", border: "1px solid rgba(99,102,241,0.2)" }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 70% 60% at 80% 50%, rgba(99,102,241,0.10) 0%, transparent 70%)" }} />
+        <div className="relative px-6 pt-6 pb-5">
+          <div className="flex items-start justify-between gap-4 flex-wrap mb-5">
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
+                  <span className="text-[9px] font-black text-white tracking-tight">BTG</span>
+                </div>
+                <h1 className="text-[1.25rem] font-black tracking-tight text-white">BTG Advisory Group</h1>
+                <span className="text-white/20">·</span>
+                <span className="text-[13px] text-white/40 font-medium">Management Dashboard</span>
+              </div>
+              <p className="text-[12px] text-white/35">March 2025 · {dateStr}</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                Live · synced today
+              </span>
+              <span className="text-white/15 select-none">·</span>
+              <span className="text-[11px] text-white/30">ERP + CRM + Debtors ledger</span>
+            </div>
           </div>
-          <div className="text-right shrink-0 space-y-1">
-            <p className="text-[11px] text-slate-400 dark:text-white/30">{dateStr}</p>
-            <div className="flex items-center gap-1.5 justify-end">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Live · ERP + CRM + Debtors ledger</span>
-            </div>
-            <div className="flex items-center gap-3 justify-end pt-1">
-              {[
-                { label: "Period", value: "Mar 25" },
-                { label: "Prior",  value: "Feb 25" },
-                { label: "Budget", value: "Mar 25" },
-              ].map(col => (
-                <span key={col.label} className="text-[10px] text-slate-400 dark:text-white/25">
-                  <span className="text-slate-300 dark:text-white/15">{col.label} / </span>{col.value}
-                </span>
-              ))}
-            </div>
+
+          {/* 4 hero stat cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { label: "Revenue",      value: `£${(latest.revenue/1000).toFixed(2)}M`,    delta: "+0.6% MoM", deltaCls: "text-indigo-300",  budgetVar: "–4.6% vs budget", budgetCls: "text-rose-400",    border: "border-indigo-500/30",  glow: "rgba(99,102,241,0.12)"   },
+              { label: "EBITDA",       value: `£${(latest.ebitda/1000).toFixed(2)}M`,     delta: `${latest.ebitdaM}% margin`, deltaCls: "text-emerald-300", budgetVar: "Best in 12 months", budgetCls: "text-emerald-400", border: "border-emerald-500/25", glow: "rgba(16,185,129,0.10)"  },
+              { label: "Cash Balance", value: "£3.95M",    delta: "+£140k MoM", deltaCls: "text-sky-300",     budgetVar: "£1.05M below target",  budgetCls: "text-amber-400",   border: "border-sky-500/25",     glow: "rgba(14,165,233,0.10)"   },
+              { label: "Lockup Days",  value: `${recData[recData.length-1].lockup}d`,     delta: "–1d MoM",    deltaCls: "text-violet-300",  budgetVar: "+28d above 90d target", budgetCls: "text-rose-400", border: "border-violet-500/25",  glow: "rgba(139,92,246,0.10)"   },
+            ].map((s, i) => (
+              <div key={i} className="rounded-xl p-4" style={{ background: `rgba(255,255,255,0.04)`, border: `1px solid`, borderColor: s.border.replace("border-", "").replace("/25", "").replace("/30", ""), boxShadow: `0 0 20px ${s.glow}` }}>
+                <p className="text-[9.5px] font-bold uppercase tracking-widest text-white/35 mb-2">{s.label}</p>
+                <p className="text-[1.6rem] font-black font-mono tabular-nums text-white leading-none mb-1.5">{s.value}</p>
+                <p className={`text-[11px] font-semibold ${s.deltaCls}`}>{s.delta}</p>
+                <p className={`text-[10px] ${s.budgetCls} mt-0.5`}>{s.budgetVar}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Alert strip */}
+        <div className="px-6 py-2.5 border-t" style={{ borderColor: "rgba(99,102,241,0.15)", background: "rgba(239,68,68,0.08)" }}>
+          <div className="flex items-center gap-2.5">
+            <AlertCircle size={12} className="text-rose-400 shrink-0" />
+            <p className="text-[11px] text-rose-300 font-medium">2 critical signals require attention — Revenue £520k below budget (3rd consecutive miss) · Debtors 90.4% aged 91+ days</p>
+            <button onClick={() => onTabChange("Risks & Exceptions")} className="ml-auto text-[11px] text-rose-400 hover:text-rose-300 font-semibold whitespace-nowrap flex items-center gap-1">
+              View all <ChevronRight size={10} />
+            </button>
           </div>
         </div>
       </div>
@@ -765,7 +807,7 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
                   <p className="text-[9.5px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30">{m.label}</p>
                   <div className={`w-1.5 h-1.5 rounded-full ${statusDot}`} />
                 </div>
-                <p className="text-[1.5rem] font-bold font-mono tabular-nums text-slate-900 dark:text-white leading-none mb-3">{m.value}</p>
+                <p className="text-[1.5rem] font-black font-mono tabular-nums text-slate-900 dark:text-white leading-none mb-3">{m.value}</p>
                 <div className="space-y-1 pt-2 border-t border-slate-100 dark:border-white/[0.05]">
                   <div className="flex items-center justify-between text-[10.5px]">
                     <span className="text-slate-400 dark:text-white/30">{m.vsLabel}</span>
@@ -794,7 +836,7 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
           ].map((m, i) => (
             <div key={i} className="p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none">
               <p className="text-[9.5px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-2">{m.label}</p>
-              <p className="text-[1.4rem] font-bold font-mono tabular-nums text-slate-900 dark:text-white leading-none mb-2">{m.value}</p>
+              <p className="text-[1.4rem] font-black font-mono tabular-nums text-slate-900 dark:text-white leading-none mb-2">{m.value}</p>
               <div className="flex items-center gap-1 mb-1">
                 {m.up ? <TrendingUp size={9} className="text-emerald-500 shrink-0" /> : <TrendingDown size={9} className="text-rose-500 shrink-0" />}
                 <span className={`text-[10.5px] font-semibold ${m.up ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{m.delta} {m.sub}</span>
@@ -1167,6 +1209,49 @@ function FinancialSection() {
         ))}
       </div>
 
+      {/* P&L Waterfall — Revenue to Net Profit */}
+      <Card>
+        <SectionHeader title="P&L waterfall — March 2025" sub="From revenue to net profit · £000 · shows where margin is made and lost" badge="Mar 25" />
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={waterfallData} margin={{ top: 8, right: 8, bottom: 4, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+            <XAxis dataKey="name" tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} dy={6} interval={0} />
+            <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => v === 0 ? "" : `£${(v / 1000).toFixed(1)}M`} width={52} />
+            <Tooltip
+              content={({ active, payload, label }) => {
+                if (!active || !payload?.length) return null;
+                const d = waterfallData.find(w => w.name === label);
+                if (!d) return null;
+                return (
+                  <div className="bg-[#0b0b1f] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs shadow-xl">
+                    <p className="font-semibold text-white mb-1">{label}</p>
+                    <p className="text-white/60">£{(d.amount / 1000).toFixed(2)}M</p>
+                  </div>
+                );
+              }}
+            />
+            {/* Invisible stacking base */}
+            <Bar dataKey="base" stackId="wf" fill="transparent" />
+            {/* Colored value bar */}
+            <Bar dataKey="amount" stackId="wf" radius={[4, 4, 0, 0]} maxBarSize={44}>
+              {waterfallData.map((entry, i) => (
+                <Cell
+                  key={i}
+                  fill={entry.type === "total" ? "#8b5cf6" : entry.type === "positive" ? "#6366f1" : "#f43f5e"}
+                  fillOpacity={0.88}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="flex items-center gap-5 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-indigo-500" />Revenue</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-rose-500" />Cost / deduction</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-violet-500" />Subtotal</span>
+          <span className="ml-auto text-[10px]">Gross margin 60.8% · EBITDA 22.1% · Net margin 16.9%</span>
+        </div>
+      </Card>
+
       <Card>
         <SectionHeader title="Financial signals" sub="March 2025" badge="Mar 25" />
         <div className="space-y-2.5">
@@ -1426,13 +1511,16 @@ function PeopleSection() {
     return "bg-rose-200/80 dark:bg-rose-500/30 text-rose-800 dark:text-rose-200";
   }
 
+  const revenuePerFTE = Math.round(10570 / latestHC.headcount); // £000/month per head
+
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Total Headcount", value: `${latestHC.headcount}`,   sub: `${netChange >= 0 ? "+" : ""}${netChange} since Nov · stable`, color: "text-slate-900 dark:text-white",         border: "border-slate-200 dark:border-white/[0.07]",   bg: "bg-white dark:bg-white/[0.025]"      },
           { label: "Fee Earners",     value: `${latestHC.feeEarners}`,  sub: `${Math.round(latestHC.feeEarners / latestHC.headcount * 100)}% of total headcount`,  color: "text-indigo-700 dark:text-indigo-300", border: "border-indigo-200 dark:border-indigo-500/20", bg: "bg-indigo-50 dark:bg-white/[0.025]"  },
           { label: "Avg Utilisation", value: `${avgUtil.toFixed(1)}%`,  sub: `vs ${avgTarget.toFixed(1)}% target · +0.6pp`,                 color: "text-emerald-700 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-500/20", bg: "bg-emerald-50 dark:bg-white/[0.025]" },
+          { label: "Revenue per FTE", value: `£${revenuePerFTE}k`,      sub: `£${Math.round(revenuePerFTE * 12 / 1000) * 1}k annualised per head`, color: "text-violet-700 dark:text-violet-300", border: "border-violet-200 dark:border-violet-500/20", bg: "bg-violet-50 dark:bg-white/[0.025]" },
         ].map(s => (
           <div key={s.label} className={`p-5 rounded-2xl border ${s.border} ${s.bg} shadow-sm dark:shadow-none`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-white/35 mb-3">{s.label}</p>
@@ -2804,33 +2892,70 @@ export default function Dashboard() {
           <p className="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-white/18">Management dashboard</p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-0.5 overflow-y-auto">
-          {NAV_ITEMS.map((item) => {
-            const isAlerts = item.label === "Risks & Exceptions";
-            const isActive = activeTab === item.label;
-            return (
-              <button
-                key={item.label}
-                onClick={() => { setActiveTab(item.label); setMobileOpen(false); }}
-                className={`relative w-full text-left px-3 py-2.5 rounded-xl transition-all text-sm flex items-center justify-between gap-2 ${
-                  isActive
-                    ? "bg-indigo-50 text-indigo-700 font-semibold dark:bg-indigo-500/[0.14] dark:text-indigo-300"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.05]"
-                }`}
-              >
-                {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] rounded-r-full bg-indigo-500 dark:bg-indigo-400" />
-                )}
-                <div className="flex items-center gap-2.5">
-                  <item.icon size={14} className="shrink-0" />
-                  {item.label}
-                </div>
-                {isAlerts && (
-                  <span className="text-[9px] font-bold bg-rose-500 text-white rounded-full w-4 h-4 flex items-center justify-center shrink-0 shadow-sm">{alertCount}</span>
-                )}
-              </button>
-            );
-          })}
+        <nav className="flex-1 p-3 overflow-y-auto space-y-4">
+          {[
+            {
+              group: "OVERVIEW",
+              items: [
+                { label: "Home",          icon: Home     },
+                { label: "KPI Dashboard", icon: BarChart2 },
+              ],
+            },
+            {
+              group: "FINANCIAL",
+              items: [
+                { label: "Financial Performance", icon: TrendingUp },
+                { label: "Collections & Cash",    icon: DollarSign },
+                { label: "Service Lines",          icon: Layers     },
+              ],
+            },
+            {
+              group: "OPERATIONS",
+              items: [
+                { label: "People & Capacity",  icon: Users      },
+                { label: "Key Insights",       icon: Trophy     },
+                { label: "Risks & Exceptions", icon: Zap        },
+              ],
+            },
+            {
+              group: "REPORTS",
+              items: [
+                { label: "Reports", icon: FileText },
+              ],
+            },
+          ].map(section => (
+            <div key={section.group}>
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-white/20 px-3 mb-1.5">{section.group}</p>
+              <div className="space-y-0.5">
+                {section.items.map(item => {
+                  const isAlerts = item.label === "Risks & Exceptions";
+                  const isActive = activeTab === item.label;
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => { setActiveTab(item.label); setMobileOpen(false); }}
+                      className={`relative w-full text-left px-3 py-2.5 rounded-xl transition-all text-[13px] flex items-center justify-between gap-2 ${
+                        isActive
+                          ? "bg-indigo-50 text-indigo-700 font-semibold dark:bg-indigo-500/[0.14] dark:text-indigo-300"
+                          : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 dark:text-white/40 dark:hover:text-white dark:hover:bg-white/[0.05]"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] rounded-r-full bg-indigo-500 dark:bg-indigo-400" />
+                      )}
+                      <div className="flex items-center gap-2.5">
+                        <item.icon size={13} className="shrink-0" />
+                        {item.label}
+                      </div>
+                      {isAlerts && (
+                        <span className="text-[9px] font-bold bg-rose-500 text-white rounded-full w-4 h-4 flex items-center justify-center shrink-0 shadow-sm">{alertCount}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-slate-100 dark:border-white/[0.05] space-y-3">
