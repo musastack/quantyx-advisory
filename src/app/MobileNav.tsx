@@ -47,11 +47,13 @@ export default function MobileNav() {
 
         <nav className="flex-1 flex flex-col p-5 gap-1 text-sm">
           {[
-            { label: "Services",     href: "#services"     },
-            { label: "How it works", href: "#how-it-works" },
-            { label: "Case Studies", href: "#case-studies" },
-            { label: "About",        href: "#about"        },
-            { label: "Contact",      href: "#contact"      },
+            { label: "Services",      href: "#services"     },
+            { label: "How It Works",  href: "#how-it-works" },
+            { label: "Case Studies",  href: "#case-studies" },
+            { label: "Integrations",  href: "#integrations" },
+            { label: "Pricing",       href: "#pricing"      },
+            { label: "About",         href: "#about"        },
+            { label: "Contact",       href: "#contact"      },
           ].map((item) => (
             <a
               key={item.label}
