@@ -252,7 +252,41 @@ const plDetail = [
   { label: "Net Profit",               curr: 1790,  prev: 1680,  budget: 2240,  isSubtotal: false, isTotal: true,  indent: 0 },
 ];
 
-// Balance sheet — Mar 25 vs Feb 25
+// Debtor aging 4-bucket breakdown (£000) — Oct to Mar
+const debtorAging = [
+  { month: "Oct", d0_30: 1190, d31_60: 2080, d61_90: 1820, d91plus: 70650 },
+  { month: "Nov", d0_30: 1290, d31_60: 2160, d61_90: 1880, d91plus: 72290 },
+  { month: "Dec", d0_30: 1430, d31_60: 2280, d61_90: 1920, d91plus: 73880 },
+  { month: "Jan", d0_30: 1660, d31_60: 2430, d61_90: 1850, d91plus: 75740 },
+  { month: "Feb", d0_30: 1900, d31_60: 2600, d61_90: 1620, d91plus: 77610 },
+  { month: "Mar", d0_30: 2110, d31_60: 2760, d61_90: 1640, d91plus: 80590 },
+];
+
+// Grade headcount pyramid — Mar 25
+const gradeHeadcount = [
+  { grade: "Partner",       count: 42,  target: 40,  chargeRate: 850, color: "#6366f1" },
+  { grade: "Director",      count: 68,  target: 70,  chargeRate: 650, color: "#8b5cf6" },
+  { grade: "Sr. Manager",   count: 95,  target: 98,  chargeRate: 480, color: "#06b6d4" },
+  { grade: "Manager",       count: 142, target: 140, chargeRate: 350, color: "#10b981" },
+  { grade: "Sr. Associate", count: 198, target: 200, chargeRate: 250, color: "#f59e0b" },
+  { grade: "Associate",     count: 179, target: 180, chargeRate: 175, color: "#f43f5e" },
+];
+
+// Margin composition — % of revenue, 12 months (Apr–Mar)
+const marginCompositionData = [
+  { month: "Apr", cos: 39.3, staff: 26.2, overhead: 5.9, tech: 2.3, other: 4.7, net: 21.6 },
+  { month: "May", cos: 39.1, staff: 26.4, overhead: 5.8, tech: 2.2, other: 4.7, net: 20.8 },
+  { month: "Jun", cos: 40.9, staff: 26.2, overhead: 5.8, tech: 2.2, other: 4.4, net: 20.5 },
+  { month: "Jul", cos: 40.7, staff: 27.5, overhead: 5.8, tech: 2.2, other: 5.1, net: 18.7 },
+  { month: "Aug", cos: 40.6, staff: 26.6, overhead: 5.9, tech: 2.2, other: 3.9, net: 20.8 },
+  { month: "Sep", cos: 41.2, staff: 25.8, overhead: 5.8, tech: 2.2, other: 4.8, net: 19.2 },
+  { month: "Oct", cos: 39.1, staff: 26.6, overhead: 5.7, tech: 2.2, other: 5.7, net: 20.7 },
+  { month: "Nov", cos: 39.1, staff: 26.5, overhead: 5.7, tech: 2.2, other: 5.8, net: 20.7 },
+  { month: "Dec", cos: 39.9, staff: 26.3, overhead: 5.7, tech: 2.2, other: 6.3, net: 19.6 },
+  { month: "Jan", cos: 40.0, staff: 27.0, overhead: 5.7, tech: 2.1, other: 4.9, net: 20.3 },
+  { month: "Feb", cos: 39.5, staff: 26.9, overhead: 5.6, tech: 2.1, other: 4.9, net: 21.0 },
+  { month: "Mar", cos: 39.2, staff: 26.6, overhead: 5.5, tech: 2.1, other: 4.5, net: 22.1 },
+];
 
 /* ─────────────────────────────────────────────
    SPARKLINE + TREND BADGE
@@ -293,6 +327,58 @@ function TrendBadge({ values }: { values: number[] }) {
         {cfg.icon}{cfg.label}
       </span>
       <span className="text-[10px] text-slate-400 dark:text-white/25">{last3.map(v => `${v}%`).join(" → ")}</span>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   GAUGE METER — SVG half-donut
+───────────────────────────────────────────── */
+
+function GaugeMeter({ value, target, label = "Utilisation" }: { value: number; target: number; label?: string }) {
+  const r = 56, sw = 12, cx = 80, cy = 76;
+  const clamp = (v: number) => Math.min(Math.max(v, 0), 100);
+  const pct   = clamp(value) / 100;
+  const tpct  = clamp(target) / 100;
+  const color = value >= target ? "#10b981" : value >= target * 0.93 ? "#f59e0b" : "#f43f5e";
+
+  // θ=180° → left (0%), θ=0° → right (100%), through top
+  function ptAt(p: number) {
+    const θ = Math.PI * (1 - p);   // 180°→0° as p:0→1
+    return { x: cx + r * Math.cos(θ), y: cy - r * Math.sin(θ) };
+  }
+
+  const L = ptAt(0);   // left (0%)
+  const R = ptAt(1);   // right (100%)
+  const F = ptAt(pct); // fill end
+  const T = ptAt(tpct);// target tick
+
+  const trackD = `M ${L.x.toFixed(2)},${L.y.toFixed(2)} A ${r},${r} 0 0,1 ${R.x.toFixed(2)},${R.y.toFixed(2)}`;
+  const fillD  = pct <= 0 ? "" : `M ${L.x.toFixed(2)},${L.y.toFixed(2)} A ${r},${r} 0 ${pct > 0.5 ? 1 : 0},1 ${F.x.toFixed(2)},${F.y.toFixed(2)}`;
+
+  // Target tick — short radial line
+  const r1 = r - sw / 2 - 2, r2 = r + sw / 2 + 2;
+  const θT = Math.PI * (1 - tpct);
+  const tx1 = cx + r1 * Math.cos(θT), ty1 = cy - r1 * Math.sin(θT);
+  const tx2 = cx + r2 * Math.cos(θT), ty2 = cy - r2 * Math.sin(θT);
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={cx * 2} height={cy + sw} viewBox={`0 0 ${cx * 2} ${cy + sw}`} className="overflow-visible">
+        {/* Track */}
+        <path d={trackD} fill="none" stroke="currentColor" strokeOpacity={0.1} strokeWidth={sw} strokeLinecap="round" className="text-slate-900 dark:text-white" />
+        {/* Fill */}
+        {pct > 0 && <path d={fillD} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" />}
+        {/* Target tick */}
+        <line x1={tx1.toFixed(2)} y1={ty1.toFixed(2)} x2={tx2.toFixed(2)} y2={ty2.toFixed(2)} stroke="#94a3b8" strokeWidth={2} strokeLinecap="round" />
+        {/* Centre number */}
+        <text x={cx} y={cy - 4} textAnchor="middle" dominantBaseline="middle" fontSize="20" fontWeight="900" fontFamily="ui-monospace,monospace" fill={color}>{value.toFixed(1)}%</text>
+        <text x={cx} y={cy + 14} textAnchor="middle" dominantBaseline="middle" fontSize="9" fill="currentColor" opacity={0.4} letterSpacing="0.08em" style={{ textTransform: "uppercase" }}>{label}</text>
+        {/* Min / Target / Max labels */}
+        <text x={L.x - 2} y={L.y + 14} textAnchor="middle" fontSize="8" fill="currentColor" opacity={0.3}>0%</text>
+        <text x={R.x + 2} y={R.y + 14} textAnchor="end" fontSize="8" fill="currentColor" opacity={0.3}>100%</text>
+        <text x={T.x}  y={T.y - 8} textAnchor="middle" fontSize="8" fill="#94a3b8" opacity={0.7}>{target}%</text>
+      </svg>
     </div>
   );
 }
@@ -769,6 +855,19 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
         </div>
       </div>
 
+      {/* "This Period in Numbers" — narrative card */}
+      <div className="relative p-5 rounded-2xl border-l-[3px] border-indigo-500 border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 100% at 0% 50%, rgba(99,102,241,0.04) 0%, transparent 70%)" }} />
+        <div className="relative flex items-start gap-3">
+          <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-400 shrink-0 mt-0.5 w-28">This period</span>
+          <p className="text-[13px] text-slate-700 dark:text-white/75 leading-relaxed italic">
+            Revenue <span className="font-semibold not-italic text-slate-900 dark:text-white">£10.57M</span> — £520k below budget for the third consecutive month, driven by CVL intake softness.{" "}
+            EBITDA margin <span className="font-semibold not-italic text-emerald-700 dark:text-emerald-300">22.1%</span>, the highest level in 12 months, as cost discipline compounds against recovering case mix.{" "}
+            Collections remain the critical risk — <span className="font-semibold not-italic text-rose-700 dark:text-rose-300">£80.6M aged 91+ days</span> representing 90% of the debtor book.
+          </p>
+        </div>
+      </div>
+
       {/* Primary KPIs — 4 key P&L metrics */}
       <div>
         <p className="text-[9.5px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-white/30 mb-2.5">P&L — March 2025</p>
@@ -865,6 +964,59 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Priority Actions */}
+      <div className="rounded-2xl border border-slate-200 dark:border-white/[0.09] bg-white dark:bg-[#0b0b17] shadow-sm dark:shadow-none overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-700 dark:text-white/70">CEO priority actions — March 2025</p>
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/25">2 critical</span>
+        </div>
+        <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+          {[
+            {
+              rank: 1, rag: "red",
+              title: "Initiate 91+ debtor recovery programme",
+              detail: "£80.6M at risk — 90% of debtor book. Insolvency case cycles explain timing but not concentration. Structured recovery initiative required.",
+              impact: "£8–12M recoverable",
+            },
+            {
+              rank: 2, rag: "red",
+              title: "CVL pipeline review — 3rd consecutive budget miss",
+              detail: "YTD shortfall £1.4M. £220k/month CVL gap vs budget. BD strategy needs review before Q2.",
+              impact: "£1.4M YTD gap",
+            },
+            {
+              rank: 3, rag: "amber",
+              title: "Lockup 28 days above 90-day target — accelerate collections",
+              detail: "Recovering from 125d Jan peak at ~2.5d/month. At this rate, target not reached until late 2025.",
+              impact: "~£3M/month cost",
+            },
+            {
+              rank: 4, rag: "green",
+              title: "EBITDA 22.1% — sustain cost discipline into Q1 FY26",
+              detail: "Best margin in 12 months. +3.4pp recovery since Jul 24 low. Opex discipline must be maintained.",
+              impact: "+£106k/pp EBITDA",
+            },
+          ].map(a => {
+            const ragMap: Record<string, { num: string; title: string; impact: string }> = {
+              red:   { num: "bg-rose-500",    title: "text-rose-700 dark:text-rose-300",       impact: "text-rose-600 dark:text-rose-400"       },
+              amber: { num: "bg-amber-400",   title: "text-amber-700 dark:text-amber-300",     impact: "text-amber-600 dark:text-amber-400"     },
+              green: { num: "bg-emerald-500", title: "text-emerald-700 dark:text-emerald-300", impact: "text-emerald-600 dark:text-emerald-400" },
+            };
+            const ragCls = ragMap[a.rag] ?? ragMap.amber;
+            return (
+              <div key={a.rank} className="flex items-start gap-3 px-5 py-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.015] transition-colors">
+                <span className={`w-5 h-5 rounded-full ${ragCls.num} text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5`}>{a.rank}</span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-[12px] font-semibold ${ragCls.title} leading-snug mb-0.5`}>{a.title}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 leading-snug mb-1">{a.detail}</p>
+                  <span className={`text-[10px] font-bold ${ragCls.impact}`}>{a.impact}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -1252,6 +1404,47 @@ function FinancialSection() {
         </div>
       </Card>
 
+      {/* Margin Composition — where every £1 of revenue goes */}
+      <Card>
+        <SectionHeader title="Where does every £1 of revenue go?" sub="Cost and margin composition as % of revenue · Apr 2024 – Mar 2025" badge="12M" />
+        <div className="mt-1 mb-3">
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={marginCompositionData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} stackOffset="none">
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
+              <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} width={34} domain={[0, 100]} />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  return (
+                    <div style={{ background: "rgba(10,10,20,0.95)", border: "1px solid rgba(255,255,255,0.08)" }} className="rounded-xl px-3.5 py-3 text-xs shadow-2xl space-y-1">
+                      <p className="text-white/40 mb-1.5 font-medium">{label} 2024/25</p>
+                      {[...payload].reverse().map((p, i) => (
+                        <p key={i} className="font-semibold tabular-nums flex items-center justify-between gap-4" style={{ color: p.color }}>
+                          <span>{p.name}</span><span>{Number(p.value).toFixed(1)}%</span>
+                        </p>
+                      ))}
+                    </div>
+                  );
+                }}
+              />
+              <Bar dataKey="cos"      name="Cost of Sales"    stackId="a" fill="#f43f5e" fillOpacity={0.85} />
+              <Bar dataKey="staff"    name="Staff Costs"      stackId="a" fill="#f59e0b" fillOpacity={0.85} />
+              <Bar dataKey="overhead" name="Overhead"         stackId="a" fill="#94a3b8" fillOpacity={0.75} />
+              <Bar dataKey="tech"     name="Technology"       stackId="a" fill="#06b6d4" fillOpacity={0.75} />
+              <Bar dataKey="other"    name="Other Opex"       stackId="a" fill="#8b5cf6" fillOpacity={0.70} />
+              <Bar dataKey="net"      name="Net EBITDA"       stackId="a" fill="#10b981" fillOpacity={0.90} radius={[3,3,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[10px] text-slate-500 dark:text-white/35">
+          {[["Cost of Sales","#f43f5e"],["Staff Costs","#f59e0b"],["Overhead","#94a3b8"],["Technology","#06b6d4"],["Other Opex","#8b5cf6"],["Net EBITDA","#10b981"]].map(([n,c]) => (
+            <span key={n} className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:c}} />{n}</span>
+          ))}
+          <span className="ml-auto text-[10px]">EBITDA recovering from 18.7% (Jul) → 22.1% (Mar) · 3.4pp improvement</span>
+        </div>
+      </Card>
+
       <Card>
         <SectionHeader title="Financial signals" sub="March 2025" badge="Mar 25" />
         <div className="space-y-2.5">
@@ -1348,25 +1541,45 @@ function CashSection() {
         </div>
       </Card>
 
-      {/* Debtor aging trend */}
+      {/* Debtor aging — 4-bucket analysis */}
       <Card>
-        <SectionHeader title="Is the aging position improving?" sub="91+ vs current · Oct 2024 – Mar 2025" />
+        <SectionHeader title="Debtor aging analysis" sub="4-bucket breakdown · £000 · Oct 2024 – Mar 2025 · the 91+ bucket is growing each month" />
         <div className="mt-1 mb-2">
-          <ResponsiveContainer width="100%" height={230}>
-            <BarChart data={recData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={debtorAging} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} dy={6} />
               <YAxis tick={{ fill: "var(--chart-tick)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `£${(v / 1000).toFixed(0)}M`} width={52} />
-              <Tooltip content={<ChartTooltip formatter={(v) => `£${(v / 1000).toFixed(1)}M`} />} />
-              <Bar dataKey="aged91" stackId="a" fill="#f43f5e" radius={[0, 0, 0, 0]} name="Aged 91+" />
-              <Bar dataKey="other"  stackId="a" fill="#6366f1" radius={[4, 4, 0, 0]} name="0–90 days" opacity={0.75} />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  const total = payload.reduce((s, p) => s + (Number(p.value) || 0), 0);
+                  return (
+                    <div style={{ background: "rgba(10,10,20,0.95)", border: "1px solid rgba(255,255,255,0.08)" }} className="rounded-xl px-3.5 py-3 text-xs shadow-2xl space-y-1">
+                      <p className="text-white/40 mb-1.5 font-medium">{label} 2024/25</p>
+                      {payload.map((p, i) => (
+                        <p key={i} className="font-semibold tabular-nums flex items-center justify-between gap-4" style={{ color: p.color }}>
+                          <span>{p.name}</span><span>£{(Number(p.value) / 1000).toFixed(1)}M</span>
+                        </p>
+                      ))}
+                      <p className="text-white/40 pt-1 border-t border-white/10 tabular-nums">Total: £{(total / 1000).toFixed(1)}M</p>
+                    </div>
+                  );
+                }}
+              />
+              <Bar dataKey="d0_30"   stackId="a" fill="#0ea5e9" fillOpacity={0.80} name="0–30 days"  />
+              <Bar dataKey="d31_60"  stackId="a" fill="#f59e0b" fillOpacity={0.80} name="31–60 days" />
+              <Bar dataKey="d61_90"  stackId="a" fill="#f97316" fillOpacity={0.80} name="61–90 days" />
+              <Bar dataKey="d91plus" stackId="a" fill="#f43f5e" fillOpacity={0.90} name="91+ days"   radius={[3,3,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex items-center gap-6 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[11px] text-slate-500 dark:text-white/35">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-rose-500" />Aged 91+</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500 opacity-75" />0–90 days</span>
-          <span className="ml-auto text-[10px] text-slate-400 dark:text-white/20">The 91+ bucket is growing in absolute terms each month</span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-3 border-t border-slate-100 dark:border-white/[0.05] text-[10px] text-slate-500 dark:text-white/35">
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-sky-500" />0–30 days (current)</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-amber-500" />31–60 days</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-orange-500" />61–90 days</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-rose-500" />91+ days (critical)</span>
+          <span className="ml-auto text-rose-500 dark:text-rose-400 font-semibold">91+ bucket ↑ every month — structural, not cyclical</span>
         </div>
       </Card>
 
@@ -1528,6 +1741,93 @@ function PeopleSection() {
             <p className="text-[11px] text-slate-400 dark:text-white/30 mt-1">{s.sub}</p>
           </div>
         ))}
+      </div>
+
+      {/* Gauge + Headcount Pyramid side by side */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        {/* Utilisation Gauge */}
+        <Card className="flex flex-col items-center">
+          <SectionHeader title="Average utilisation" sub="Mar 2025 · blended across all grades vs targets" />
+          <GaugeMeter value={avgUtil} target={avgTarget} label="Avg Utilisation" />
+          <div className="mt-4 w-full grid grid-cols-3 gap-3 text-center">
+            {[
+              { label: "Actual",  value: `${avgUtil.toFixed(1)}%`,  color: "text-emerald-700 dark:text-emerald-300" },
+              { label: "Target",  value: `${avgTarget.toFixed(1)}%`, color: "text-slate-600 dark:text-white/55" },
+              { label: "Delta",   value: `+${(avgUtil - avgTarget).toFixed(1)}pp`, color: "text-emerald-600 dark:text-emerald-400" },
+            ].map(s => (
+              <div key={s.label} className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-1">{s.label}</p>
+                <p className={`text-[1.1rem] font-black font-mono tabular-nums ${s.color}`}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 w-full space-y-1.5">
+            {utilisationHeatmap.map(g => {
+              const delta = g.Mar - g.target;
+              const pct = Math.min(g.Mar / 100, 1);
+              const tpct = Math.min(g.target / 100, 1);
+              const isAbove = delta >= 0;
+              return (
+                <div key={g.grade} className="flex items-center gap-3">
+                  <span className="text-[10px] text-slate-500 dark:text-white/40 w-24 shrink-0 text-right">{g.grade}</span>
+                  <div className="flex-1 relative h-4 rounded-full bg-slate-100 dark:bg-white/[0.06] overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 rounded-full transition-all" style={{ width: `${pct * 100}%`, background: isAbove ? "#10b981" : "#f59e0b", opacity: 0.8 }} />
+                    <div className="absolute inset-y-0 w-px bg-slate-400 dark:bg-white/20" style={{ left: `${tpct * 100}%` }} />
+                  </div>
+                  <span className={`text-[10px] font-mono font-semibold w-12 text-right ${isAbove ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>{g.Mar.toFixed(1)}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* Headcount Pyramid */}
+        <Card>
+          <SectionHeader title="Headcount by grade" sub="Mar 2025 · actual vs target · ghost bar = target" />
+          <div className="space-y-3 mt-2">
+            {gradeHeadcount.map(g => {
+              const maxCount = Math.max(...gradeHeadcount.map(x => Math.max(x.count, x.target)));
+              const actualW  = (g.count / maxCount) * 100;
+              const targetW  = (g.target / maxCount) * 100;
+              const isOver   = g.count > g.target;
+              return (
+                <div key={g.grade}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold text-slate-700 dark:text-white/75">{g.grade}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-semibold ${isOver ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        {g.count} {isOver ? "↑" : "↓"}
+                      </span>
+                      <span className="text-[10px] text-slate-400 dark:text-white/25">/{g.target} target</span>
+                    </div>
+                  </div>
+                  <div className="relative h-5 rounded-lg bg-slate-100 dark:bg-white/[0.05] overflow-hidden">
+                    {/* Target ghost */}
+                    <div className="absolute inset-y-0 left-0 rounded-lg border-2 border-dashed border-slate-300 dark:border-white/20" style={{ width: `${targetW}%` }} />
+                    {/* Actual fill */}
+                    <div className="absolute inset-y-0 left-0 rounded-lg" style={{ width: `${actualW}%`, background: g.color, opacity: 0.8 }} />
+                    {/* Charge rate label */}
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-semibold text-slate-400 dark:text-white/25">£{g.chargeRate}/hr</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/[0.05]">
+            <div className="grid grid-cols-3 gap-3 text-center">
+              {[
+                { label: "Total", value: `${gradeHeadcount.reduce((s,g) => s+g.count,0)}`, color: "text-slate-900 dark:text-white" },
+                { label: "Fee earners", value: `${gradeHeadcount.slice(0,-1).reduce((s,g) => s+g.count,0)}`, color: "text-indigo-700 dark:text-indigo-300" },
+                { label: "Partners", value: `${gradeHeadcount[0].count}`, color: "text-violet-700 dark:text-violet-300" },
+              ].map(s => (
+                <div key={s.label} className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.05]">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 mb-1">{s.label}</p>
+                  <p className={`text-[1.1rem] font-black font-mono tabular-nums ${s.color}`}>{s.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Utilisation chart */}
@@ -1749,6 +2049,55 @@ function AlertsSection({ onTabChange }: { onTabChange: (tab: string) => void }) 
 
   return (
     <div className="space-y-5">
+
+      {/* Situation Room header */}
+      <div className="relative overflow-hidden rounded-2xl p-6" style={{ background: "linear-gradient(135deg, #08080f 0%, #12060f 100%)", border: "1px solid rgba(244,63,94,0.2)" }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 70% at 90% 40%, rgba(244,63,94,0.08) 0%, transparent 70%)" }} />
+        <div className="relative">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-400">Situation Room · March 2025</p>
+              </div>
+              <h2 className="text-[1.1rem] font-black text-white leading-tight tracking-tight">
+                {critical.length} critical items require CEO action before end of month
+              </h2>
+              <p className="text-[12px] text-white/40 mt-1">
+                {warnings.length} warnings monitored · {intelligence.length} intelligence signals · last synced today
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 shrink-0">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-rose-500/30 bg-rose-500/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                <span className="text-[11px] font-semibold text-rose-300">{critical.length} Critical</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-amber-500/30 bg-amber-500/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="text-[11px] font-semibold text-amber-300">{warnings.length} Warnings</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[11px] font-semibold text-emerald-300">{intelligence.length} Positive</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Priority items */}
+          <div className="grid grid-cols-2 gap-3">
+            {critical.map((c, i) => (
+              <div key={i} className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-500/[0.07]">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">{i+1}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-rose-400">{c.area}</span>
+                </div>
+                <p className="text-[12px] font-semibold text-rose-200 leading-snug mb-1">{c.title}</p>
+                <p className="text-[10.5px] text-white/40 leading-snug">{c.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Exception register */}
       <ActionLayer onTabChange={onTabChange} />
