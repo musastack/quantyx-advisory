@@ -747,7 +747,7 @@ function HomeSection({ onTabChange }: { onTabChange: (tab: string) => void }) {
               { label: "Cash Balance", value: "£3.95M",    delta: "+£140k MoM", deltaCls: "text-sky-300",     budgetVar: "£1.05M below target",  budgetCls: "text-amber-400",   border: "border-sky-500/25",     glow: "rgba(14,165,233,0.10)"   },
               { label: "Lockup Days",  value: `${recData[recData.length-1].lockup}d`,     delta: "–1d MoM",    deltaCls: "text-violet-300",  budgetVar: "+28d above 90d target", budgetCls: "text-rose-400", border: "border-violet-500/25",  glow: "rgba(139,92,246,0.10)"   },
             ].map((s, i) => (
-              <div key={i} className="rounded-xl p-4" style={{ background: `rgba(255,255,255,0.04)`, border: `1px solid`, borderColor: s.border.replace("border-", "").replace("/25", "").replace("/30", ""), boxShadow: `0 0 20px ${s.glow}` }}>
+              <div key={i} className={`rounded-xl p-4 border ${s.border}`} style={{ background: "rgba(255,255,255,0.04)", boxShadow: `0 0 20px ${s.glow}` }}>
                 <p className="text-[9.5px] font-bold uppercase tracking-widest text-white/35 mb-2">{s.label}</p>
                 <p className="text-[1.6rem] font-black font-mono tabular-nums text-white leading-none mb-1.5">{s.value}</p>
                 <p className={`text-[11px] font-semibold ${s.deltaCls}`}>{s.delta}</p>

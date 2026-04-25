@@ -483,12 +483,12 @@ function TimekeeperCard({ tk }: { tk: Timekeeper }) {
 function FeesTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-[var(--chart-tooltip-bd)] bg-[var(--chart-tooltip-bg)] px-3.5 py-3 shadow-xl text-xs">
-      <p className="font-bold text-slate-900 dark:text-white mb-2">{label}</p>
+    <div className="rounded-xl border border-white/10 bg-[var(--chart-tooltip-bg)] px-3.5 py-3 shadow-xl text-xs">
+      <p className="font-bold text-white mb-2">{label}</p>
       {payload.map((p) => (
         <div key={p.dataKey} className="flex items-center justify-between gap-6">
-          <span className="text-slate-500 dark:text-white/50 capitalize">{p.dataKey === "billed" ? "Fees billed" : "Target"}</span>
-          <span className="font-bold text-slate-900 dark:text-white">{fmtk(p.value)}</span>
+          <span className="text-white/50 capitalize">{p.dataKey === "billed" ? "Fees billed" : "Target"}</span>
+          <span className="font-bold text-white">{fmtk(p.value)}</span>
         </div>
       ))}
     </div>
