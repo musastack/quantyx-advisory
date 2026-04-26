@@ -155,8 +155,8 @@ export default function Home() {
 
               {/* Subline */}
               <p className="text-lg text-slate-600 dark:text-white/55 max-w-xl mb-10 leading-relaxed">
-                We connect your systems, centralise your data, and build the operating layer
-                that gives management full visibility — without spreadsheets or manual effort.
+                We solve your data problems by building bespoke dashboards — tailored to your business,
+                not a generic template — that give management full visibility without spreadsheets or manual effort.
               </p>
 
               {/* Stat tickers */}
