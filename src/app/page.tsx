@@ -114,7 +114,7 @@ export default function Home() {
             <ThemeToggle />
             <Link
               href="/dashboard"
-              className="hidden sm:block text-sm text-slate-500 hover:text-slate-900 dark:text-white/60 dark:hover:text-white transition-colors px-1"
+              className="hidden sm:block text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors font-medium"
             >
               View Demo
             </Link>
@@ -155,8 +155,8 @@ export default function Home() {
 
               {/* Subline */}
               <p className="text-lg text-slate-600 dark:text-white/55 max-w-xl mb-10 leading-relaxed">
-                We solve your data problems by building bespoke dashboards — tailored to your business,
-                not a generic template — that give management full visibility without spreadsheets or manual effort.
+                We solve your data problems by building bespoke dashboards, tailored to your business and not a generic template,
+                giving management full visibility without spreadsheets or manual effort.
               </p>
 
               {/* Stat tickers */}
