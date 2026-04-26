@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { Download, ChevronRight, ArrowUpRight, ArrowDownRight, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
+import RevenueTrendChart from "../components/RevenueTrendChart";
 
 /* ═══════════════════════════════════════════════════════════
    MERIDIAN ADVISORY PARTNERS  ·  Q1 FY2025
@@ -319,20 +320,7 @@ function Overview() {
             <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>On track vs £57.6M annual target · 22.2% delivered</p>
           </div>
           <div className="px-8 py-10 lg:px-10 flex flex-col justify-center">
-            <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>15-Month Revenue Trend</p>
-            <ResponsiveContainer width="100%" height={155}>
-              <AreaChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-                <defs>
-                  <linearGradient id="heroG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
-                <Tooltip content={<Tip />} />
-                <Area type="monotone" dataKey="rev" stroke="#6366f1" strokeWidth={2.5} fill="url(#heroG)" dot={false} name="Revenue" isAnimationActive animationDuration={1400} />
-              </AreaChart>
-            </ResponsiveContainer>
+            <RevenueTrendChart />
           </div>
         </div>
       </div>
