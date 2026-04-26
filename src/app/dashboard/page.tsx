@@ -276,6 +276,24 @@ function Pills<T extends string>({ options, active, onChange, color = "#6366f1" 
   );
 }
 
+// Mini sparkline — plain SVG, no axes, no dots
+function Spark({ data, color = "#6ee7b7" }: { data: number[]; color?: string }) {
+  if (data.length < 2) return null;
+  const W = 64, H = 32, PAD = 2;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * W;
+    const y = H - PAD - ((v - min) / range) * (H - PAD * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  return (
+    <svg width={W} height={H} style={{ display: "block", overflow: "visible", flexShrink: 0 }}>
+      <polyline points={pts} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════
    SECTION: OVERVIEW
 ═══════════════════════════════════════════════════════════ */
@@ -285,10 +303,38 @@ function Overview() {
   const cash = useCountUp(9.2,   1400, 600);
 
   const kpis = [
-    { label: "Q1 Revenue",    display: `£${(rev / 1000).toFixed(2)}M`,  delta: "+18.4%", up: true  },
-    { label: "EBITDA Margin", display: `${marg.toFixed(1)}%`,            delta: "+3.2pp", up: true  },
-    { label: "Cash",          display: `£${cash.toFixed(1)}M`,           delta: "+£1.4M", up: true  },
-    { label: "Lockup Days",   display: "94d",                            delta: "–6d",    up: true  },
+    {
+      label: "Q1 Revenue",    display: `£${(rev / 1000).toFixed(2)}M`,
+      spark: monthly.slice(-3).map(d => d.rev),    sparkColor: "#6ee7b7",
+      deltaQtr: "+18.4%",   upQtr: true,
+      deltaBudget: "–3.0%", upBudget: false,
+      progressBarPct: 22.2,  progressNote: "22.2% delivered",
+      progressLabel: "Target £57.6M", progressColor: "#f59e0b",
+    },
+    {
+      label: "EBITDA Margin", display: `${marg.toFixed(1)}%`,
+      spark: monthly.slice(-3).map(d => d.ebitda), sparkColor: "#6ee7b7",
+      deltaQtr: "+3.2pp",   upQtr: true,
+      deltaBudget: "+2.2pp", upBudget: true,
+      progressBarPct: 100,   progressNote: "107% · ahead",
+      progressLabel: "Target 30.0%",  progressColor: "#6ee7b7",
+    },
+    {
+      label: "Cash",          display: `£${cash.toFixed(1)}M`,
+      spark: [7.8, 8.4, 9.2],             sparkColor: "#6ee7b7",
+      deltaQtr: "+£1.4M",   upQtr: true,
+      deltaBudget: "+£0.7M", upBudget: true,
+      progressBarPct: 100,   progressNote: "108% · ahead",
+      progressLabel: "Target £8.5M",   progressColor: "#6ee7b7",
+    },
+    {
+      label: "Lockup Days",   display: "94d",
+      spark: [100, 97, 94],               sparkColor: "#6ee7b7",
+      deltaQtr: "–6d",       upQtr: true,
+      deltaBudget: "+4d",    upBudget: false,
+      progressBarPct: 100,   progressNote: "4d over target",
+      progressLabel: "Target 90d",     progressColor: "#f87171",
+    },
   ];
 
   const signals = [
@@ -328,12 +374,37 @@ function Overview() {
       {/* KPI row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((k, i) => (
-          <Card key={i} className="p-7">
-            <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.3)" }}>{k.label}</p>
-            <p className="text-[2.2rem] font-black text-white tabular-nums leading-none">{k.display}</p>
-            <div className={`flex items-center gap-1.5 mt-3 text-sm font-semibold ${k.up ? "text-emerald-400" : "text-rose-400"}`}>
-              {k.up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-              {k.delta} <span className="font-normal text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>vs prior quarter</span>
+          <Card key={i} className="p-6 flex flex-col">
+            {/* label + sparkline */}
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>{k.label}</p>
+              <Spark data={k.spark} color={k.sparkColor} />
+            </div>
+            {/* main value */}
+            <p className="text-[2.2rem] font-black text-white tabular-nums leading-none mb-3">{k.display}</p>
+            {/* dual delta */}
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className={`flex items-center gap-1 text-[13px] font-semibold ${k.upQtr ? "text-emerald-400" : "text-rose-400"}`}>
+                {k.upQtr ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                <span>{k.deltaQtr}</span>
+                <span className="text-[10px] font-normal ml-0.5" style={{ color: "rgba(255,255,255,0.22)" }}>qtr</span>
+              </div>
+              <div style={{ width: 1, height: 14, background: "rgba(255,255,255,0.1)", flexShrink: 0 }} />
+              <div className="flex items-center gap-1 text-[13px] font-semibold" style={{ color: k.upBudget ? "#60a5fa" : "#f87171" }}>
+                {k.upBudget ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                <span>{k.deltaBudget}</span>
+                <span className="text-[10px] font-normal ml-0.5" style={{ color: "rgba(255,255,255,0.22)" }}>bud</span>
+              </div>
+            </div>
+            {/* progress bar */}
+            <div className="mt-auto">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[9px] font-semibold tracking-wider uppercase" style={{ color: "rgba(255,255,255,0.22)" }}>{k.progressLabel}</span>
+                <span className="text-[9px] font-bold" style={{ color: k.progressColor }}>{k.progressNote}</span>
+              </div>
+              <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.07)" }}>
+                <div style={{ height: "100%", width: `${k.progressBarPct}%`, borderRadius: 2, background: k.progressColor, transition: "width 1.2s cubic-bezier(0.16,1,0.3,1)" }} />
+              </div>
             </div>
           </Card>
         ))}
