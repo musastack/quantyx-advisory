@@ -2126,70 +2126,317 @@ function FPandA() {
         </div>
       </div>
 
-      {/* Charts row */}
-      {view === "pl" && (
-        <div className="grid lg:grid-cols-5 gap-4">
-          {/* Waterfall */}
-          <Card className="lg:col-span-3 p-7">
-            <div className="mb-5">
-              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Budget Bridge</p>
-              <p className="text-white font-bold text-sm mt-0.5">Budget → Actual variance by practice · Mar 25 (£000)</p>
-            </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={WATERFALL_DATA} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis domain={[4400, 4550]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
-                  tickFormatter={v => `£${v}`} width={42} />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (!active || !payload?.length) return null;
-                    const d = WATERFALL_DATA.find(w => w.name === label);
-                    return (
-                      <div className="rounded-xl px-4 py-3 text-xs shadow-2xl" style={{ background: "#111127", border: "1px solid rgba(255,255,255,0.1)" }}>
-                        <p className="font-bold mb-1 text-white/40 tracking-widest uppercase text-[9px]">{label}</p>
-                        <p className="font-bold text-white">{d?.isTotal ? `£${d.bar.toLocaleString()}k` : `${d && d.bar >= 0 ? "+" : ""}£${d?.bar}k`}</p>
-                      </div>
-                    );
-                  }}
-                />
-                <Bar dataKey="invisible" stackId="a" fill="transparent" isAnimationActive={false} />
-                <Bar dataKey="bar" stackId="a" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800}>
-                  {WATERFALL_DATA.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.9} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex gap-5 mt-3 justify-end flex-wrap">
-              {[{ color: "#6366f1", l: "Budget / Actual total" }, { color: "#22c55e", l: "Favourable" }, { color: "#ef4444", l: "Adverse" }].map(lg => (
-                <div key={lg.l} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
-                  <div className="w-2 h-2 rounded-full" style={{ background: lg.color }} />{lg.l}
-                </div>
-              ))}
-            </div>
-          </Card>
+      {/* ── Insights panel ── */}
+      {(() => {
+        if (view === "pl") {
+          // Compute key P&L metrics
+          const revRow   = plNominals.find(n => n.code === "REV")!;
+          const codRow   = plNominals.find(n => n.code === "COD")!;
+          const salRow   = plNominals.find(n => n.code === "SAL")!;
+          const ovhRow   = plNominals.find(n => n.code === "OVH")!;
+          const revLines = plNominals.filter(n => n.parentCode === "REV");
+          const costLines = plNominals.filter(n => n.parentCode === "COD" || n.parentCode === "SAL" || n.parentCode === "OVH");
 
-          {/* Monthly comparison */}
-          <Card className="lg:col-span-2 p-7">
-            <div className="mb-5">
-              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Monthly Trend</p>
-              <p className="text-white font-bold text-sm mt-0.5">Actual vs Budget (6 mo) · £000</p>
+          const revVar    = revRow.actuals - revRow.budget;
+          const revVarPct = ((revVar / revRow.budget) * 100).toFixed(1);
+          const totCostActual = codRow.actuals + salRow.actuals + ovhRow.actuals;
+          const totCostBudget = codRow.budget  + salRow.budget  + ovhRow.budget;
+          const costVar   = totCostActual - totCostBudget; // negative = favourable
+          const ebitdaActual = revRow.actuals - totCostActual;
+          const ebitdaBudget = revRow.budget  - totCostBudget;
+          const ebitdaVar = ebitdaActual - ebitdaBudget;
+
+          const ytdRevVar  = revRow.ytdActuals - revRow.ytdBudget;
+          const ytdRevPct  = ((ytdRevVar / revRow.ytdBudget) * 100).toFixed(1);
+
+          // Ranked revenue variances
+          const revRanked = [...revLines].map(n => ({ ...n, var: n.actuals - n.budget })).sort((a, b) => Math.abs(b.var) - Math.abs(a.var));
+          const bestRev   = revRanked.filter(n => n.var > 0).slice(0, 2);
+          const worstRev  = revRanked.filter(n => n.var < 0).slice(0, 2);
+
+          // Ranked cost variances (negative var = favourable for costs)
+          const costRanked = [...costLines].map(n => ({ ...n, var: n.actuals - n.budget })).sort((a, b) => Math.abs(b.var) - Math.abs(a.var));
+          const biggestCostSaving  = costRanked.filter(n => n.var < 0)[0];
+          const biggestCostOverrun = costRanked.filter(n => n.var > 0)[0];
+
+          // Month-on-month revenue
+          const lastTwo = fpandaMonthly.slice(-2);
+          const momRev  = lastTwo.length === 2 ? lastTwo[1].actual - lastTwo[0].actual : 0;
+          const momBudDelta = lastTwo.length === 2 ? lastTwo[1].actual - lastTwo[1].budget : 0;
+
+          // Consecutive misses (months actual < budget)
+          const misses = fpandaMonthly.filter(m => m.actual < m.budget).length;
+
+          const summaryGood = ebitdaVar >= 0;
+
+          return (
+            <div className="space-y-4">
+              {/* Executive summary banner */}
+              <div className="rounded-2xl p-6 relative overflow-hidden"
+                style={{ background: summaryGood ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)", border: `1px solid ${summaryGood ? "rgba(34,197,94,0.18)" : "rgba(239,68,68,0.18)"}` }}>
+                <div className="flex items-start gap-5">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
+                    style={{ background: summaryGood ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)" }}>
+                    {summaryGood ? "✓" : "⚠"}
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Executive Summary · March 2025</p>
+                    <p className="text-white font-semibold text-sm leading-relaxed">
+                      Revenue came in at <span style={{ color: revVar >= 0 ? "#22c55e" : "#f87171", fontWeight: 700 }}>£{revRow.actuals.toLocaleString()}k — {revVar >= 0 ? "£" + revVar + "k ahead of" : "£" + Math.abs(revVar) + "k behind"} the £{revRow.budget.toLocaleString()}k budget ({revVar >= 0 ? "+" : ""}{revVarPct}%)</span>.{" "}
+                      Total costs were <span style={{ color: costVar < 0 ? "#22c55e" : "#f87171", fontWeight: 700 }}>£{Math.abs(costVar)}k {costVar < 0 ? "under" : "over"} budget</span>, leaving EBITDA at{" "}
+                      <span style={{ color: ebitdaVar >= 0 ? "#22c55e" : "#f87171", fontWeight: 700 }}>£{ebitdaActual.toLocaleString()}k ({ebitdaVar >= 0 ? "+" : ""}£{ebitdaVar}k vs budget)</span>.{" "}
+                      {misses >= 3 ? `Revenue has missed budget in ${misses} of the last 6 months — YTD shortfall is £${Math.abs(ytdRevVar)}k (${ytdRevPct}%) and requires attention.`
+                        : `MoM revenue grew £${momRev}k in March. YTD position is ${ytdRevVar < 0 ? "£" + Math.abs(ytdRevVar) + "k behind" : "£" + ytdRevVar + "k ahead of"} budget.`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Four insight cards */}
+              <div className="grid lg:grid-cols-4 gap-4">
+
+                {/* Revenue drivers */}
+                <Card className="p-6">
+                  <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Revenue Drivers</p>
+                  <div className="space-y-3">
+                    {bestRev.map(n => (
+                      <div key={n.code} className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[11px] font-semibold text-white">{n.name}</p>
+                          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Outperforming budget</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[13px] font-black tabular-nums" style={{ color: "#22c55e" }}>+£{n.var}k</p>
+                          <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{((n.var / n.budget) * 100).toFixed(1)}%</p>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.06)" }} />
+                    {worstRev.map(n => (
+                      <div key={n.code} className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[11px] font-semibold text-white">{n.name}</p>
+                          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Below budget — review pipeline</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[13px] font-black tabular-nums" style={{ color: "#f87171" }}>£{n.var}k</p>
+                          <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{((n.var / n.budget) * 100).toFixed(1)}%</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Cost position */}
+                <Card className="p-6">
+                  <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Cost Position</p>
+                  <div className="space-y-3">
+                    {[
+                      { label: "Cost of Delivery", row: codRow },
+                      { label: "Staff & Benefits",  row: salRow },
+                      { label: "Overhead",           row: ovhRow },
+                    ].map(({ label, row }) => {
+                      const v = row.actuals - row.budget;
+                      const pct = ((v / row.budget) * 100).toFixed(1);
+                      return (
+                        <div key={label} className="flex items-center justify-between">
+                          <div>
+                            <p className="text-[11px] font-semibold text-white">{label}</p>
+                            <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>£{row.actuals.toLocaleString()}k actual</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[13px] font-black tabular-nums" style={{ color: v < 0 ? "#22c55e" : "#f87171" }}>
+                              {v < 0 ? "–" : "+"}£{Math.abs(v)}k
+                            </p>
+                            <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{v < 0 ? "" : "+"}{pct}%</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-white">Biggest saving</p>
+                      {biggestCostSaving && (
+                        <p className="text-[11px] font-bold tabular-nums" style={{ color: "#22c55e" }}>
+                          {biggestCostSaving.name.split(" ")[0]} –£{Math.abs(biggestCostSaving.var)}k
+                        </p>
+                      )}
+                    </div>
+                    {biggestCostOverrun && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-[11px] font-bold text-white">Biggest overrun</p>
+                        <p className="text-[11px] font-bold tabular-nums" style={{ color: "#f87171" }}>
+                          {biggestCostOverrun.name.split(" ")[0]} +£{biggestCostOverrun.var}k
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                {/* YTD watch */}
+                <Card className="p-6">
+                  <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>YTD Position</p>
+                  <div className="space-y-4">
+                    {[
+                      { label: "YTD Revenue",    actual: revRow.ytdActuals, budget: revRow.ytdBudget, isRev: true  },
+                      { label: "YTD Costs",       actual: codRow.ytdActuals + salRow.ytdActuals + ovhRow.ytdActuals,
+                                                  budget: codRow.ytdBudget  + salRow.ytdBudget  + ovhRow.ytdBudget, isRev: false },
+                    ].map(r => {
+                      const v   = r.actual - r.budget;
+                      const pct = ((v / r.budget) * 100).toFixed(1);
+                      const good = r.isRev ? v >= 0 : v <= 0;
+                      return (
+                        <div key={r.label}>
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-[11px] font-semibold text-white">{r.label}</p>
+                            <p className="text-[12px] font-black tabular-nums" style={{ color: good ? "#22c55e" : "#f87171" }}>
+                              {v >= 0 ? "+" : ""}£{v.toLocaleString()}k
+                            </p>
+                          </div>
+                          <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.07)" }}>
+                            <div className="h-full rounded-full" style={{ width: `${Math.min((r.actual / r.budget) * 100, 100)}%`, background: good ? "#22c55e" : "#ef4444", transition: "width 1s ease" }} />
+                          </div>
+                          <div className="flex justify-between mt-1">
+                            <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>£{r.actual.toLocaleString()}k</p>
+                            <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>Budget £{r.budget.toLocaleString()}k</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+                    <div>
+                      <p className="text-[9px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.2)" }}>Run Rate Outlook</p>
+                      <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
+                        At current pace, full-year revenue would be{" "}
+                        <span style={{ color: "#a5b4fc", fontWeight: 700 }}>
+                          £{((revRow.ytdActuals / 3) * 12 / 1000).toFixed(2)}M
+                        </span>{" "}
+                        vs £{((revRow.ytdBudget / 3) * 12 / 1000).toFixed(2)}M target.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Actions for management */}
+                <Card className="p-6">
+                  <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Management Actions</p>
+                  <div className="space-y-3">
+                    {[
+                      ytdRevVar < -200 && {
+                        color: "#ef4444",
+                        text: `YTD revenue £${Math.abs(ytdRevVar)}k behind budget. Accelerate billing and WIP conversion before Q2 close.`,
+                      },
+                      worstRev[0] && {
+                        color: "#f97316",
+                        text: `${worstRev[0].name} trailing budget by £${Math.abs(worstRev[0].var)}k. Review pipeline coverage and deal timelines.`,
+                      },
+                      biggestCostOverrun && biggestCostOverrun.var > 10 && {
+                        color: "#eab308",
+                        text: `${biggestCostOverrun.name} £${biggestCostOverrun.var}k over budget. Confirm whether one-off or recurring before re-forecast.`,
+                      },
+                      momRev > 0 && {
+                        color: "#22c55e",
+                        text: `Revenue grew £${momRev}k MoM in March — strongest month in the period. Identify what drove this and replicate in Q2.`,
+                      },
+                      costVar < -50 && {
+                        color: "#22c55e",
+                        text: `Costs £${Math.abs(costVar)}k under budget this month. Confirm savings are structural, not deferred spend.`,
+                      },
+                    ].filter(Boolean).slice(0, 4).map((action, i) => action && (
+                      <div key={i} className="flex items-start gap-2.5">
+                        <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: action.color }} />
+                        <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>{action.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height={180}>
-              <ComposedChart data={fpandaMonthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis domain={[3900, 4600]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
-                  tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={42} />
-                <Tooltip content={<Tip />} />
-                <Bar dataKey="actual" name="Actual" radius={[3,3,0,0]} isAnimationActive animationDuration={900}>
-                  {fpandaMonthly.map((d, i) => <Cell key={i} fill={d.actual >= d.budget ? "#6366f1" : "#ef4444"} fillOpacity={0.85} />)}
-                </Bar>
-                <Line type="monotone" dataKey="budget" name="Budget" stroke="rgba(255,255,255,0.3)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </Card>
-        </div>
-      )}
+          );
+        }
+
+        // Balance Sheet insights
+        const cash  = bsNominals.find(n => n.code === "1000")!;
+        const debtors = bsNominals.find(n => n.code === "1100")!;
+        const wip   = bsNominals.find(n => n.code === "1200")!;
+        const creditors = bsNominals.find(n => n.code === "3000")!;
+        const eq    = bsNominals.find(n => n.code === "EQ")!;
+        const ca    = bsNominals.find(n => n.code === "CA")!;
+        const cl    = bsNominals.find(n => n.code === "CL")!;
+        const netAssets = ca.actuals - cl.actuals;
+        const netAssetsBudget = ca.budget - cl.budget;
+
+        return (
+          <div className="space-y-4">
+            <div className="rounded-2xl p-6 relative overflow-hidden"
+              style={{ background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.18)" }}>
+              <div className="flex items-start gap-5">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg"
+                  style={{ background: "rgba(99,102,241,0.12)" }}>📊</div>
+                <div>
+                  <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Balance Sheet Summary · March 2025</p>
+                  <p className="text-white font-semibold text-sm leading-relaxed">
+                    Net assets stand at <span style={{ color: "#a5b4fc", fontWeight: 700 }}>£{(netAssets / 1000).toFixed(2)}M</span> vs budget of £{(netAssetsBudget / 1000).toFixed(2)}M.{" "}
+                    Cash is <span style={{ color: "#22c55e", fontWeight: 700 }}>£{(cash.actuals / 1000).toFixed(2)}M — £{((cash.actuals - cash.budget) / 1000).toFixed(1)}M above budget</span>.{" "}
+                    Trade debtors are elevated at <span style={{ color: "#f87171", fontWeight: 700 }}>£{(debtors.actuals / 1000).toFixed(2)}M (£{((debtors.actuals - debtors.budget) / 1000).toFixed(1)}M over budget)</span> and WIP of <span style={{ color: "#f97316", fontWeight: 700 }}>£{(wip.actuals / 1000).toFixed(2)}M is £{((wip.actuals - wip.budget) / 1000).toFixed(1)}M above plan</span> — combined lockup risk requires active management.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-4 gap-4">
+              {[
+                { label: "Cash & Bank",       nominal: cash,     isGood: (v: number) => v >= 0, note: "above budget — strong position" },
+                { label: "Trade Debtors",     nominal: debtors,  isGood: (v: number) => v <= 0, note: "over budget — chase collections" },
+                { label: "Work in Progress",  nominal: wip,      isGood: (v: number) => v <= 0, note: "over plan — convert to invoices" },
+                { label: "Trade Creditors",   nominal: creditors, isGood: (v: number) => v <= 0, note: "over budget — manage payment timing" },
+              ].map(({ label, nominal, isGood, note }) => {
+                const v    = nominal.actuals - nominal.budget;
+                const good = isGood(v);
+                return (
+                  <Card key={label} className="p-6">
+                    <p className="text-[9px] font-bold tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.25)" }}>{label}</p>
+                    <p className="text-[2rem] font-black tabular-nums text-white leading-none">£{(nominal.actuals / 1000).toFixed(2)}M</p>
+                    <p className="text-[13px] font-bold tabular-nums mt-2" style={{ color: good ? "#22c55e" : "#f87171" }}>
+                      {v >= 0 ? "+" : ""}£{(v / 1000).toFixed(1)}M vs budget
+                    </p>
+                    <p className="text-[10px] mt-1.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.35)" }}>{note}</p>
+                  </Card>
+                );
+              })}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4">
+              <Card className="p-6">
+                <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Equity & Net Assets</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm text-white font-semibold">Total Equity</p>
+                  <p className="text-[1.4rem] font-black tabular-nums" style={{ color: "#a5b4fc" }}>£{(eq.actuals / 1000).toFixed(2)}M</p>
+                </div>
+                <div className="h-px mb-3" style={{ background: "rgba(255,255,255,0.06)" }} />
+                <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  Equity is £{((eq.actuals - eq.budget) / 1000).toFixed(2)}M {eq.actuals >= eq.budget ? "above" : "below"} budget, driven primarily by retained earnings of £{(bsNominals.find(n => n.code === "5100")!.actuals / 1000).toFixed(2)}M. Net asset strength supports current debt service capacity.
+                </p>
+              </Card>
+              <Card className="p-6">
+                <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Balance Sheet Actions</p>
+                <div className="space-y-3">
+                  {[
+                    { color: "#ef4444", text: `Trade debtors £${((debtors.actuals - debtors.budget) / 1000).toFixed(1)}M over budget. Prioritise collection of 91+ day balances (£8.6M outstanding).` },
+                    { color: "#f97316", text: `WIP £${((wip.actuals - wip.budget) / 1000).toFixed(1)}M above plan. Review billing milestones across all open engagements and invoice where deliverables are complete.` },
+                    { color: "#22c55e", text: `Cash position £${((cash.actuals - cash.budget) / 1000).toFixed(1)}M above budget. Evaluate whether excess cash should be deployed against creditors or placed on short-term deposit.` },
+                  ].map((a, i) => (
+                    <div key={i} className="flex items-start gap-2.5">
+                      <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: a.color }} />
+                      <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>{a.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Nominal table */}
       <Card className="overflow-hidden">
