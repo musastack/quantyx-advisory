@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   AreaChart, Area, BarChart, Bar, ComposedChart,
   XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -2040,6 +2040,120 @@ const VAR_REASONS: { id: VarReason; label: string }[] = [
   { id: "scope-change",label: "Scope Change"  },
 ];
 
+/* Dark-themed dropdown — replaces native <select> because the OS picker
+   renders with a hard-coded white background that ignores option styles. */
+type DarkSelectOption = { value: string; label: string };
+function DarkSelect({
+  value,
+  options,
+  onChange,
+  width = 120,
+}: {
+  value: string;
+  options: readonly DarkSelectOption[];
+  onChange: (v: string) => void;
+  width?: number | string;
+}) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const current = options.find(o => o.value === value) ?? options[0];
+
+  return (
+    <div ref={wrapRef} style={{ position: "relative", display: "inline-block", width, colorScheme: "dark" }} onClick={e => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width,
+          backgroundColor: "rgba(255,255,255,0.06)",
+          color: value ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 8,
+          padding: "4px 8px",
+          fontSize: 10,
+          fontWeight: 600,
+          outline: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 8,
+          appearance: "none",
+          WebkitAppearance: "none",
+          MozAppearance: "none",
+          cursor: "pointer",
+        }}>
+        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{current?.label ?? ""}</span>
+        <span style={{ color: "rgba(255,255,255,0.35)" }}>{"\u25BE"}</span>
+      </button>
+
+      {open && (
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 50,
+            marginTop: 4,
+            left: 0,
+            minWidth: typeof width === "number" ? width : "100%",
+            backgroundColor: "#0d1530",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: 8,
+            overflow: "hidden",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            colorScheme: "dark",
+          }}>
+          {options.map(o => {
+            const selected = o.value === value;
+            return (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => { onChange(o.value); setOpen(false); }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "6px 12px",
+                  fontSize: 10,
+                  fontWeight: 600,
+                  backgroundColor: selected ? "rgba(99,102,241,0.18)" : "transparent",
+                  color: selected ? "#a5b4fc" : "rgba(255,255,255,0.85)",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "background-color 120ms",
+                  appearance: "none",
+                  WebkitAppearance: "none",
+                  MozAppearance: "none",
+                  font: "inherit",
+                }}
+                onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(255,255,255,0.05)"; }}
+                onMouseLeave={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent"; }}>
+                {o.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function FPandA() {
   const [view,       setView]       = useState<"pl" | "bs">("pl");
   const [collapsed,  setCollapsed]  = useState<Record<string, boolean>>({});
@@ -2610,14 +2724,11 @@ function FPandA() {
                     {/* Reason */}
                     <td className="px-5 py-3">
                       {!isHead && (
-                        <select
+                        <DarkSelect
                           value={reasons[n.code] || ""}
-                          onChange={e => setReasons(p => ({ ...p, [n.code]: e.target.value as VarReason }))}
-                          onClick={e => e.stopPropagation()}
-                          className="rounded-lg px-2 py-1 text-[10px] font-semibold w-[120px]"
-                          style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}>
-                          {VAR_REASONS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
-                        </select>
+                          options={VAR_REASONS.map(r => ({ value: r.id, label: r.label }))}
+                          onChange={v => setReasons(p => ({ ...p, [n.code]: v as VarReason }))}
+                        />
                       )}
                     </td>
 
