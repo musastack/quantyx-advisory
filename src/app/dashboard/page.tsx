@@ -308,32 +308,48 @@ function Overview() {
       spark: monthly.slice(-3).map(d => d.rev),    sparkColor: "#6ee7b7",
       deltaQtr: "+18.4%",   upQtr: true,
       deltaBudget: "–3.0%", upBudget: false,
-      progressBarPct: 22.2,  progressNote: "22.2% delivered",
-      progressLabel: "Target £57.6M", progressColor: "#f59e0b",
+      // Cumulative: £12.8M of £57.6M annual target = 22.2%.
+      // Expected pace at Q1 end = 25% → behind → amber.
+      progressBarPct: 22.2,
+      progressNote: "behind pace",
+      progressLabel: "Target £57.6M",
+      progressColor: "#f59e0b",
     },
     {
       label: "EBITDA Margin", display: `${marg.toFixed(1)}%`,
       spark: monthly.slice(-3).map(d => d.ebitda), sparkColor: "#6ee7b7",
       deltaQtr: "+3.2pp",   upQtr: true,
       deltaBudget: "+2.2pp", upBudget: true,
-      progressBarPct: 100,   progressNote: "107% · ahead",
-      progressLabel: "Target 30.0%",  progressColor: "#6ee7b7",
+      // Floor metric, range 20–35%. Position = (32.1 − 20) / 15 = 80.7%.
+      // Above 30.0% floor → green.
+      progressBarPct: Math.round((32.1 - 20) / (35 - 20) * 100),
+      progressNote: "ahead",
+      progressLabel: "Target 30.0%",
+      progressColor: "#6ee7b7",
     },
     {
       label: "Cash",          display: `£${cash.toFixed(1)}M`,
       spark: [7.8, 8.4, 9.2],             sparkColor: "#6ee7b7",
       deltaQtr: "+£1.4M",   upQtr: true,
       deltaBudget: "+£0.7M", upBudget: true,
-      progressBarPct: 100,   progressNote: "108% · ahead",
-      progressLabel: "Target £8.5M",   progressColor: "#6ee7b7",
+      // Floor metric, range £5–12M. Position = (9.2 − 5) / 7 = 60%.
+      // Above £8.5M floor → green.
+      progressBarPct: Math.round((9.2 - 5) / (12 - 5) * 100),
+      progressNote: "ahead",
+      progressLabel: "Target £8.5M",
+      progressColor: "#6ee7b7",
     },
     {
       label: "Lockup Days",   display: "94d",
       spark: [100, 97, 94],               sparkColor: "#6ee7b7",
       deltaQtr: "–6d",       upQtr: true,
       deltaBudget: "+4d",    upBudget: false,
-      progressBarPct: 100,   progressNote: "4d over target",
-      progressLabel: "Target 90d",     progressColor: "#f87171",
+      // Inverted ceiling metric, scale 0–120d. Fill = 94 / 120 = 78.3%.
+      // Past 90d ceiling → red. Bar fills left-to-right as days worsen.
+      progressBarPct: Math.round((94 / 120) * 100),
+      progressNote: "4d over target",
+      progressLabel: "Target 90d",
+      progressColor: "#f87171",
     },
   ];
 
