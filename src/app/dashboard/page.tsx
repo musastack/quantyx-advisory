@@ -294,6 +294,135 @@ function Spark({ data, color = "#6ee7b7" }: { data: number[]; color?: string }) 
   );
 }
 
+// Per-metric progress visualisation
+type ProgressConfig =
+  | { type: "revenue"; actual: number; target: number; monthsElapsed: number }
+  | { type: "margin";  actual: number; target: number; rangeMin: number; rangeMax: number }
+  | { type: "cash";    actual: number; target: number }
+  | { type: "lockup";  actual: number; ceiling: number; warnWithin: number };
+
+function MetricProgress({ p }: { p: ProgressConfig }) {
+  const track: React.CSSProperties = {
+    position: "relative", height: 4, borderRadius: 2,
+    background: "rgba(255,255,255,0.07)",
+  };
+  const labelL: React.CSSProperties = {
+    fontSize: 9, fontWeight: 600, letterSpacing: "0.06em",
+    textTransform: "uppercase", color: "rgba(255,255,255,0.22)",
+  };
+  const labelRow: React.CSSProperties = {
+    display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6,
+  };
+  const bar = (pct: number, color: string): React.CSSProperties => ({
+    height: "100%", width: `${Math.min(pct, 100)}%`, borderRadius: 2, background: color,
+    transition: "width 1.2s cubic-bezier(0.16,1,0.3,1)",
+  });
+
+  if (p.type === "revenue") {
+    const fillPct = (p.actual / p.target) * 100;
+    const pacePct = (p.monthsElapsed / 12) * 100;
+    const diff    = fillPct - pacePct;
+    const color   = diff >= 0 ? "#6ee7b7" : diff >= -3 ? "#f59e0b" : "#f87171";
+    const note    = diff >= -3
+      ? `on pace · ${fillPct.toFixed(1)}% of £${(p.target / 1000).toFixed(1)}M`
+      : `behind · ${fillPct.toFixed(1)}% of £${(p.target / 1000).toFixed(1)}M`;
+    return (
+      <div>
+        <div style={labelRow}>
+          <span style={labelL}>Annual target £{(p.target / 1000).toFixed(1)}M</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color }}>{note}</span>
+        </div>
+        <div style={track}>
+          <div style={bar(fillPct, color)} />
+          {/* pace marker — shows where revenue should be today */}
+          <div style={{
+            position: "absolute", top: 0, bottom: 0, left: `${pacePct}%`,
+            width: 1.5, background: "rgba(255,255,255,0.45)", borderRadius: 1,
+            transform: "translateX(-50%)",
+          }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (p.type === "margin") {
+    const range     = p.rangeMax - p.rangeMin;
+    const targetPct = ((p.target - p.rangeMin) / range) * 100;
+    const actualPct = Math.max(3, Math.min(((p.actual - p.rangeMin) / range) * 100, 97));
+    const diff      = p.actual - p.target;
+    const color     = diff >= 0 ? "#6ee7b7" : diff >= -1 ? "#f59e0b" : "#f87171";
+    const note      = diff >= 0
+      ? `+${diff.toFixed(1)}pp above target`
+      : `${Math.abs(diff).toFixed(1)}pp below target`;
+    return (
+      <div>
+        <div style={labelRow}>
+          <span style={labelL}>Target {p.target}% &nbsp;·&nbsp; {p.rangeMin}–{p.rangeMax}% range</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color }}>{note}</span>
+        </div>
+        <div style={track}>
+          {/* target tick */}
+          <div style={{
+            position: "absolute", top: -2, bottom: -2, left: `${targetPct}%`,
+            width: 1, background: "rgba(255,255,255,0.3)", transform: "translateX(-50%)",
+          }} />
+          {/* current value dot */}
+          <div style={{
+            position: "absolute", top: "50%", left: `${actualPct}%`,
+            width: 8, height: 8, borderRadius: "50%", background: color,
+            transform: "translate(-50%, -50%)",
+            transition: "left 1.2s cubic-bezier(0.16,1,0.3,1)",
+            zIndex: 1,
+          }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (p.type === "cash") {
+    const above   = p.actual >= p.target;
+    const fillPct = above ? 100 : (p.actual / p.target) * 100;
+    const diff    = p.actual - p.target;
+    const color   = above ? "#6ee7b7" : fillPct >= 80 ? "#f59e0b" : "#f87171";
+    const note    = above
+      ? `£${Math.abs(diff).toFixed(1)}M above target`
+      : `£${Math.abs(diff).toFixed(1)}M below target`;
+    return (
+      <div>
+        <div style={labelRow}>
+          <span style={labelL}>Target £{p.target.toFixed(1)}M</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color }}>{note}</span>
+        </div>
+        <div style={track}>
+          <div style={bar(fillPct, color)} />
+        </div>
+      </div>
+    );
+  }
+
+  // lockup — inverted ceiling metric
+  const breached    = p.actual >= p.ceiling;
+  const nearCeiling = !breached && p.actual >= p.ceiling - p.warnWithin;
+  const fillPct     = breached ? 100 : (p.actual / p.ceiling) * 100;
+  const color       = breached ? "#f87171" : nearCeiling ? "#f59e0b" : "#6ee7b7";
+  const remaining   = p.ceiling - p.actual;
+  const note        = breached
+    ? `${p.actual - p.ceiling}d over target`
+    : nearCeiling ? `${remaining}d to target`
+    : `${remaining}d below target`;
+  return (
+    <div>
+      <div style={labelRow}>
+        <span style={labelL}>Target {p.ceiling}d</span>
+        <span style={{ fontSize: 9, fontWeight: 700, color }}>{note}</span>
+      </div>
+      <div style={track}>
+        <div style={bar(fillPct, color)} />
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════
    SECTION: OVERVIEW
 ═══════════════════════════════════════════════════════════ */
@@ -308,48 +437,28 @@ function Overview() {
       spark: monthly.slice(-3).map(d => d.rev),    sparkColor: "#6ee7b7",
       deltaQtr: "+18.4%",   upQtr: true,
       deltaBudget: "–3.0%", upBudget: false,
-      // Cumulative: £12.8M of £57.6M annual target = 22.2%.
-      // Expected pace at Q1 end = 25% → behind → amber.
-      progressBarPct: 22.2,
-      progressNote: "behind pace",
-      progressLabel: "Target £57.6M",
-      progressColor: "#f59e0b",
+      progress: { type: "revenue" as const, actual: 12800, target: 57600, monthsElapsed: 3 },
     },
     {
       label: "EBITDA Margin", display: `${marg.toFixed(1)}%`,
       spark: monthly.slice(-3).map(d => d.ebitda), sparkColor: "#6ee7b7",
       deltaQtr: "+3.2pp",   upQtr: true,
       deltaBudget: "+2.2pp", upBudget: true,
-      // Floor metric, range 20–35%. Position = (32.1 − 20) / 15 = 80.7%.
-      // Above 30.0% floor → green.
-      progressBarPct: Math.round((32.1 - 20) / (35 - 20) * 100),
-      progressNote: "ahead",
-      progressLabel: "Target 30.0%",
-      progressColor: "#6ee7b7",
+      progress: { type: "margin" as const, actual: 32.1, target: 30.0, rangeMin: 20, rangeMax: 40 },
     },
     {
       label: "Cash",          display: `£${cash.toFixed(1)}M`,
       spark: [7.8, 8.4, 9.2],             sparkColor: "#6ee7b7",
       deltaQtr: "+£1.4M",   upQtr: true,
       deltaBudget: "+£0.7M", upBudget: true,
-      // Floor metric, range £5–12M. Position = (9.2 − 5) / 7 = 60%.
-      // Above £8.5M floor → green.
-      progressBarPct: Math.round((9.2 - 5) / (12 - 5) * 100),
-      progressNote: "ahead",
-      progressLabel: "Target £8.5M",
-      progressColor: "#6ee7b7",
+      progress: { type: "cash" as const, actual: 9.2, target: 8.5 },
     },
     {
       label: "Lockup Days",   display: "94d",
       spark: [100, 97, 94],               sparkColor: "#6ee7b7",
       deltaQtr: "–6d",       upQtr: true,
       deltaBudget: "+4d",    upBudget: false,
-      // Inverted ceiling metric, scale 0–120d. Fill = 94 / 120 = 78.3%.
-      // Past 90d ceiling → red. Bar fills left-to-right as days worsen.
-      progressBarPct: Math.round((94 / 120) * 100),
-      progressNote: "4d over target",
-      progressLabel: "Target 90d",
-      progressColor: "#f87171",
+      progress: { type: "lockup" as const, actual: 94, ceiling: 90, warnWithin: 5 },
     },
   ];
 
@@ -412,15 +521,9 @@ function Overview() {
                 <span className="text-[10px] font-normal ml-0.5" style={{ color: "rgba(255,255,255,0.22)" }}>bud</span>
               </div>
             </div>
-            {/* progress bar */}
+            {/* progress */}
             <div className="mt-auto">
-              <div className="flex justify-between items-center mb-1.5">
-                <span className="text-[9px] font-semibold tracking-wider uppercase" style={{ color: "rgba(255,255,255,0.22)" }}>{k.progressLabel}</span>
-                <span className="text-[9px] font-bold" style={{ color: k.progressColor }}>{k.progressNote}</span>
-              </div>
-              <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,0.07)" }}>
-                <div style={{ height: "100%", width: `${k.progressBarPct}%`, borderRadius: 2, background: k.progressColor, transition: "width 1.2s cubic-bezier(0.16,1,0.3,1)" }} />
-              </div>
+              <MetricProgress p={k.progress} />
             </div>
           </Card>
         ))}
