@@ -235,7 +235,7 @@ export default function Home() {
               Your team is <span className="gradient-text">flying blind.</span>
             </h2>
             <p className="text-slate-500 dark:text-white/40 mb-12 text-base leading-relaxed max-w-xl mx-auto">
-              Most growing businesses have the data. They just can't see it in one place — so decisions get made on gut feel, outdated spreadsheets, or nothing at all.
+              Most growing businesses have the data. They just can't see it in one place, so decisions get made on gut feel, outdated spreadsheets, or nothing at all.
             </p>
           </ScrollReveal>
 
@@ -289,7 +289,7 @@ export default function Home() {
                   Financial operating system
                 </h3>
                 <p className="text-slate-600 dark:text-white/50 leading-relaxed mb-5 text-base">
-                  We turn raw business data into dashboards and reporting that make performance easy to understand — without anyone building a spreadsheet.
+                  We turn raw business data into dashboards and reporting that make performance easy to understand, without anyone building a spreadsheet.
                 </p>
                 <div className="inline-flex items-center gap-2 border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/[0.08] text-indigo-700 dark:text-indigo-300 rounded-full px-4 py-1.5 text-xs font-semibold mb-6">
                   ✓ Clear visibility and faster decisions
@@ -359,7 +359,7 @@ export default function Home() {
                   Process automation
                 </h3>
                 <p className="text-slate-600 dark:text-white/50 leading-relaxed mb-5 text-base">
-                  We automate the reporting and workflows your team runs manually — so they spend time on decisions, not on data wrangling.
+                  We automate the reporting and workflows your team runs manually, so they spend time on decisions, not on data wrangling.
                 </p>
                 <div className="inline-flex items-center gap-2 border border-violet-200 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/[0.08] text-violet-700 dark:text-violet-300 rounded-full px-4 py-1.5 text-xs font-semibold mb-6">
                   ✓ Less manual work, fewer errors
@@ -385,7 +385,7 @@ export default function Home() {
                   Data centralisation
                 </h3>
                 <p className="text-slate-600 dark:text-white/50 leading-relaxed mb-5 text-base">
-                  We connect your systems and centralise data into a structured reporting layer — so every report draws from the same reliable source.
+                  We connect your systems and centralise data into a structured reporting layer, so every report draws from the same reliable source.
                 </p>
                 <div className="inline-flex items-center gap-2 border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/[0.08] text-emerald-700 dark:text-emerald-300 rounded-full px-4 py-1.5 text-xs font-semibold mb-6">
                   ✓ Reliable data and better insight
@@ -445,7 +445,7 @@ export default function Home() {
                 Three steps. Minimal effort<br />from your team.
               </h2>
               <p className="text-slate-500 dark:text-white/40 text-sm max-w-md mx-auto leading-relaxed">
-                We handle the technical complexity — you get clean data, clear reporting, and better decisions.
+                We handle the technical complexity. You get clean data, clear reporting, and better decisions.
               </p>
             </div>
           </ScrollReveal>
@@ -456,7 +456,7 @@ export default function Home() {
                 step: "01",
                 Icon: Database,
                 title: "Connect",
-                body: "We integrate your systems via APIs and structured exports — pulling from wherever your data lives.",
+                body: "We integrate your systems via APIs and structured exports, pulling from wherever your data lives.",
                 tags: ["API integrations", "Scheduled exports", "Manual uploads"],
                 accent: "border-sky-200 dark:border-sky-500/25",
                 iconBg: "bg-sky-100 dark:bg-sky-500/15",
@@ -467,7 +467,7 @@ export default function Home() {
                 step: "02",
                 Icon: GitMerge,
                 title: "Centralise",
-                body: "All data lands in a central database — cleaned, modelled, and validated so every report draws from one consistent source.",
+                body: "All data lands in a central database, cleaned, modelled, and validated so every report draws from one consistent source.",
                 tags: ["Central database", "Data modelling", "Transformation layer"],
                 accent: "border-violet-200 dark:border-violet-500/25",
                 iconBg: "bg-violet-100 dark:bg-violet-500/15",
@@ -478,7 +478,7 @@ export default function Home() {
                 step: "03",
                 Icon: BarChart3,
                 title: "Operate",
-                body: "We build the reporting layer — live dashboards, KPI views, alerts, and management packs. Always connected. Always current.",
+                body: "We build the reporting layer: live dashboards, KPI views, alerts, and management packs. Always connected. Always current.",
                 tags: ["Live dashboards", "Automated reports", "KPI tracking"],
                 accent: "border-emerald-200 dark:border-emerald-500/25",
                 iconBg: "bg-emerald-100 dark:bg-emerald-500/15",
@@ -613,10 +613,10 @@ export default function Home() {
                     <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500 dark:text-white/30 border border-slate-200 dark:border-white/[0.08] px-3 py-1 rounded-full bg-white dark:bg-transparent">Data &amp; Operational Layer</span>
                   </div>
                   <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight text-slate-900 dark:text-white">
-                    Financial, stock, and operations —<br className="hidden md:block" /> unified into one layer
+                    Financial, stock, and operations,<br className="hidden md:block" /> unified into one layer
                   </h3>
                   <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-4 max-w-lg">
-                    A commercial electrical contractor running invoicing in Xero, stock in Cin7, and all job tracking manually in Excel — with no central view of job profitability, crew load, or delivery risk. We centralised all three into a Postgres data model and built a live operational layer on top.
+                    A commercial electrical contractor running invoicing in Xero, stock in Cin7, and all job tracking manually in Excel, with no central view of job profitability, crew load, or delivery risk. We centralised all three into a Postgres data model and built a live operational layer on top.
                   </p>
                   <p className="text-xs text-slate-400 dark:text-white/30 mb-7 max-w-lg">
                     Built using: Xero API · Cin7 API · Postgres (Supabase) · Structured SQL views
@@ -663,10 +663,10 @@ export default function Home() {
                     <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500 dark:text-white/30 border border-slate-200 dark:border-white/[0.08] px-3 py-1 rounded-full bg-white dark:bg-transparent">WIP &amp; Financial Layer</span>
                   </div>
                   <h3 className="text-2xl md:text-3xl font-bold mb-4 leading-snug tracking-tight text-slate-900 dark:text-white">
-                    WIP, billing, and matter profitability —<br className="hidden md:block" /> unified into one partner view
+                    WIP, billing, and matter profitability,<br className="hidden md:block" /> unified into one partner view
                   </h3>
                   <p className="text-slate-600 dark:text-white/50 text-sm leading-relaxed mb-4 max-w-lg">
-                    A mid-sized UK law firm running matters in Clio, invoicing in Xero, and WIP reconciliation manually in Excel — with no view of matter margin or billing delays. We centralised all three and built a partner-facing insight layer covering WIP, realisation rates, and billing performance.
+                    A mid-sized UK law firm running matters in Clio, invoicing in Xero, and WIP reconciliation manually in Excel, with no view of matter margin or billing delays. We centralised all three and built a partner-facing insight layer covering WIP, realisation rates, and billing performance.
                   </p>
                   <p className="text-xs text-slate-400 dark:text-white/30 mb-7 max-w-lg">
                     Built using: Clio API · Xero API · Postgres (Supabase) · Structured SQL views
@@ -747,7 +747,7 @@ export default function Home() {
                 Any system you use,<br />we can wire it up
               </h2>
               <p className="text-slate-500 dark:text-white/40 text-sm max-w-md mx-auto">
-                We build direct API integrations across your tech stack — accounting, inventory, CRM, marketing, and more.
+                We build direct API integrations across your tech stack: accounting, inventory, CRM, marketing, and more.
               </p>
             </div>
           </ScrollReveal>
@@ -788,7 +788,7 @@ export default function Home() {
                 Scoped, fixed-fee.<br />No surprises.
               </h2>
               <p className="text-slate-500 dark:text-white/40 text-sm max-w-md mx-auto leading-relaxed">
-                Every engagement is fully scoped before we start — you know exactly what you&apos;re getting and what it costs.
+                Every engagement is fully scoped before we start. You know exactly what you&apos;re getting and what it costs.
               </p>
             </div>
           </ScrollReveal>
@@ -866,7 +866,7 @@ export default function Home() {
 
           <ScrollReveal>
             <p className="text-center text-xs text-slate-400 dark:text-white/25">
-              No prices shown — every engagement is scoped individually. Proposal within 3 working days of your discovery call.
+              No prices shown. Every engagement is scoped individually. Proposal within 3 working days of your discovery call.
             </p>
           </ScrollReveal>
 
@@ -893,15 +893,15 @@ export default function Home() {
                   We got frustrated with the tools available to SMEs. The enterprise products were too complex, the off-the-shelf dashboards were too generic, and consultants kept producing slide decks without building anything.
                 </p>
                 <p className="text-slate-500 dark:text-white/35 leading-relaxed text-sm">
-                  So we built better ones. Quantyx Advisory is a specialist data consultancy for founder-led businesses and lean finance teams — we deliver real infrastructure, not recommendations.
+                  So we built better ones. Quantyx Advisory is a specialist data consultancy for founder-led businesses and lean finance teams. We deliver real infrastructure, not recommendations.
                 </p>
               </div>
             </ScrollReveal>
 
             <div className="grid sm:grid-cols-2 gap-4">
               {[
-                { icon: "📊", title: "Accounting background",     body: "We understand P&Ls, management accounts, and what a finance team actually needs — not just how to build dashboards.", color: "border-indigo-200 bg-indigo-50 dark:border-indigo-500/20 dark:bg-indigo-500/[0.04]", label: "text-indigo-700 dark:text-indigo-400" },
-                { icon: "🔍", title: "Ex-audit & data analytics", body: "We've worked in audit and data roles — we know how to interrogate data and spot where things don't add up.", color: "border-violet-200 bg-violet-50 dark:border-violet-500/20 dark:bg-violet-500/[0.04]", label: "text-violet-700 dark:text-violet-400" },
+                { icon: "📊", title: "Accounting background",     body: "We understand P&Ls, management accounts, and what a finance team actually needs, not just how to build dashboards.", color: "border-indigo-200 bg-indigo-50 dark:border-indigo-500/20 dark:bg-indigo-500/[0.04]", label: "text-indigo-700 dark:text-indigo-400" },
+                { icon: "🔍", title: "Ex-audit & data analytics", body: "We've worked in audit and data roles. We know how to interrogate data and spot where things don't add up.", color: "border-violet-200 bg-violet-50 dark:border-violet-500/20 dark:bg-violet-500/[0.04]", label: "text-violet-700 dark:text-violet-400" },
                 { icon: "🏗",  title: "We build, not just advise", body: "We don't produce slide decks. We build the actual pipelines, databases, and dashboards — and hand them over working.", color: "border-sky-200 bg-sky-50 dark:border-sky-500/20 dark:bg-sky-500/[0.04]", label: "text-sky-700 dark:text-sky-400" },
                 { icon: "🤝", title: "SME-focused",               body: "We work with businesses without a data team. Our engagements are scoped, priced, and communicated in plain English.", color: "border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/[0.04]", label: "text-emerald-700 dark:text-emerald-400" },
               ].map((card, i) => (
@@ -945,12 +945,12 @@ export default function Home() {
                   Let&apos;s talk about<br />your reporting.
                 </h2>
                 <p className="text-slate-600 dark:text-white/45 text-base leading-relaxed mb-8">
-                  Book a free 30-minute call. We&apos;ll ask about your current setup, understand what&apos;s not working, and tell you honestly whether we can help — and how.
+                  Book a free 30-minute call. We&apos;ll ask about your current setup, understand what&apos;s not working, and tell you honestly whether we can help, and how.
                 </p>
                 <div className="space-y-3 mb-8">
                   {[
                     "No commitment required",
-                    "Plain-English conversation — no jargon",
+                    "Plain-English conversation, no jargon",
                     "Clear proposal within 3 working days",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-white/50">
