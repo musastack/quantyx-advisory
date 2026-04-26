@@ -427,25 +427,14 @@ function Overview() {
    SECTION: REVENUE
 ═══════════════════════════════════════════════════════════ */
 
-type RevView = "budget" | "service" | "avgline" | "customers";
-
 function Revenue() {
-  const [view, setView] = useState<RevView>("budget");
-
-  const viewOptions: { id: RevView; label: string }[] = [
-    { id: "budget",    label: "vs Budget"        },
-    { id: "service",   label: "By Service Line"  },
-    { id: "avgline",   label: "vs Annual Avg"    },
-    { id: "customers", label: "Top Customers"    },
-  ];
-
   return (
     <div className="space-y-5">
       {/* Summary tiles */}
       <div className="grid lg:grid-cols-3 gap-4">
         {[
-          { label: "March Revenue",  value: "£4.49M", delta: "+£0.17M MoM",  note: "vs Feb 2025",        up: true,  accent: "#6366f1" },
-          { label: "YTD vs Budget",  value: "–£0.8M", delta: "–1.4% miss",   note: "£57.8M vs £58.6M",   up: false, accent: "#ef4444" },
+          { label: "March Revenue",  value: "£4.49M", delta: "+£0.17M MoM",  note: "vs Feb 2025",       up: true,  accent: "#6366f1" },
+          { label: "YTD vs Budget",  value: "–£0.8M", delta: "–1.4% miss",   note: "£57.8M vs £58.6M",  up: false, accent: "#ef4444" },
           { label: "Annual Avg/mo",  value: `£${(yearlyAvg / 1000).toFixed(2)}M`, delta: "+12.1% vs prior yr", note: "Apr 24–Mar 25", up: true, accent: "#22c55e" },
         ].map((c, i) => (
           <div key={i} className="rounded-2xl p-7 relative overflow-hidden"
@@ -461,154 +450,152 @@ function Revenue() {
         ))}
       </div>
 
-      {/* Chart picker + chart */}
-      <Card className="p-7">
-        <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
-          <div>
-            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Revenue Analysis</p>
-            <p className="text-white font-bold text-sm mt-0.5">
-              {view === "budget"    && "Actual vs Budget — Monthly"}
-              {view === "service"   && "Revenue by Service Line — Monthly"}
-              {view === "avgline"   && "Monthly Revenue vs Annual Average"}
-              {view === "customers" && "Top 8 Clients — YTD Revenue"}
-            </p>
+      {/* Row 1: Budget vs Actuals | vs Annual Average */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        {/* Budget vs Actuals */}
+        <Card className="lg:col-span-3 p-7">
+          <div className="mb-5">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Actual vs Budget</p>
+            <p className="text-white font-bold text-sm mt-0.5">Monthly — Apr 24 to Mar 25</p>
           </div>
-          <Pills options={viewOptions} active={view} onChange={setView} color="#6366f1" />
-        </div>
-
-        {/* vs Budget */}
-        {view === "budget" && (
-          <>
-            <ResponsiveContainer width="100%" height={280}>
-              <ComposedChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} interval={1} />
-                <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
-                  tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={42} />
-                <Tooltip content={<Tip />} />
-                <Bar dataKey="rev" radius={[4, 4, 0, 0]} name="Actual" isAnimationActive animationDuration={1000}>
-                  {monthly.map((d, i) => <Cell key={i} fill={d.rev >= d.budget ? "#6366f1" : "#ef4444"} fillOpacity={0.85} />)}
-                </Bar>
-                <Line type="monotone" dataKey="budget" stroke="rgba(255,255,255,0.3)" strokeWidth={1.5}
-                  strokeDasharray="5 3" dot={false} name="Budget" isAnimationActive={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
-            <div className="flex gap-5 mt-4 justify-end">
-              {[{ color: "#6366f1", l: "Above budget" }, { color: "#ef4444", l: "Below budget" }, { color: "rgba(255,255,255,0.3)", l: "Budget" }].map(lg => (
-                <div key={lg.l} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
-                  <div className="w-2 h-2 rounded-full" style={{ background: lg.color }} />{lg.l}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* By service line */}
-        {view === "service" && (
-          <>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={slMonthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
-                  tickFormatter={v => `£${v}k`} width={42} />
-                <Tooltip content={<Tip />} />
-                <Bar dataKey="restr"   stackId="a" fill="#6366f1" fillOpacity={0.9} name="Restructuring"  isAnimationActive animationDuration={900} />
-                <Bar dataKey="ma"      stackId="a" fill="#8b5cf6" fillOpacity={0.9} name="M&A Advisory"   isAnimationActive animationDuration={900} />
-                <Bar dataKey="forensic"stackId="a" fill="#06b6d4" fillOpacity={0.9} name="Forensic"       isAnimationActive animationDuration={900} />
-                <Bar dataKey="pe"      stackId="a" fill="#10b981" fillOpacity={0.9} name="PE Advisory"    isAnimationActive animationDuration={900} />
-                <Bar dataKey="val"     stackId="a" fill="#f59e0b" fillOpacity={0.9} name="Valuations"     isAnimationActive animationDuration={900} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex flex-wrap gap-4 mt-4">
-              {services.map(s => (
-                <div key={s.name} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>
-                  <div className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />{s.name}
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* vs Annual avg */}
-        {view === "avgline" && (
-          <>
-            <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={monthly.slice(3)} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-                <defs>
-                  <linearGradient id="avgG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
-                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
-                  tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={42} />
-                <Tooltip content={<Tip />} />
-                <ReferenceLine y={yearlyAvg} stroke="rgba(255,255,255,0.35)" strokeDasharray="6 3" strokeWidth={1.5}
-                  label={{ value: `Avg £${(yearlyAvg / 1000).toFixed(2)}M`, position: "right", fill: "rgba(255,255,255,0.4)", fontSize: 10 }} />
-                <Area type="monotone" dataKey="rev" stroke="#6366f1" strokeWidth={2.5} fill="url(#avgG)"
-                  dot={{ fill: "#6366f1", r: 3, strokeWidth: 0 }} name="Monthly Revenue" isAnimationActive animationDuration={1200} />
-              </AreaChart>
-            </ResponsiveContainer>
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              {monthly.slice(3).map((d, i) => {
-                const diff = d.rev - yearlyAvg;
-                return (
-                  <div key={i} className="rounded-xl p-2.5 text-center" style={{ background: diff >= 0 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)" }}>
-                    <p className="text-[9px] mb-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{d.m}</p>
-                    <p className={`text-[11px] font-bold tabular-nums ${diff >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                      {diff >= 0 ? "+" : ""}£{(diff / 1000).toFixed(1)}M
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {/* Top customers — horizontal bars */}
-        {view === "customers" && (
-          <div className="space-y-4">
-            <div className="flex justify-end mb-2">
-              <div className="flex gap-4 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-white/60" /> YTD</div>
-                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-white/20" /> Q1</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <ComposedChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} interval={1} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
+                tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={42} />
+              <Tooltip content={<Tip />} />
+              <Bar dataKey="rev" radius={[4, 4, 0, 0]} name="Actual" isAnimationActive animationDuration={1000}>
+                {monthly.map((d, i) => <Cell key={i} fill={d.rev >= d.budget ? "#6366f1" : "#ef4444"} fillOpacity={0.85} />)}
+              </Bar>
+              <Line type="monotone" dataKey="budget" stroke="rgba(255,255,255,0.3)" strokeWidth={1.5}
+                strokeDasharray="5 3" dot={false} name="Budget" isAnimationActive={false} />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <div className="flex gap-5 mt-3 justify-end">
+            {[{ color: "#6366f1", l: "Above budget" }, { color: "#ef4444", l: "Below budget" }, { color: "rgba(255,255,255,0.3)", l: "Budget line" }].map(lg => (
+              <div key={lg.l} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <div className="w-2 h-2 rounded-full" style={{ background: lg.color }} />{lg.l}
               </div>
-            </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* vs Annual Average */}
+        <Card className="lg:col-span-2 p-7">
+          <div className="mb-5">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>vs Annual Average</p>
+            <p className="text-white font-bold text-sm mt-0.5">Avg £{(yearlyAvg / 1000).toFixed(2)}M/mo</p>
+          </div>
+          <ResponsiveContainer width="100%" height={148}>
+            <AreaChart data={monthly.slice(3)} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+              <defs>
+                <linearGradient id="avgG" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false}
+                tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={38} />
+              <Tooltip content={<Tip />} />
+              <ReferenceLine y={yearlyAvg} stroke="rgba(255,255,255,0.3)" strokeDasharray="5 3" strokeWidth={1.5} />
+              <Area type="monotone" dataKey="rev" stroke="#6366f1" strokeWidth={2.5} fill="url(#avgG)"
+                dot={{ fill: "#6366f1", r: 2.5, strokeWidth: 0 }} name="Revenue" isAnimationActive animationDuration={1200} />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div className="mt-3 grid grid-cols-3 gap-1.5">
+            {monthly.slice(3).slice(-6).map((d, i) => {
+              const diff = d.rev - yearlyAvg;
+              return (
+                <div key={i} className="rounded-lg p-2 text-center" style={{ background: diff >= 0 ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)" }}>
+                  <p className="text-[8px] mb-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{d.m}</p>
+                  <p className={`text-[10px] font-bold tabular-nums ${diff >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                    {diff >= 0 ? "+" : ""}£{Math.round(diff / 100) / 10}M
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+
+      {/* Row 2: By Service Line | Top Customers */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        {/* Service Line Breakdown */}
+        <Card className="lg:col-span-3 p-7">
+          <div className="mb-5">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Revenue by Service Line</p>
+            <p className="text-white font-bold text-sm mt-0.5">Monthly contribution — Apr 24 to Mar 25</p>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={slMonthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+              <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
+                tickFormatter={v => `£${v}k`} width={42} />
+              <Tooltip content={<Tip />} />
+              <Bar dataKey="restr"    stackId="a" fill="#6366f1" fillOpacity={0.9} name="Restructuring" isAnimationActive animationDuration={900} />
+              <Bar dataKey="ma"       stackId="a" fill="#8b5cf6" fillOpacity={0.9} name="M&A Advisory"  isAnimationActive animationDuration={900} />
+              <Bar dataKey="forensic" stackId="a" fill="#06b6d4" fillOpacity={0.9} name="Forensic"      isAnimationActive animationDuration={900} />
+              <Bar dataKey="pe"       stackId="a" fill="#10b981" fillOpacity={0.9} name="PE Advisory"   isAnimationActive animationDuration={900} />
+              <Bar dataKey="val"      stackId="a" fill="#f59e0b" fillOpacity={0.9} name="Valuations"    isAnimationActive animationDuration={900} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="flex flex-wrap gap-4 mt-3">
+            {services.map(s => (
+              <div key={s.name} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />{s.name}
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Top Customers */}
+        <Card className="lg:col-span-2 p-7">
+          <div className="mb-5">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Top Clients</p>
+            <p className="text-white font-bold text-sm mt-0.5">YTD revenue — £000s</p>
+          </div>
+          <div className="space-y-4">
             {topCustomers.map((c, i) => {
               const maxYtd = topCustomers[0].ytd;
               return (
-                <div key={i} className="grid grid-cols-[160px_1fr_80px] gap-4 items-center">
-                  <div>
-                    <p className="text-[12px] font-semibold text-white truncate">{c.name}</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{c.sector}</p>
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div>
+                      <p className="text-[11px] font-semibold text-white truncate max-w-[140px]">{c.name}</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{c.sector}</p>
+                    </div>
+                    <p className="text-[12px] font-black text-white tabular-nums shrink-0">£{(c.ytd / 1000).toFixed(1)}M</p>
                   </div>
-                  <div className="space-y-1.5">
-                    {/* YTD bar */}
-                    <div className="relative h-[8px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <div className="space-y-1">
+                    <div className="relative h-[6px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
                       <div className="absolute inset-y-0 left-0 rounded-full"
                         style={{ width: `${(c.ytd / maxYtd) * 100}%`, background: c.color, opacity: 0.9,
                           transition: `width 1.1s cubic-bezier(0.16,1,0.3,1) ${i * 60}ms` }} />
                     </div>
-                    {/* Q1 bar */}
-                    <div className="relative h-[5px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+                    <div className="relative h-[3px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
                       <div className="absolute inset-y-0 left-0 rounded-full"
-                        style={{ width: `${(c.qtr / maxYtd) * 100}%`, background: c.color, opacity: 0.4,
+                        style={{ width: `${(c.qtr / maxYtd) * 100}%`, background: c.color, opacity: 0.35,
                           transition: `width 1.1s cubic-bezier(0.16,1,0.3,1) ${i * 60 + 100}ms` }} />
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[13px] font-bold text-white tabular-nums">£{(c.ytd / 1000).toFixed(1)}M</p>
-                    <p className="text-[10px] tabular-nums" style={{ color: "rgba(255,255,255,0.3)" }}>£{(c.qtr / 1000).toFixed(1)}M Q1</p>
                   </div>
                 </div>
               );
             })}
           </div>
-        )}
-      </Card>
+          <div className="flex gap-4 mt-4 pt-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <div className="flex items-center gap-1.5 text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+              <div className="w-2 h-2 rounded-sm" style={{ background: "rgba(255,255,255,0.5)" }} /> YTD
+            </div>
+            <div className="flex items-center gap-1.5 text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+              <div className="w-2 h-1 rounded-sm" style={{ background: "rgba(255,255,255,0.25)" }} /> Q1 only
+            </div>
+          </div>
+        </Card>
+      </div>
 
       {/* P&L table */}
       <Card className="overflow-hidden">
@@ -784,15 +771,16 @@ function People() {
 
 function Debtors() {
   // Forecast sliders
-  const [recovery91, setRecovery91]   = useState(25);   // % of 91+ recovered
-  const [lockupTarget, setLockupTarget] = useState(80); // target lockup days (current 94)
-  const [accel3190, setAccel3190]     = useState(20);   // % of 31-90d accelerated
+  const [recovery91, setRecovery91]       = useState(25);   // % of 91+ recovered
+  const [lockupReduction, setLockupReduction] = useState(14); // days to reduce lockup (0–34)
+  const [accel3190, setAccel3190]         = useState(20);   // % of 31-90d accelerated
 
   // Cash freed calculations
-  const cashFrom91     = Math.round(debtorBuckets[3].value * recovery91 / 100);
   const currentLockup  = 94;
   const monthlyRev     = 4490;
-  const cashFromLockup = Math.round(((currentLockup - lockupTarget) / 30) * monthlyRev);
+  const lockupTarget   = currentLockup - lockupReduction;    // derived: e.g. 94 - 14 = 80
+  const cashFrom91     = Math.round(debtorBuckets[3].value * recovery91 / 100);
+  const cashFromLockup = Math.round((lockupReduction / 30) * monthlyRev);
   const cashFrom3190   = Math.round((debtorBuckets[1].value + debtorBuckets[2].value) * accel3190 / 100);
   const totalFreed     = cashFrom91 + cashFromLockup + cashFrom3190;
   const projectedCash  = currentCash + totalFreed;
@@ -922,20 +910,20 @@ function Debtors() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-sm font-semibold text-white">Reduce lockup days to</p>
-                  <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>Current: 94 days · each day = ~£{Math.round(monthlyRev / 30)}k</p>
+                  <p className="text-sm font-semibold text-white">Reduce lockup days</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>Current: 94d · target: {lockupTarget}d · each day ≈ £{Math.round(monthlyRev / 30)}k</p>
                 </div>
-                <span className="text-lg font-black tabular-nums" style={{ color: "#eab308" }}>{lockupTarget}d</span>
+                <span className="text-lg font-black tabular-nums" style={{ color: "#eab308" }}>–{lockupReduction}d</span>
               </div>
-              <input type="range" min={60} max={94} value={lockupTarget} onChange={e => setLockupTarget(+e.target.value)}
+              <input type="range" min={0} max={34} value={lockupReduction} onChange={e => setLockupReduction(+e.target.value)}
                 className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                style={{ accentColor: "#eab308", background: `linear-gradient(to right, #eab308 ${(94 - lockupTarget) / 34 * 100}%, rgba(255,255,255,0.1) ${(94 - lockupTarget) / 34 * 100}%)` }}
+                style={{ accentColor: "#eab308", background: `linear-gradient(to right, #eab308 ${lockupReduction / 34 * 100}%, rgba(255,255,255,0.1) ${lockupReduction / 34 * 100}%)` }}
               />
               <div className="flex justify-between text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>
-                <span>60d</span><span>94d (current)</span>
+                <span>0 days (no change)</span><span>34 days (max)</span>
               </div>
               <p className="mt-2 text-[11px] font-semibold text-emerald-400">
-                +£{(cashFromLockup / 1000).toFixed(2)}M freed ({currentLockup - lockupTarget} days improvement)
+                +£{(cashFromLockup / 1000).toFixed(2)}M freed ({lockupReduction} day improvement → target {lockupTarget}d)
               </p>
             </div>
 

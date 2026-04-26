@@ -537,18 +537,18 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════
-          RESULTS — dark section
+          RESULTS
       ══════════════════════════════════════ */}
-      <section className="py-24 px-6 bg-[#05050f] dark:bg-[#030310] relative overflow-hidden">
-        <div className="absolute inset-0 aurora-bg opacity-60 pointer-events-none" />
+      <section className="py-24 px-6 bg-slate-50 dark:bg-[#05050f] relative overflow-hidden border-t border-slate-100 dark:border-transparent">
+        <div className="absolute inset-0 aurora-bg opacity-40 dark:opacity-60 pointer-events-none" />
         <div className="max-w-6xl mx-auto relative">
 
           <ScrollReveal>
             <div className="text-center mb-16">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-indigo-400/70 mb-4">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400/70 mb-4">
                 Real results
               </p>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
                 What our clients achieve
               </h2>
             </div>
@@ -556,20 +556,21 @@ export default function Home() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { value: 30,   prefix: "< ",  suffix: " min",  label: "Weekly reporting",      was: "Was 3–8 hrs",         color: "border-indigo-500/30 bg-indigo-500/[0.06]", textColor: "text-indigo-400" },
-              { value: 0.3,  prefix: "",    suffix: "%",      label: "Match error rate",      was: "Was 6%",              color: "border-violet-500/30 bg-violet-500/[0.06]", textColor: "text-violet-400", decimals: 1 },
-              { value: 25,   prefix: "",    suffix: "%",      label: "Client churn reduced",  was: "Marketing clients",   color: "border-emerald-500/30 bg-emerald-500/[0.06]", textColor: "text-emerald-400" },
-              { value: 20,   prefix: "",    suffix: " min",   label: "Management packs",      was: "Was 4 hrs",           color: "border-amber-500/30 bg-amber-500/[0.06]", textColor: "text-amber-400" },
+              { value: 30,  prefix: "< ", suffix: " min", label: "Weekly reporting",     was: "Was 3–8 hrs",       cardCls: "border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-500/[0.06]",   valCls: "text-indigo-600 dark:text-indigo-400",   topColor: "rgba(99,102,241,0.5)"  },
+              { value: 0.3, prefix: "",   suffix: "%",     label: "Match error rate",     was: "Was 6%",            cardCls: "border-violet-200 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/[0.06]",   valCls: "text-violet-600 dark:text-violet-400",   topColor: "rgba(139,92,246,0.5)", decimals: 1 },
+              { value: 25,  prefix: "",   suffix: "%",     label: "Client churn reduced", was: "Marketing clients", cardCls: "border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/[0.06]", valCls: "text-emerald-600 dark:text-emerald-400", topColor: "rgba(16,185,129,0.5)"  },
+              { value: 20,  prefix: "",   suffix: " min",  label: "Management packs",     was: "Was 4 hrs",         cardCls: "border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/[0.06]",       valCls: "text-amber-600 dark:text-amber-400",     topColor: "rgba(245,158,11,0.5)"  },
             ].map((stat, i) => (
               <ScrollReveal key={stat.label} delay={i * 0.08}>
-                <div className={`rounded-2xl border p-6 ${stat.color} flex flex-col`} style={{ borderTopWidth: 2, borderTopColor: stat.textColor.includes("indigo") ? "rgba(99,102,241,0.5)" : stat.textColor.includes("violet") ? "rgba(139,92,246,0.5)" : stat.textColor.includes("emerald") ? "rgba(16,185,129,0.5)" : "rgba(245,158,11,0.5)" }}>
-                  <p className={`text-4xl font-black mb-1 ${stat.textColor}`}>
+                <div className={`rounded-2xl border p-6 ${stat.cardCls} flex flex-col`}
+                  style={{ borderTopWidth: 2, borderTopColor: stat.topColor }}>
+                  <p className={`text-4xl font-black mb-1 ${stat.valCls}`}>
                     {stat.prefix}
-                    <StatTicker to={stat.value} decimals={stat.decimals ?? 0} />
+                    <StatTicker to={stat.value} decimals={(stat as { decimals?: number }).decimals ?? 0} />
                     {stat.suffix}
                   </p>
-                  <p className="text-sm font-semibold text-white/70 mb-1">{stat.label}</p>
-                  <p className="text-xs text-white/30">{stat.was}</p>
+                  <p className="text-sm font-semibold text-slate-700 dark:text-white/70 mb-1">{stat.label}</p>
+                  <p className="text-xs text-slate-500 dark:text-white/30">{stat.was}</p>
                 </div>
               </ScrollReveal>
             ))}
