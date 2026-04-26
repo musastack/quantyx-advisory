@@ -183,6 +183,90 @@ const DEMO_ASSETS: Asset[] = [
   { id: 6, name: "BMW 5 Series (×2)",        category: "Vehicles",         purchaseDate: "2024-01-01", cost:  88000, usefulLife: 4,  depMethod: "reducing-balance" },
 ];
 
+/* ─── People department / office data ──────────────────── */
+const deptBreakdown = [
+  { name: "Corporate Restructuring", count: 42, util: 79, target: 78, color: "#6366f1" },
+  { name: "M&A Advisory",            count: 38, util: 72, target: 75, color: "#8b5cf6" },
+  { name: "Forensic & Disputes",     count: 28, util: 81, target: 80, color: "#06b6d4" },
+  { name: "PE Advisory",             count: 24, util: 76, target: 75, color: "#10b981" },
+  { name: "Valuations",              count: 10, util: 68, target: 70, color: "#f59e0b" },
+];
+
+const officeBreakdown = [
+  { name: "London",     count: 98, util: 76, target: 76, color: "#6366f1" },
+  { name: "Manchester", count: 28, util: 74, target: 73, color: "#8b5cf6" },
+  { name: "Edinburgh",  count: 16, util: 72, target: 72, color: "#06b6d4" },
+];
+
+/* ─── FP&A nominal data ─────────────────────────────────── */
+type FPANominal = {
+  code: string; name: string; category: string; parentCode?: string;
+  isHeader?: boolean; isRevenue?: boolean;
+  actuals: number; budget: number; ytdActuals: number; ytdBudget: number;
+};
+
+const plNominals: FPANominal[] = [
+  { code: "REV", name: "Revenue", category: "Revenue", isHeader: true, isRevenue: true, actuals: 4490, budget: 4500, ytdActuals: 12800, ytdBudget: 13200 },
+  { code: "4000", name: "Corporate Restructuring", category: "Revenue", parentCode: "REV", isRevenue: true, actuals: 1620, budget: 1600, ytdActuals: 4540, ytdBudget: 4600 },
+  { code: "4010", name: "M&A Advisory",            category: "Revenue", parentCode: "REV", isRevenue: true, actuals: 1380, budget: 1415, ytdActuals: 3920, ytdBudget: 4050 },
+  { code: "4020", name: "Forensic & Disputes",     category: "Revenue", parentCode: "REV", isRevenue: true, actuals:  680, budget:  660, ytdActuals: 1940, ytdBudget: 1860 },
+  { code: "4030", name: "PE Advisory",             category: "Revenue", parentCode: "REV", isRevenue: true, actuals:  520, budget:  555, ytdActuals: 1500, ytdBudget: 1590 },
+  { code: "4040", name: "Valuations",              category: "Revenue", parentCode: "REV", isRevenue: true, actuals:  290, budget:  270, ytdActuals:  900, ytdBudget:  810 },
+  { code: "COD", name: "Cost of Delivery", category: "Cost of Delivery", isHeader: true, actuals: 1841, budget: 1890, ytdActuals: 5060, ytdBudget: 5190 },
+  { code: "5000", name: "Direct Staff Costs",    category: "Cost of Delivery", parentCode: "COD", actuals: 1420, budget: 1450, ytdActuals: 3920, ytdBudget: 4020 },
+  { code: "5010", name: "Subcontractor Costs",   category: "Cost of Delivery", parentCode: "COD", actuals:  281, budget:  290, ytdActuals:  850, ytdBudget:  870 },
+  { code: "5020", name: "Direct Disbursements",  category: "Cost of Delivery", parentCode: "COD", actuals:  140, budget:  150, ytdActuals:  290, ytdBudget:  300 },
+  { code: "SAL", name: "Staff & Benefits", category: "Staff & Benefits", isHeader: true, actuals: 875, budget: 892, ytdActuals: 2534, ytdBudget: 2580 },
+  { code: "6000", name: "Base Salaries",          category: "Staff & Benefits", parentCode: "SAL", actuals: 620, budget: 630, ytdActuals: 1800, ytdBudget: 1840 },
+  { code: "6010", name: "Bonuses & Incentives",   category: "Staff & Benefits", parentCode: "SAL", actuals: 112, budget: 105, ytdActuals:  310, ytdBudget:  300 },
+  { code: "6020", name: "Employer NI",            category: "Staff & Benefits", parentCode: "SAL", actuals:  88, budget: 102, ytdActuals:  260, ytdBudget:  290 },
+  { code: "6030", name: "Pension Contributions",  category: "Staff & Benefits", parentCode: "SAL", actuals:  55, budget:  55, ytdActuals:  164, ytdBudget:  150 },
+  { code: "OVH", name: "Overhead", category: "Overhead", isHeader: true, actuals: 333, budget: 344, ytdActuals: 949, ytdBudget: 1000 },
+  { code: "7000", name: "Office Rent & Rates",     category: "Overhead", parentCode: "OVH", actuals:  95, budget:  95, ytdActuals: 285, ytdBudget:  285 },
+  { code: "7010", name: "Software & Technology",   category: "Overhead", parentCode: "OVH", actuals:  58, budget:  62, ytdActuals: 168, ytdBudget:  182 },
+  { code: "7020", name: "Professional Fees",       category: "Overhead", parentCode: "OVH", actuals:  48, budget:  50, ytdActuals: 138, ytdBudget:  145 },
+  { code: "7030", name: "Marketing & BD",          category: "Overhead", parentCode: "OVH", actuals:  38, budget:  42, ytdActuals: 108, ytdBudget:  120 },
+  { code: "7040", name: "Travel & Entertainment",  category: "Overhead", parentCode: "OVH", actuals:  52, budget:  50, ytdActuals: 148, ytdBudget:  148 },
+  { code: "7050", name: "Other Overhead",          category: "Overhead", parentCode: "OVH", actuals:  42, budget:  45, ytdActuals: 102, ytdBudget:  120 },
+];
+
+const bsNominals: FPANominal[] = [
+  { code: "CA",  name: "Current Assets",      category: "Assets",      isHeader: true, actuals: 34340, budget: 29550, ytdActuals: 34340, ytdBudget: 29550 },
+  { code: "1000", name: "Cash & Bank",         category: "Assets", parentCode: "CA",  actuals:  9200, budget:  8500, ytdActuals:  9200, ytdBudget:  8500 },
+  { code: "1100", name: "Trade Debtors",       category: "Assets", parentCode: "CA",  actuals: 18880, budget: 17000, ytdActuals: 18880, ytdBudget: 17000 },
+  { code: "1200", name: "Work in Progress",    category: "Assets", parentCode: "CA",  actuals:  5800, budget:  3800, ytdActuals:  5800, ytdBudget:  3800 },
+  { code: "1300", name: "Prepayments",         category: "Assets", parentCode: "CA",  actuals:   460, budget:   250, ytdActuals:   460, ytdBudget:   250 },
+  { code: "FA",  name: "Fixed Assets (NBV)",  category: "Assets",      isHeader: true, actuals:   508, budget:   750, ytdActuals:   508, ytdBudget:   750 },
+  { code: "2000", name: "Leasehold Improvements",category: "Assets", parentCode: "FA", actuals:  181, budget:   200, ytdActuals:   181, ytdBudget:   200 },
+  { code: "2100", name: "IT Equipment",        category: "Assets", parentCode: "FA",  actuals:    95, budget:   110, ytdActuals:    95, ytdBudget:   110 },
+  { code: "2200", name: "Plant & Equipment",   category: "Assets", parentCode: "FA",  actuals:   232, budget:   440, ytdActuals:   232, ytdBudget:   440 },
+  { code: "CL",  name: "Current Liabilities", category: "Liabilities", isHeader: true, actuals:  3575, budget:  3280, ytdActuals:  3575, ytdBudget:  3280 },
+  { code: "3000", name: "Trade Creditors",     category: "Liabilities", parentCode: "CL", actuals: 1240, budget: 1100, ytdActuals: 1240, ytdBudget: 1100 },
+  { code: "3100", name: "PAYE & NI Liability", category: "Liabilities", parentCode: "CL", actuals:  487, budget:  450, ytdActuals:  487, ytdBudget:  450 },
+  { code: "3200", name: "VAT Liability",       category: "Liabilities", parentCode: "CL", actuals:  898, budget:  860, ytdActuals:  898, ytdBudget:  860 },
+  { code: "3300", name: "Accruals",            category: "Liabilities", parentCode: "CL", actuals:  550, budget:  450, ytdActuals:  550, ytdBudget:  450 },
+  { code: "3400", name: "Deferred Revenue",    category: "Liabilities", parentCode: "CL", actuals:  400, budget:  420, ytdActuals:  400, ytdBudget:  420 },
+  { code: "EQ",  name: "Equity",              category: "Equity",      isHeader: true, actuals: 31273, budget: 27020, ytdActuals: 31273, ytdBudget: 27020 },
+  { code: "5000", name: "Share Capital",       category: "Equity", parentCode: "EQ",  actuals:   100, budget:   100, ytdActuals:   100, ytdBudget:   100 },
+  { code: "5100", name: "Retained Earnings",   category: "Equity", parentCode: "EQ",  actuals: 31173, budget: 26920, ytdActuals: 31173, ytdBudget: 26920 },
+];
+
+const fpandaMonthly = [
+  { m: "Oct", actual: 4120, budget: 4100 }, { m: "Nov", actual: 4250, budget: 4200 },
+  { m: "Dec", actual: 4080, budget: 4300 }, { m: "Jan", actual: 4190, budget: 4300 },
+  { m: "Feb", actual: 4320, budget: 4400 }, { m: "Mar", actual: 4490, budget: 4500 },
+];
+
+const WATERFALL_DATA = [
+  { name: "Budget",        invisible: 0,    bar: 4500, color: "#6366f1", isTotal: true  },
+  { name: "Restructuring", invisible: 4500, bar: 20,   color: "#22c55e", isTotal: false },
+  { name: "M&A Advisory",  invisible: 4485, bar: 35,   color: "#ef4444", isTotal: false },
+  { name: "Forensic",      invisible: 4485, bar: 20,   color: "#22c55e", isTotal: false },
+  { name: "PE Advisory",   invisible: 4470, bar: 35,   color: "#ef4444", isTotal: false },
+  { name: "Valuations",    invisible: 4470, bar: 20,   color: "#22c55e", isTotal: false },
+  { name: "Actual",        invisible: 0,    bar: 4490, color: "#10b981", isTotal: true  },
+];
+
 function calcNBV(a: Asset) {
   const years = Math.max(0, (new Date("2025-03-31").getTime() - new Date(a.purchaseDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
   if (a.depMethod === "straight-line") {
@@ -284,7 +368,7 @@ function Gauge({ value, target, label }: { value: number; target: number; label:
   const L = arc(0), R = arc(1), F = arc(p), T = arc(tp);
   const big = p > 0.5 ? 1 : 0;
   const ang = Math.PI * (1 - tp);
-  const r1 = r - sw / 2 - 2, r2 = r + sw / 2 + 2;
+  const r1 = r - sw / 2 - 6, r2 = r + sw / 2 + 6;
   return (
     <div className="flex flex-col items-center">
       <svg width={cx * 2} height={cy + sw + 6} className="overflow-visible">
@@ -295,7 +379,7 @@ function Gauge({ value, target, label }: { value: number; target: number; label:
           style={{ transition: "stroke-dasharray 1.2s cubic-bezier(0.16,1,0.3,1) 0.2s" }} />}
         <line x1={(cx + r1 * Math.cos(ang)).toFixed(1)} y1={(cy - r1 * Math.sin(ang)).toFixed(1)}
           x2={(cx + r2 * Math.cos(ang)).toFixed(1)} y2={(cy - r2 * Math.sin(ang)).toFixed(1)}
-          stroke="rgba(255,255,255,0.45)" strokeWidth={2} strokeLinecap="round" />
+          stroke="rgba(255,255,255,0.85)" strokeWidth={3} strokeLinecap="round" />
         <text x={cx} y={cy - 4} textAnchor="middle" fontSize="22" fontWeight="900"
           fontFamily="ui-monospace,monospace" fill={color}>{value}%</text>
         <text x={cx} y={cy + 14} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.3)"
@@ -616,11 +700,6 @@ function Overview() {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Revenue Trend — full width */}
-      <div className="rounded-2xl p-7" style={{ background: "#0d1530", border: "1px solid rgba(255,255,255,0.07)" }}>
-        <RevenueTrendChart />
       </div>
 
       {/* KPI row */}
@@ -970,9 +1049,17 @@ function Revenue() {
 ═══════════════════════════════════════════════════════════ */
 
 function People() {
-  const [hcType, setHcType] = useState<CType>("area");
-  const avgUtil = grades.reduce((s, g) => s + g.util, 0) / grades.length;
-  const avgTgt  = grades.reduce((s, g) => s + g.targetUtil, 0) / grades.length;
+  const [hcType,     setHcType]     = useState<CType>("area");
+  const [filterView, setFilterView] = useState<"grade" | "dept" | "office">("grade");
+
+  type BreakdownItem = { name: string; count: number; util: number; target: number; color: string };
+  const breakdownData: BreakdownItem[] =
+    filterView === "grade"  ? grades.map(g => ({ name: g.grade, count: g.count, util: g.util, target: g.targetUtil, color: g.util >= g.targetUtil ? "#22c55e" : "#ef4444" })) :
+    filterView === "dept"   ? deptBreakdown :
+    officeBreakdown;
+
+  const avgUtil = breakdownData.reduce((s, g) => s + g.util, 0) / breakdownData.length;
+  const avgTgt  = breakdownData.reduce((s, g) => s + g.target, 0) / breakdownData.length;
 
   return (
     <div className="space-y-5">
@@ -989,6 +1076,22 @@ function People() {
             <p className="mt-2 text-sm font-semibold text-emerald-400 flex items-center gap-1"><ArrowUpRight size={13} />{k.delta}</p>
           </Card>
         ))}
+      </div>
+
+      {/* Filter toggle */}
+      <div className="flex items-center gap-3">
+        <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>View by:</span>
+        <div className="flex gap-1.5">
+          {([["grade", "Grade"], ["dept", "Department"], ["office", "Office"]] as const).map(([id, label]) => (
+            <button key={id} onClick={() => setFilterView(id)}
+              className="px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all"
+              style={filterView === id
+                ? { background: "rgba(99,102,241,0.2)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.35)" }
+                : { color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Gauge + util bars */}
@@ -1025,25 +1128,30 @@ function People() {
         </Card>
 
         <Card className="p-8">
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Utilisation by Grade</p>
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Utilisation by {filterView === "grade" ? "Grade" : filterView === "dept" ? "Department" : "Office"}</p>
           <p className="text-white/40 text-[10px] mb-6">Bar shows actual · white line = target</p>
           <div className="space-y-8">
-            {grades.map((g, i) => {
-              const color = g.util >= g.targetUtil ? "#22c55e" : g.util >= g.targetUtil * 0.97 ? "#eab308" : "#ef4444";
-              const diff  = g.util - g.targetUtil;
+            {breakdownData.map((g, i) => {
+              const color = g.util >= g.target ? "#22c55e" : g.util >= g.target * 0.97 ? "#eab308" : "#ef4444";
+              const diff  = g.util - g.target;
               return (
                 <div key={i}>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold text-white">{g.grade}</span>
+                    <div>
+                      <span className="text-sm font-semibold text-white">{g.name}</span>
+                      {filterView !== "grade" && (
+                        <span className="ml-2 text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{g.count} headcount</span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>target {g.targetUtil}%</span>
+                      <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>target {g.target}%</span>
                       <span className="text-sm font-black tabular-nums" style={{ color }}>{g.util}%</span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${diff >= 0 ? "text-emerald-400 bg-emerald-400/10" : "text-rose-400 bg-rose-400/10"}`}>
                         {diff >= 0 ? "+" : ""}{diff}pp
                       </span>
                     </div>
                   </div>
-                  <UtilBar actual={g.util} target={g.targetUtil} color={color} delay={i * 90} />
+                  <UtilBar actual={g.util} target={g.target} color={color} delay={i * 90} />
                 </div>
               );
             })}
@@ -1917,6 +2025,317 @@ function Creditors() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   SECTION: FP&A — BUDGET vs ACTUALS
+═══════════════════════════════════════════════════════════ */
+
+type VarReason = "" | "timing" | "volume" | "rate" | "one-off" | "scope-change";
+const VAR_REASONS: { id: VarReason; label: string }[] = [
+  { id: "",            label: "— Select —"    },
+  { id: "timing",      label: "Timing"        },
+  { id: "volume",      label: "Volume"        },
+  { id: "rate",        label: "Rate / Price"  },
+  { id: "one-off",     label: "One-off"       },
+  { id: "scope-change",label: "Scope Change"  },
+];
+
+function FPandA() {
+  const [view,       setView]       = useState<"pl" | "bs">("pl");
+  const [collapsed,  setCollapsed]  = useState<Record<string, boolean>>({});
+  const [reasons,    setReasons]    = useState<Record<string, VarReason>>({});
+  const [comments,   setComments]   = useState<Record<string, string>>({});
+
+  // Persist comments + reasons in localStorage
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("fpanda_state") || "{}");
+      if (saved.reasons)  setReasons(saved.reasons);
+      if (saved.comments) setComments(saved.comments);
+    } catch { /* ignore */ }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("fpanda_state", JSON.stringify({ reasons, comments }));
+  }, [reasons, comments]);
+
+  const nominals = view === "pl" ? plNominals : bsNominals;
+
+  function toggleSection(code: string) {
+    setCollapsed(p => ({ ...p, [code]: !p[code] }));
+  }
+
+  // Visible rows (collapse children when header is collapsed)
+  const collapsedHeaders = new Set(
+    nominals.filter(n => n.isHeader && collapsed[n.code]).map(n => n.code)
+  );
+  const visibleRows = nominals.filter(n => !n.parentCode || !collapsedHeaders.has(n.parentCode));
+
+  // CSV export
+  function exportCSV() {
+    const headers = ["Code","Nominal","Actuals","Budget","Var","Var%","Reason","Comment","YTD Actuals","YTD Budget","YTD Var"];
+    const rows = nominals.map(n => {
+      const varAmt  = n.actuals - n.budget;
+      const varPct  = n.budget !== 0 ? ((varAmt / n.budget) * 100).toFixed(1) : "—";
+      const ytdVar  = n.ytdActuals - n.ytdBudget;
+      return [
+        n.code, `"${n.name}"`, n.actuals, n.budget, varAmt, varPct,
+        reasons[n.code] || "", `"${(comments[n.code] || "").replace(/"/g, "'")}"`,
+        n.ytdActuals, n.ytdBudget, ytdVar,
+      ].join(",");
+    });
+    const csv  = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = `fpanda_${view}_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  // PDF export via print
+  function exportPDF() { window.print(); }
+
+  // Variance colour helper
+  function varColor(varAmt: number, isRevenue?: boolean) {
+    if (varAmt === 0) return "rgba(255,255,255,0.2)";
+    const good = isRevenue ? varAmt > 0 : varAmt < 0;
+    return good ? "#22c55e" : "#ef4444";
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Header toolbar */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Financial Planning & Analysis</p>
+          <p className="text-white font-bold text-lg mt-0.5">Budget vs Actuals — March 2025</p>
+        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Pills
+            options={[{ id: "pl", label: "P & L" }, { id: "bs", label: "Balance Sheet" }]}
+            active={view}
+            onChange={v => setView(v as "pl" | "bs")}
+          />
+          <button onClick={exportCSV}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold transition-all"
+            style={{ background: "rgba(99,102,241,0.12)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.25)" }}>
+            <Download size={13} /> Export CSV
+          </button>
+          <button onClick={exportPDF}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold transition-all"
+            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <Download size={13} /> Export PDF
+          </button>
+        </div>
+      </div>
+
+      {/* Charts row */}
+      {view === "pl" && (
+        <div className="grid lg:grid-cols-5 gap-4">
+          {/* Waterfall */}
+          <Card className="lg:col-span-3 p-7">
+            <div className="mb-5">
+              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Budget Bridge</p>
+              <p className="text-white font-bold text-sm mt-0.5">Budget → Actual variance by practice · Mar 25 (£000)</p>
+            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={WATERFALL_DATA} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 9 }} axisLine={false} tickLine={false} />
+                <YAxis domain={[4400, 4550]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
+                  tickFormatter={v => `£${v}`} width={42} />
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null;
+                    const d = WATERFALL_DATA.find(w => w.name === label);
+                    return (
+                      <div className="rounded-xl px-4 py-3 text-xs shadow-2xl" style={{ background: "#111127", border: "1px solid rgba(255,255,255,0.1)" }}>
+                        <p className="font-bold mb-1 text-white/40 tracking-widest uppercase text-[9px]">{label}</p>
+                        <p className="font-bold text-white">{d?.isTotal ? `£${d.bar.toLocaleString()}k` : `${d && d.bar >= 0 ? "+" : ""}£${d?.bar}k`}</p>
+                      </div>
+                    );
+                  }}
+                />
+                <Bar dataKey="invisible" stackId="a" fill="transparent" isAnimationActive={false} />
+                <Bar dataKey="bar" stackId="a" radius={[3, 3, 0, 0]} isAnimationActive animationDuration={800}>
+                  {WATERFALL_DATA.map((d, i) => <Cell key={i} fill={d.color} fillOpacity={0.9} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="flex gap-5 mt-3 justify-end flex-wrap">
+              {[{ color: "#6366f1", l: "Budget / Actual total" }, { color: "#22c55e", l: "Favourable" }, { color: "#ef4444", l: "Adverse" }].map(lg => (
+                <div key={lg.l} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  <div className="w-2 h-2 rounded-full" style={{ background: lg.color }} />{lg.l}
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Monthly comparison */}
+          <Card className="lg:col-span-2 p-7">
+            <div className="mb-5">
+              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Monthly Trend</p>
+              <p className="text-white font-bold text-sm mt-0.5">Actual vs Budget (6 mo) · £000</p>
+            </div>
+            <ResponsiveContainer width="100%" height={180}>
+              <ComposedChart data={fpandaMonthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
+                <YAxis domain={[3900, 4600]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
+                  tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={42} />
+                <Tooltip content={<Tip />} />
+                <Bar dataKey="actual" name="Actual" radius={[3,3,0,0]} isAnimationActive animationDuration={900}>
+                  {fpandaMonthly.map((d, i) => <Cell key={i} fill={d.actual >= d.budget ? "#6366f1" : "#ef4444"} fillOpacity={0.85} />)}
+                </Bar>
+                <Line type="monotone" dataKey="budget" name="Budget" stroke="rgba(255,255,255,0.3)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      )}
+
+      {/* Nominal table */}
+      <Card className="overflow-hidden">
+        <div className="px-8 py-5 border-b flex items-center justify-between" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div>
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>
+              {view === "pl" ? "P&L Nominals" : "Balance Sheet Nominals"}
+            </p>
+            <p className="text-white font-bold text-sm mt-0.5">Nominal-by-nominal · March 2025</p>
+          </div>
+          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.25)" }}>Click category to expand / collapse</p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs min-w-[960px]">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                {[
+                  { label: "Code",        align: "left"  },
+                  { label: "Nominal",     align: "left"  },
+                  { label: "Actuals",     align: "right" },
+                  { label: "Budget",      align: "right" },
+                  { label: "Var",         align: "right" },
+                  { label: "Var %",       align: "right" },
+                  { label: "Reason",      align: "left"  },
+                  { label: "Commentary",  align: "left"  },
+                  { label: "YTD Actuals", align: "right" },
+                  { label: "YTD Budget",  align: "right" },
+                  { label: "YTD Var",     align: "right" },
+                ].map(h => (
+                  <th key={h.label}
+                    className={`px-5 py-3 text-[9px] font-bold tracking-widest uppercase ${h.align === "right" ? "text-right" : "text-left"}`}
+                    style={{ color: "rgba(255,255,255,0.2)" }}>
+                    {h.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {visibleRows.map((n, i) => {
+                const varAmt  = n.actuals - n.budget;
+                const varPct  = n.budget !== 0 ? (varAmt / n.budget) * 100 : 0;
+                const ytdVar  = n.ytdActuals - n.ytdBudget;
+                const vc      = varColor(varAmt, n.isRevenue);
+                const ytdVC   = varColor(ytdVar, n.isRevenue);
+                const isHead  = n.isHeader;
+
+                return (
+                  <tr key={n.code}
+                    onClick={isHead ? () => toggleSection(n.code) : undefined}
+                    style={{
+                      borderBottom: "1px solid rgba(255,255,255,0.04)",
+                      background: isHead ? "rgba(255,255,255,0.04)" : undefined,
+                      cursor: isHead ? "pointer" : undefined,
+                    }}>
+                    {/* Code */}
+                    <td className="px-5 py-3 tabular-nums font-mono text-[10px]"
+                      style={{ color: "rgba(255,255,255,0.25)" }}>
+                      {isHead && (
+                        <span className="mr-1 text-[8px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+                          {collapsed[n.code] ? "▶" : "▼"}
+                        </span>
+                      )}
+                      {n.code}
+                    </td>
+
+                    {/* Nominal */}
+                    <td className="px-5 py-3" style={{ color: isHead ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.55)", fontWeight: isHead ? 700 : 400, paddingLeft: isHead ? undefined : "2rem" }}>
+                      {n.name}
+                    </td>
+
+                    {/* Actuals */}
+                    <td className="px-5 py-3 text-right tabular-nums font-bold text-white">
+                      £{n.actuals.toLocaleString()}k
+                    </td>
+
+                    {/* Budget */}
+                    <td className="px-5 py-3 text-right tabular-nums" style={{ color: "rgba(255,255,255,0.35)" }}>
+                      £{n.budget.toLocaleString()}k
+                    </td>
+
+                    {/* Var */}
+                    <td className="px-5 py-3 text-right tabular-nums font-semibold" style={{ color: vc }}>
+                      {varAmt >= 0 ? "+" : ""}£{varAmt.toLocaleString()}k
+                    </td>
+
+                    {/* Var % */}
+                    <td className="px-5 py-3 text-right tabular-nums font-semibold" style={{ color: vc }}>
+                      {n.budget !== 0 ? `${varPct >= 0 ? "+" : ""}${varPct.toFixed(1)}%` : "—"}
+                    </td>
+
+                    {/* Reason */}
+                    <td className="px-5 py-3">
+                      {!isHead && (
+                        <select
+                          value={reasons[n.code] || ""}
+                          onChange={e => setReasons(p => ({ ...p, [n.code]: e.target.value as VarReason }))}
+                          onClick={e => e.stopPropagation()}
+                          className="rounded-lg px-2 py-1 text-[10px] font-semibold w-[120px]"
+                          style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.1)", outline: "none" }}>
+                          {VAR_REASONS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
+                        </select>
+                      )}
+                    </td>
+
+                    {/* Commentary */}
+                    <td className="px-5 py-3">
+                      {!isHead && (
+                        <input
+                          type="text"
+                          placeholder="Add note…"
+                          value={comments[n.code] || ""}
+                          onChange={e => setComments(p => ({ ...p, [n.code]: e.target.value }))}
+                          onClick={e => e.stopPropagation()}
+                          className="rounded-lg px-3 py-1 text-[10px] w-[180px]"
+                          style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.08)", outline: "none" }}
+                        />
+                      )}
+                    </td>
+
+                    {/* YTD Actuals */}
+                    <td className="px-5 py-3 text-right tabular-nums" style={{ color: "rgba(255,255,255,0.5)" }}>
+                      £{n.ytdActuals.toLocaleString()}k
+                    </td>
+
+                    {/* YTD Budget */}
+                    <td className="px-5 py-3 text-right tabular-nums" style={{ color: "rgba(255,255,255,0.3)" }}>
+                      £{n.ytdBudget.toLocaleString()}k
+                    </td>
+
+                    {/* YTD Var */}
+                    <td className="px-5 py-3 text-right tabular-nums font-semibold" style={{ color: ytdVC }}>
+                      {ytdVar >= 0 ? "+" : ""}£{ytdVar.toLocaleString()}k
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
    SECTION: REPORTS
 ═══════════════════════════════════════════════════════════ */
 
@@ -2000,7 +2419,7 @@ function Reports() {
    ROOT
 ═══════════════════════════════════════════════════════════ */
 
-type Tab = "overview" | "revenue" | "bank" | "people" | "debtors" | "creditors" | "assets" | "reports";
+type Tab = "overview" | "revenue" | "bank" | "people" | "debtors" | "creditors" | "assets" | "fpanda" | "reports";
 
 const TABS: { id: Tab; label: string; dot?: string }[] = [
   { id: "overview",   label: "Overview"   },
@@ -2010,6 +2429,7 @@ const TABS: { id: Tab; label: string; dot?: string }[] = [
   { id: "debtors",    label: "Debtors",   dot: "#ef4444" },
   { id: "creditors",  label: "Creditors", dot: "#f97316" },
   { id: "assets",     label: "Assets"     },
+  { id: "fpanda",     label: "FP&A"       },
   { id: "reports",    label: "Reports"    },
 ];
 
@@ -2063,6 +2483,7 @@ export default function DashboardPage() {
         {tab === "debtors"   && <Debtors />}
         {tab === "creditors" && <Creditors />}
         {tab === "assets"    && <Assets />}
+        {tab === "fpanda"    && <FPandA />}
         {tab === "reports"   && <Reports />}
       </main>
     </div>
