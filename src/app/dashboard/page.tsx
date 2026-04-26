@@ -6,7 +6,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer,
   ReferenceLine, Cell, CartesianGrid, LineChart, Line,
 } from "recharts";
-import { Download, ChevronRight, ArrowUpRight, ArrowDownRight, SlidersHorizontal } from "lucide-react";
+import { Download, ChevronRight, ArrowUpRight, ArrowDownRight, SlidersHorizontal, Building2, Plus, X } from "lucide-react";
 import Link from "next/link";
 import RevenueTrendChart from "../components/RevenueTrendChart";
 
@@ -113,6 +113,88 @@ const pl = [
   { label: "Net Profit",       value: 1263, prev: 1162, pct: 28.1,  isGross: false, isEbitda: false, isNet: true  },
 ];
 
+/* ─── Bank data ─────────────────────────────────────────── */
+const bankAccounts = [
+  { name: "Current Account", bank: "HSBC",     sort: "40-22-15", balance: 6840, prev: 6210, accent: "#6366f1" },
+  { name: "Client Account",  bank: "Barclays",  sort: "20-58-63", balance: 1820, prev: 1950, accent: "#06b6d4" },
+  { name: "Reserve Account", bank: "Lloyds",    sort: "30-96-87", balance:  540, prev:  540, accent: "#10b981" },
+];
+const totalBankBalance = bankAccounts.reduce((s, a) => s + a.balance, 0);
+
+const cashTrend30 = [
+  { d: "3 Mar",  bal: 7820 }, { d: "7 Mar",  bal: 7640 }, { d: "11 Mar", bal: 8190 },
+  { d: "14 Mar", bal: 8050 }, { d: "18 Mar", bal: 8380 }, { d: "21 Mar", bal: 8760 },
+  { d: "25 Mar", bal: 9100 }, { d: "28 Mar", bal: 9200 }, { d: "31 Mar", bal: 9200 },
+];
+
+const upcomingPayments = [
+  { desc: "PAYE / NI — March Payroll",   due: "5 Apr",  amount: 487, color: "#8b5cf6" },
+  { desc: "Spaces Group — Office Rent",  due: "7 Apr",  amount:  95, color: "#06b6d4" },
+  { desc: "HMRC VAT — Q1 Return",        due: "7 Apr",  amount: 218, color: "#ef4444" },
+  { desc: "Zurich — PI Insurance",       due: "15 Apr", amount:  44, color: "#f59e0b" },
+  { desc: "Software Licences (bundle)",  due: "18 Apr", amount:  28, color: "#6366f1" },
+];
+
+/* ─── Creditor data ─────────────────────────────────────── */
+const creditorBuckets = [
+  { label: "Current  0–30d", short: "0–30d", value: 1240, color: "#22c55e", pct: 34.7 },
+  { label: "31–60 days",     short: "31–60d", value:  890, color: "#eab308", pct: 24.9 },
+  { label: "61–90 days",     short: "61–90d", value:  620, color: "#f97316", pct: 17.3 },
+  { label: "91+ days",       short: "91+d",   value:  825, color: "#ef4444", pct: 23.1 },
+];
+const totalCreditors = creditorBuckets.reduce((s, b) => s + b.value, 0);
+
+const creditorTrend = [
+  { m: "Oct", c0: 1100, c31: 780, c61: 540, c91: 690 },
+  { m: "Nov", c0: 1150, c31: 820, c61: 570, c91: 730 },
+  { m: "Dec", c0: 1200, c31: 850, c61: 590, c91: 780 },
+  { m: "Jan", c0: 1210, c31: 860, c61: 600, c91: 800 },
+  { m: "Feb", c0: 1230, c31: 875, c61: 610, c91: 815 },
+  { m: "Mar", c0: 1240, c31: 890, c61: 620, c91: 825 },
+];
+
+const topCreditors = [
+  { name: "HMRC",               balance: 487, overdue:  0, nextDue: "7 Apr 25",  sector: "Tax Authority",  color: "#ef4444" },
+  { name: "Spaces Group Ltd",    balance: 285, overdue:  0, nextDue: "7 Apr 25",  sector: "Property",       color: "#06b6d4" },
+  { name: "Reed Consulting",     balance: 198, overdue: 65, nextDue: "15 Apr 25", sector: "Recruitment",    color: "#f97316" },
+  { name: "Zurich Insurance",    balance: 144, overdue:  0, nextDue: "15 Apr 25", sector: "Insurance",      color: "#eab308" },
+  { name: "Axiom Technology",    balance: 122, overdue: 44, nextDue: "30 Apr 25", sector: "Technology",     color: "#8b5cf6" },
+  { name: "Clifford Chance LLP", balance:  98, overdue: 98, nextDue: "Overdue",   sector: "Legal",          color: "#f87171" },
+];
+
+/* ─── Fixed Asset data ──────────────────────────────────── */
+type Asset = {
+  id: number; name: string; category: string; purchaseDate: string;
+  cost: number; usefulLife: number; depMethod: "straight-line" | "reducing-balance";
+};
+
+const CAT_COLORS: Record<string, string> = {
+  "IT": "#6366f1", "Leasehold": "#06b6d4", "Plant & Equipment": "#f59e0b",
+  "Furniture": "#10b981", "Vehicles": "#8b5cf6",
+};
+const ASSET_CATS = Object.keys(CAT_COLORS);
+
+const DEMO_ASSETS: Asset[] = [
+  { id: 1, name: "Dell Laptop Fleet (×28)",  category: "IT",               purchaseDate: "2023-04-01", cost:  56000, usefulLife: 3,  depMethod: "straight-line"    },
+  { id: 2, name: "Cisco VOIP System",        category: "IT",               purchaseDate: "2022-10-01", cost:  18500, usefulLife: 5,  depMethod: "straight-line"    },
+  { id: 3, name: "Office Fit-Out — Floor 4", category: "Leasehold",        purchaseDate: "2021-06-01", cost: 280000, usefulLife: 10, depMethod: "straight-line"    },
+  { id: 4, name: "Boardroom AV System",      category: "Plant & Equipment", purchaseDate: "2023-01-01", cost:  24000, usefulLife: 5,  depMethod: "straight-line"    },
+  { id: 5, name: "Reception Furniture",      category: "Furniture",        purchaseDate: "2021-06-01", cost:  42000, usefulLife: 8,  depMethod: "straight-line"    },
+  { id: 6, name: "BMW 5 Series (×2)",        category: "Vehicles",         purchaseDate: "2024-01-01", cost:  88000, usefulLife: 4,  depMethod: "reducing-balance" },
+];
+
+function calcNBV(a: Asset) {
+  const years = Math.max(0, (new Date("2025-03-31").getTime() - new Date(a.purchaseDate).getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+  if (a.depMethod === "straight-line") {
+    const annual = a.cost / a.usefulLife;
+    const accum  = Math.min(annual * years, a.cost);
+    return { annual: Math.round(annual), accum: Math.round(accum), nbv: Math.round(a.cost - accum) };
+  }
+  const nbv   = a.cost * Math.pow(0.75, years);
+  const accum = a.cost - nbv;
+  return { annual: Math.round(nbv * 0.25), accum: Math.round(accum), nbv: Math.round(nbv) };
+}
+
 /* ═══════════════════════════════════════════════════════════
    ANIMATION
 ═══════════════════════════════════════════════════════════ */
@@ -218,8 +300,10 @@ function Gauge({ value, target, label }: { value: number; target: number; label:
           fontFamily="ui-monospace,monospace" fill={color}>{value}%</text>
         <text x={cx} y={cy + 14} textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.3)"
           letterSpacing="0.1em" style={{ textTransform: "uppercase" }}>{label}</text>
-        <text x={T.x} y={T.y - 7} textAnchor="middle" fontSize="8" fill="rgba(255,255,255,0.35)">{target}%</text>
       </svg>
+      <p className="text-[10px] mt-1 tabular-nums" style={{ color: "rgba(255,255,255,0.3)" }}>
+        Target <span style={{ color: "rgba(255,255,255,0.55)", fontWeight: 700 }}>{target}%</span>
+      </p>
     </div>
   );
 }
@@ -270,6 +354,27 @@ function Pills<T extends string>({ options, active, onChange, color = "#6366f1" 
             ? { background: color, color: "#fff", boxShadow: `0 0 12px ${color}40` }
             : { color: "rgba(255,255,255,0.35)" }}>
           {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Chart type toggle — reusable across sections
+type CType = "area" | "line" | "bar";
+function ChartTypeToggle({ type, setType }: { type: CType; setType: (t: CType) => void }) {
+  const opts: { id: CType; icon: string }[] = [
+    { id: "area", icon: "∿" }, { id: "line", icon: "—" }, { id: "bar", icon: "▊" },
+  ];
+  return (
+    <div className="flex gap-1">
+      {opts.map(o => (
+        <button key={o.id} onClick={() => setType(o.id)}
+          className="px-2.5 py-1 rounded-lg text-[9px] font-bold tracking-wider transition-all"
+          style={type === o.id
+            ? { background: "rgba(99,102,241,0.18)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.3)" }
+            : { color: "rgba(255,255,255,0.22)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          {o.icon}
         </button>
       ))}
     </div>
@@ -427,6 +532,7 @@ function MetricProgress({ p }: { p: ProgressConfig }) {
    SECTION: OVERVIEW
 ═══════════════════════════════════════════════════════════ */
 function Overview() {
+  const [ebitdaType, setEbitdaType] = useState<CType>("area");
   const rev  = useCountUp(12800, 1600, 200);
   const marg = useCountUp(31.2,  1400, 400);
   const cash = useCountUp(9.2,   1400, 600);
@@ -490,20 +596,40 @@ function Overview() {
             </div>
             <p className="mt-3 text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>On track vs £57.6M annual target · 22.2% delivered</p>
           </div>
-          <div className="px-8 py-10 lg:px-10 flex flex-col justify-center">
-            <RevenueTrendChart />
+          <div className="px-10 py-14 flex flex-col justify-center gap-6">
+            {[
+              { label: "vs Prior Year",       value: "+44%",   note: "Q1 FY25 vs Q1 FY24",            color: "#6ee7b7" },
+              { label: "vs Annual Budget",     value: "–£0.8M", note: "1.4% below annual budget pace",  color: "#f87171" },
+              { label: "Annual Target Progress", value: "22.2%", note: "of £57.6M annual target",       color: "#a5b4fc" },
+            ].map((s, i) => (
+              <div key={i}>
+                {i > 0 && <div className="mb-6 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />}
+                <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>{s.label}</p>
+                <p className="text-[2.2rem] font-black tabular-nums mt-1" style={{ color: s.color }}>{s.value}</p>
+                <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>{s.note}</p>
+                {i === 2 && (
+                  <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                    <div className="h-full rounded-full" style={{ width: "22.2%", background: "#6366f1", transition: "width 1.4s cubic-bezier(0.16,1,0.3,1)" }} />
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
+      </div>
+
+      {/* Revenue Trend — full width */}
+      <div className="rounded-2xl p-7" style={{ background: "#0d1530", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <RevenueTrendChart />
       </div>
 
       {/* KPI row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((k, i) => (
           <Card key={i} className="p-6 flex flex-col">
-            {/* label + sparkline */}
+            {/* label */}
             <div className="flex items-start justify-between mb-3">
               <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>{k.label}</p>
-              <Spark data={k.spark} color={k.sparkColor} />
             </div>
             {/* main value */}
             <p className="text-[2.2rem] font-black text-white tabular-nums leading-none mb-3">{k.display}</p>
@@ -537,26 +663,49 @@ function Overview() {
               <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>EBITDA Margin</p>
               <p className="text-white font-bold text-sm mt-0.5">15-month trend</p>
             </div>
-            <div className="text-right">
-              <p className="text-[2rem] font-black text-white tabular-nums">32.1%</p>
-              <p className="text-emerald-400 text-xs font-semibold">+3.2pp YoY</p>
+            <div className="flex items-center gap-3">
+              <ChartTypeToggle type={ebitdaType} setType={setEbitdaType} />
+              <div className="text-right">
+                <p className="text-[2rem] font-black text-white tabular-nums">32.1%</p>
+                <p className="text-emerald-400 text-xs font-semibold">+3.2pp YoY</p>
+              </div>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="eG" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22c55e" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
-              <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
-              <YAxis domain={[22, 34]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} width={30} />
-              <Tooltip content={<Tip />} />
-              <ReferenceLine y={28} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
-              <Area type="monotone" dataKey="ebitda" stroke="#22c55e" strokeWidth={2.5} fill="url(#eG)" dot={false} name="EBITDA %" isAnimationActive animationDuration={1400} />
-            </AreaChart>
+            {ebitdaType === "bar" ? (
+              <BarChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
+                <YAxis domain={[22, 34]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} width={30} />
+                <Tooltip content={<Tip />} />
+                <ReferenceLine y={28} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
+                <Bar dataKey="ebitda" fill="#22c55e" fillOpacity={0.8} radius={[3, 3, 0, 0]} name="EBITDA %" isAnimationActive animationDuration={900} />
+              </BarChart>
+            ) : ebitdaType === "line" ? (
+              <LineChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
+                <YAxis domain={[22, 34]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} width={30} />
+                <Tooltip content={<Tip />} />
+                <ReferenceLine y={28} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
+                <Line type="monotone" dataKey="ebitda" stroke="#22c55e" strokeWidth={2.5} dot={false} name="EBITDA %" isAnimationActive animationDuration={1200} />
+              </LineChart>
+            ) : (
+              <AreaChart data={monthly} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                <defs>
+                  <linearGradient id="eG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+                <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} interval={2} />
+                <YAxis domain={[22, 34]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} tickFormatter={v => `${v}%`} width={30} />
+                <Tooltip content={<Tip />} />
+                <ReferenceLine y={28} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
+                <Area type="monotone" dataKey="ebitda" stroke="#22c55e" strokeWidth={2.5} fill="url(#eG)" dot={false} name="EBITDA %" isAnimationActive animationDuration={1400} />
+              </AreaChart>
+            )}
           </ResponsiveContainer>
         </Card>
 
@@ -821,6 +970,7 @@ function Revenue() {
 ═══════════════════════════════════════════════════════════ */
 
 function People() {
+  const [hcType, setHcType] = useState<CType>("area");
   const avgUtil = grades.reduce((s, g) => s + g.util, 0) / grades.length;
   const avgTgt  = grades.reduce((s, g) => s + g.targetUtil, 0) / grades.length;
 
@@ -848,12 +998,27 @@ function People() {
           <Gauge value={parseFloat(avgUtil.toFixed(1))} target={parseFloat(avgTgt.toFixed(1))} label="avg utilisation" />
           <div className="mt-5 grid grid-cols-2 gap-3 w-full">
             {[
-              { label: "Above target", count: grades.filter(g => g.util >= g.targetUtil).length, color: "#22c55e" },
-              { label: "Below target", count: grades.filter(g => g.util < g.targetUtil).length,  color: "#ef4444" },
+              { label: "Above target", grades: grades.filter(g => g.util >= g.targetUtil), color: "#22c55e" },
+              { label: "Below target", grades: grades.filter(g => g.util < g.targetUtil),  color: "#ef4444" },
             ].map((s, i) => (
-              <div key={i} className="rounded-xl p-3 text-center" style={{ background: `${s.color}12`, border: `1px solid ${s.color}20` }}>
-                <p className="text-[1.5rem] font-black tabular-nums" style={{ color: s.color }}>{s.count}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{s.label}</p>
+              <div key={i} className="rounded-xl p-3" style={{ background: `${s.color}12`, border: `1px solid ${s.color}20` }}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>{s.label}</p>
+                  <p className="text-[1.3rem] font-black tabular-nums" style={{ color: s.color }}>{s.grades.length}</p>
+                </div>
+                <div className="space-y-0.5">
+                  {s.grades.map(g => {
+                    const diff = g.util - g.targetUtil;
+                    return (
+                      <div key={g.grade} className="flex items-center justify-between">
+                        <span className="text-[9px]" style={{ color: "rgba(255,255,255,0.4)" }}>{g.grade}</span>
+                        <span className="text-[9px] font-bold tabular-nums" style={{ color: s.color }}>
+                          {diff >= 0 ? "+" : ""}{diff}pp
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </div>
@@ -892,25 +1057,47 @@ function People() {
       {/* Headcount trend + grade table */}
       <div className="grid lg:grid-cols-5 gap-4">
         <Card className="lg:col-span-3 p-7">
-          <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Headcount Trend</p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Headcount Trend</p>
+            <ChartTypeToggle type={hcType} setType={setHcType} />
+          </div>
           <p className="text-white font-bold text-sm mb-6">Last 6 months</p>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={[{m:"Oct",hc:128},{m:"Nov",hc:131},{m:"Dec",hc:130},{m:"Jan",hc:134},{m:"Feb",hc:138},{m:"Mar",hc:142}]}
-              margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="hcG" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+          {(() => {
+            const hcData = [{m:"Oct",hc:128},{m:"Nov",hc:131},{m:"Dec",hc:130},{m:"Jan",hc:134},{m:"Feb",hc:138},{m:"Mar",hc:142}];
+            const common = { margin: { top: 5, right: 5, bottom: 0, left: 0 } };
+            const axes = <>
               <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
               <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
               <YAxis domain={[120, 150]} tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} width={28} />
               <Tooltip content={<Tip />} />
-              <Area type="monotone" dataKey="hc" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#hcG)"
-                dot={{ fill: "#8b5cf6", r: 3, strokeWidth: 0 }} name="Headcount" isAnimationActive animationDuration={1200} />
-            </AreaChart>
-          </ResponsiveContainer>
+            </>;
+            return (
+              <ResponsiveContainer width="100%" height={180}>
+                {hcType === "bar" ? (
+                  <BarChart data={hcData} {...common}>
+                    {axes}
+                    <Bar dataKey="hc" fill="#8b5cf6" fillOpacity={0.8} radius={[3,3,0,0]} name="Headcount" isAnimationActive animationDuration={900} />
+                  </BarChart>
+                ) : hcType === "line" ? (
+                  <LineChart data={hcData} {...common}>
+                    {axes}
+                    <Line type="monotone" dataKey="hc" stroke="#8b5cf6" strokeWidth={2.5} dot={{ fill: "#8b5cf6", r: 3, strokeWidth: 0 }} name="Headcount" isAnimationActive animationDuration={1200} />
+                  </LineChart>
+                ) : (
+                  <AreaChart data={hcData} {...common}>
+                    <defs>
+                      <linearGradient id="hcG" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    {axes}
+                    <Area type="monotone" dataKey="hc" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#hcG)" dot={{ fill: "#8b5cf6", r: 3, strokeWidth: 0 }} name="Headcount" isAnimationActive animationDuration={1200} />
+                  </AreaChart>
+                )}
+              </ResponsiveContainer>
+            );
+          })()}
         </Card>
 
         <Card className="lg:col-span-2 overflow-hidden">
@@ -1171,6 +1358,565 @@ function Debtors() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   SECTION: BANK
+═══════════════════════════════════════════════════════════ */
+function Bank() {
+  const [cashChartType, setCashChartType] = useState<CType>("area");
+  const totalUpcoming = upcomingPayments.reduce((s, p) => s + p.amount, 0);
+  const runwayMonths  = (totalBankBalance / (333 + 875)).toFixed(1);
+
+  const cashAxes = (
+    <>
+      <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+      <XAxis dataKey="d" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 8 }} axisLine={false} tickLine={false} />
+      <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
+        tickFormatter={v => `£${(v / 1000).toFixed(1)}M`} width={40} />
+      <Tooltip content={<Tip />} />
+    </>
+  );
+
+  return (
+    <div className="space-y-5">
+      {/* Account cards */}
+      <div className="grid grid-cols-3 gap-4">
+        {bankAccounts.map((a, i) => {
+          const diff = a.balance - a.prev;
+          const up   = diff >= 0;
+          return (
+            <div key={i} className="rounded-2xl p-7 relative overflow-hidden"
+              style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: a.accent }} />
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>{a.name}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.25)" }}>{a.bank} · Sort {a.sort}</p>
+                </div>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${a.accent}18` }}>
+                  <Building2 size={14} style={{ color: a.accent }} />
+                </div>
+              </div>
+              <p className="text-[2.2rem] font-black text-white tabular-nums leading-none">
+                £{(a.balance / 1000).toFixed(2)}M
+              </p>
+              <div className={`flex items-center gap-1 mt-2 text-[11px] font-semibold ${up ? "text-emerald-400" : "text-rose-400"}`}>
+                {up ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                £{Math.abs(diff).toLocaleString()}k MoM
+              </div>
+              <p className="text-[9px] mt-2" style={{ color: "rgba(255,255,255,0.2)" }}>Reconciled 31 Mar 2025</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Cash trend + upcoming */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        <Card className="lg:col-span-3 p-7">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Combined Balance</p>
+              <p className="text-white font-bold text-sm mt-0.5">30-day movement — March 2025</p>
+            </div>
+            <ChartTypeToggle type={cashChartType} setType={setCashChartType} />
+          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            {cashChartType === "bar" ? (
+              <BarChart data={cashTrend30} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                {cashAxes}
+                <Bar dataKey="bal" fill="#6366f1" fillOpacity={0.8} radius={[3,3,0,0]} name="Balance" isAnimationActive animationDuration={900} />
+              </BarChart>
+            ) : cashChartType === "line" ? (
+              <LineChart data={cashTrend30} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                {cashAxes}
+                <Line type="monotone" dataKey="bal" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: "#6366f1", r: 3, strokeWidth: 0 }} name="Balance" isAnimationActive animationDuration={1200} />
+              </LineChart>
+            ) : (
+              <AreaChart data={cashTrend30} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                <defs>
+                  <linearGradient id="bankG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                {cashAxes}
+                <Area type="monotone" dataKey="bal" stroke="#6366f1" strokeWidth={2.5} fill="url(#bankG)"
+                  dot={{ fill: "#6366f1", r: 2.5, strokeWidth: 0 }} name="Balance" isAnimationActive animationDuration={1200} />
+              </AreaChart>
+            )}
+          </ResponsiveContainer>
+        </Card>
+
+        <Card className="lg:col-span-2 p-7">
+          <div className="mb-5">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Upcoming Payments</p>
+            <p className="text-white font-bold text-sm mt-0.5">Next 30 days · £{(totalUpcoming / 1000).toFixed(3)}M total</p>
+          </div>
+          <div className="space-y-1">
+            {upcomingPayments.map((p, i) => (
+              <div key={i} className="flex items-center gap-3 py-2.5 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-semibold text-white truncate">{p.desc}</p>
+                  <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>Due {p.due}</p>
+                </div>
+                <p className="text-sm font-bold tabular-nums shrink-0" style={{ color: p.color }}>–£{p.amount}k</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Summary stats */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: "Total Cash",    value: `£${(totalBankBalance / 1000).toFixed(2)}M`, note: "Combined across all accounts", color: "#6366f1" },
+          { label: "Cash Runway",   value: `${runwayMonths} months`,                     note: "At current overhead rate",     color: "#10b981" },
+          { label: "Payments Due",  value: `£${(totalUpcoming / 1000).toFixed(3)}M`,    note: "Due in next 30 days",          color: "#f59e0b" },
+        ].map((c, i) => (
+          <Card key={i} className="p-7">
+            <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.3)" }}>{c.label}</p>
+            <p className="text-[2rem] font-black tabular-nums leading-none" style={{ color: c.color }}>{c.value}</p>
+            <p className="mt-2 text-[11px]" style={{ color: "rgba(255,255,255,0.35)" }}>{c.note}</p>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION: ASSETS
+═══════════════════════════════════════════════════════════ */
+function Assets() {
+  const [assets, setAssets] = useState<Asset[]>(DEMO_ASSETS);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({
+    name: "", category: "IT", purchaseDate: "", cost: "", usefulLife: "", depMethod: "straight-line" as Asset["depMethod"],
+  });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("qx_assets");
+      if (saved) setAssets(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  function saveAssets(updated: Asset[]) {
+    setAssets(updated);
+    try { localStorage.setItem("qx_assets", JSON.stringify(updated)); } catch {}
+  }
+
+  function addAsset() {
+    if (!form.name || !form.purchaseDate || !form.cost || !form.usefulLife) return;
+    saveAssets([...assets, { id: Date.now(), name: form.name, category: form.category, purchaseDate: form.purchaseDate, cost: +form.cost, usefulLife: +form.usefulLife, depMethod: form.depMethod }]);
+    setShowForm(false);
+    setForm({ name: "", category: "IT", purchaseDate: "", cost: "", usefulLife: "", depMethod: "straight-line" });
+  }
+
+  const totals = assets.reduce((acc, a) => {
+    const { annual, accum, nbv } = calcNBV(a);
+    return { cost: acc.cost + a.cost, accum: acc.accum + accum, nbv: acc.nbv + nbv, annual: acc.annual + annual };
+  }, { cost: 0, accum: 0, nbv: 0, annual: 0 });
+
+  const catData = ASSET_CATS
+    .map(c => ({ label: c, color: CAT_COLORS[c], value: assets.filter(a => a.category === c).reduce((s, a) => s + calcNBV(a).nbv, 0) }))
+    .filter(c => c.value > 0);
+
+  const inp: React.CSSProperties = {
+    width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: 8, padding: "8px 12px", color: "rgba(255,255,255,0.85)", fontSize: 12, outline: "none",
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Summary */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: "Total Cost",        value: `£${(totals.cost  / 1000).toFixed(0)}k`, accent: "#6366f1" },
+          { label: "Total NBV",         value: `£${(totals.nbv   / 1000).toFixed(0)}k`, accent: "#22c55e" },
+          { label: "Accumulated Dep",   value: `£${(totals.accum / 1000).toFixed(0)}k`, accent: "#eab308" },
+          { label: "Annual Dep Charge", value: `£${(totals.annual/ 1000).toFixed(0)}k`, accent: "#f97316" },
+        ].map((s, i) => (
+          <div key={i} className="rounded-2xl p-6 relative overflow-hidden"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: s.accent }} />
+            <p className="text-[10px] font-bold tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.3)" }}>{s.label}</p>
+            <p className="text-[1.8rem] font-black text-white tabular-nums leading-none">{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Register + NBV donut */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        <Card className="lg:col-span-3 overflow-hidden">
+          <div className="px-7 py-5 border-b flex items-center justify-between" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <div>
+              <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Fixed Asset Register</p>
+              <p className="text-white font-bold text-sm mt-0.5">{assets.length} assets · As at 31 Mar 2025</p>
+            </div>
+            <button onClick={() => setShowForm(v => !v)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-bold transition-all"
+              style={{ background: "rgba(99,102,241,0.18)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.3)" }}>
+              <Plus size={11} /> Add Asset
+            </button>
+          </div>
+
+          {showForm && (
+            <div className="px-7 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(99,102,241,0.05)" }}>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Asset Name</p>
+                  <input style={inp} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. HP ProBook Fleet (×12)" />
+                </div>
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Category</p>
+                  <select style={inp} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                    {ASSET_CATS.map(c => <option key={c} value={c} style={{ background: "#0d1530" }}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Purchase Date</p>
+                  <input type="date" style={inp} value={form.purchaseDate} onChange={e => setForm(f => ({ ...f, purchaseDate: e.target.value }))} />
+                </div>
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Cost (£)</p>
+                  <input type="number" style={inp} value={form.cost} onChange={e => setForm(f => ({ ...f, cost: e.target.value }))} placeholder="25000" />
+                </div>
+                <div>
+                  <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Useful Life (years)</p>
+                  <input type="number" style={inp} value={form.usefulLife} onChange={e => setForm(f => ({ ...f, usefulLife: e.target.value }))} placeholder="5" />
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[9px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.25)" }}>Depreciation Method</p>
+                  <select style={inp} value={form.depMethod} onChange={e => setForm(f => ({ ...f, depMethod: e.target.value as Asset["depMethod"] }))}>
+                    <option value="straight-line" style={{ background: "#0d1530" }}>Straight-Line</option>
+                    <option value="reducing-balance" style={{ background: "#0d1530" }}>Reducing Balance (25% p.a.)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <button onClick={addAsset}
+                  className="px-5 py-2 rounded-xl text-[11px] font-bold"
+                  style={{ background: "rgba(99,102,241,0.25)", color: "#a5b4fc", border: "1px solid rgba(99,102,241,0.4)" }}>
+                  Add to Register
+                </button>
+                <button onClick={() => setShowForm(false)}
+                  className="px-5 py-2 rounded-xl text-[11px] font-bold"
+                  style={{ color: "rgba(255,255,255,0.3)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  {["Asset", "Cost", "Accum Dep", "NBV", "Dep/yr", "Method", ""].map(h => (
+                    <th key={h} className={`px-4 py-3 text-[9px] font-bold tracking-widest uppercase ${h === "Asset" ? "text-left" : "text-right"}`}
+                      style={{ color: "rgba(255,255,255,0.2)" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {assets.map(a => {
+                  const { annual, accum, nbv } = calcNBV(a);
+                  const color = CAT_COLORS[a.category] || "#6366f1";
+                  return (
+                    <tr key={a.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.035)" }}>
+                      <td className="px-4 py-3.5">
+                        <p className="text-[11px] font-semibold text-white truncate max-w-[150px]">{a.name}</p>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: `${color}18`, color }}>{a.category}</span>
+                      </td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-white font-semibold text-[11px]">£{a.cost.toLocaleString()}</td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-[11px]" style={{ color: "#eab308" }}>£{accum.toLocaleString()}</td>
+                      <td className="px-4 py-3.5 text-right tabular-nums font-bold text-[11px]" style={{ color: nbv > 0 ? "#22c55e" : "rgba(255,255,255,0.3)" }}>£{nbv.toLocaleString()}</td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-[11px]" style={{ color: "rgba(255,255,255,0.4)" }}>£{annual.toLocaleString()}</td>
+                      <td className="px-4 py-3.5 text-right text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>
+                        {a.depMethod === "straight-line" ? "S/L" : "R/B"}
+                      </td>
+                      <td className="px-4 py-3.5 text-right">
+                        <button onClick={() => saveAssets(assets.filter(x => x.id !== a.id))}
+                          className="p-1 rounded-lg transition-all"
+                          style={{ color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                          <X size={10} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card className="lg:col-span-2 p-7">
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>NBV by Category</p>
+          <p className="text-white font-bold text-sm mb-6">Net book value mix</p>
+          <div className="flex flex-col items-center gap-5">
+            <div className="relative">
+              <Donut data={catData} size={150} sw={20} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <p className="text-[9px] tracking-wider uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Total NBV</p>
+                <p className="text-[0.95rem] font-black text-white tabular-nums">£{(totals.nbv / 1000).toFixed(0)}k</p>
+              </div>
+            </div>
+            <div className="w-full space-y-2.5">
+              {catData.map((c, i) => (
+                <div key={i} className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ background: c.color }} />
+                  <span className="text-[11px] flex-1 truncate" style={{ color: "rgba(255,255,255,0.5)" }}>{c.label}</span>
+                  <span className="text-[11px] font-bold text-white tabular-nums">£{(c.value / 1000).toFixed(0)}k</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION: CREDITORS
+═══════════════════════════════════════════════════════════ */
+function Creditors() {
+  const [earlyPayPct,    setEarlyPayPct]    = useState(20);
+  const [extendDays,     setExtendDays]     = useState(10);
+  const [clearOverduePct,setClearOverduePct]= useState(50);
+  const [agingType,      setAgingType]      = useState<CType>("bar");
+
+  const overdueBalance  = topCreditors.reduce((s, c) => s + c.overdue, 0);
+  const savedFromEarly  = Math.round(creditorBuckets[0].value * earlyPayPct / 100 * 0.025);
+  const deferredCash    = Math.round((extendDays / 30) * (creditorBuckets[1].value + creditorBuckets[2].value));
+  const clearedOverdue  = Math.round(overdueBalance * clearOverduePct / 100);
+  const netCashImpact   = deferredCash - clearedOverdue;
+
+  const agingAxes = (
+    <>
+      <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.04)" vertical={false} />
+      <XAxis dataKey="m" tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false} />
+      <YAxis tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 9 }} axisLine={false} tickLine={false}
+        tickFormatter={v => `£${(v / 1000).toFixed(0)}M`} width={36} />
+      <Tooltip content={<Tip />} />
+    </>
+  );
+
+  return (
+    <div className="space-y-5">
+      {/* Header stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Creditors",      value: `£${(totalCreditors / 1000).toFixed(2)}M`, delta: "+£0.12M MoM",    up: false, accent: "#f97316" },
+          { label: "Overdue (61+ days)",   value: `£${((creditorBuckets[2].value + creditorBuckets[3].value) / 1000).toFixed(2)}M`, delta: "Requires action", up: false, accent: "#ef4444" },
+          { label: "Payable Days (DPO)",   value: "52d",                                      delta: "+7d vs 45d target", up: false, accent: "#eab308" },
+          { label: "Invoices Outstanding", value: "43",                                        delta: "12 overdue",        up: false, accent: "#8b5cf6" },
+        ].map((s, i) => (
+          <div key={i} className="rounded-2xl p-6 relative overflow-hidden"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: s.accent }} />
+            <p className="text-[10px] font-bold tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.3)" }}>{s.label}</p>
+            <p className="text-[1.9rem] font-black text-white tabular-nums leading-none">{s.value}</p>
+            <div className={`flex items-center gap-1 mt-2 text-[11px] font-semibold ${s.up ? "text-emerald-400" : "text-rose-400"}`}>
+              {s.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}{s.delta}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Aging donut + trend */}
+      <div className="grid lg:grid-cols-5 gap-4">
+        <Card className="lg:col-span-2 p-7">
+          <p className="text-[10px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Creditor Aging Mix</p>
+          <p className="text-white font-bold text-sm mb-6">March 2025</p>
+          <div className="flex flex-col items-center gap-5">
+            <div className="relative">
+              <Donut data={creditorBuckets} size={170} sw={22} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <p className="text-[9px] tracking-wider uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Total</p>
+                <p className="text-[1.1rem] font-black text-white tabular-nums">£{(totalCreditors / 1000).toFixed(1)}M</p>
+              </div>
+            </div>
+            <div className="w-full space-y-3">
+              {creditorBuckets.map((b, i) => (
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full shrink-0" style={{ background: b.color }} />
+                      <span className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.5)" }}>{b.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-bold text-white tabular-nums">£{(b.value / 1000).toFixed(1)}M</span>
+                      <span className="text-[10px] tabular-nums w-10 text-right" style={{ color: "rgba(255,255,255,0.3)" }}>{b.pct}%</span>
+                    </div>
+                  </div>
+                  <div className="relative h-[4px] rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <div className="absolute inset-y-0 left-0 rounded-full"
+                      style={{ width: `${b.pct}%`, background: b.color, opacity: 0.75, transition: `width 1.1s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+
+        <Card className="lg:col-span-3 p-7">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Aging Trend</p>
+            <ChartTypeToggle type={agingType} setType={setAgingType} />
+          </div>
+          <p className="text-white font-bold text-sm mb-6">6-month view — Oct 24 to Mar 25</p>
+          <ResponsiveContainer width="100%" height={220}>
+            {agingType === "area" ? (
+              <AreaChart data={creditorTrend} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                <defs>
+                  {["#22c55e","#eab308","#f97316","#ef4444"].map((c,i) => (
+                    <linearGradient key={i} id={`cG${i}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={c} stopOpacity={0.3} />
+                      <stop offset="100%" stopColor={c} stopOpacity={0} />
+                    </linearGradient>
+                  ))}
+                </defs>
+                {agingAxes}
+                <Area dataKey="c0"  stackId="a" stroke="#22c55e" fill="url(#cG0)" name="0–30d"  isAnimationActive animationDuration={900} />
+                <Area dataKey="c31" stackId="a" stroke="#eab308" fill="url(#cG1)" name="31–60d" isAnimationActive animationDuration={900} />
+                <Area dataKey="c61" stackId="a" stroke="#f97316" fill="url(#cG2)" name="61–90d" isAnimationActive animationDuration={900} />
+                <Area dataKey="c91" stackId="a" stroke="#ef4444" fill="url(#cG3)" name="91+d"   isAnimationActive animationDuration={900} />
+              </AreaChart>
+            ) : agingType === "line" ? (
+              <LineChart data={creditorTrend} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                {agingAxes}
+                <Line dataKey="c0"  stroke="#22c55e" strokeWidth={2} dot={false} name="0–30d"  />
+                <Line dataKey="c31" stroke="#eab308" strokeWidth={2} dot={false} name="31–60d" />
+                <Line dataKey="c61" stroke="#f97316" strokeWidth={2} dot={false} name="61–90d" />
+                <Line dataKey="c91" stroke="#ef4444" strokeWidth={2} dot={false} name="91+d"   />
+              </LineChart>
+            ) : (
+              <BarChart data={creditorTrend} margin={{ top: 5, right: 5, bottom: 0, left: 0 }}>
+                {agingAxes}
+                <Bar dataKey="c0"  stackId="a" fill="#22c55e" fillOpacity={0.85} name="0–30d"  isAnimationActive animationDuration={900} />
+                <Bar dataKey="c31" stackId="a" fill="#eab308" fillOpacity={0.85} name="31–60d" isAnimationActive animationDuration={900} />
+                <Bar dataKey="c61" stackId="a" fill="#f97316" fillOpacity={0.85} name="61–90d" isAnimationActive animationDuration={900} />
+                <Bar dataKey="c91" stackId="a" fill="#ef4444" fillOpacity={0.9}  name="91+d"   isAnimationActive animationDuration={900} radius={[4,4,0,0]} />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
+          <div className="flex gap-4 mt-3 flex-wrap">
+            {[{ color: "#22c55e", l: "0–30d" }, { color: "#eab308", l: "31–60d" }, { color: "#f97316", l: "61–90d" }, { color: "#ef4444", l: "91+d" }].map(lg => (
+              <div key={lg.l} className="flex items-center gap-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <div className="w-2 h-2 rounded-full" style={{ background: lg.color }} />{lg.l}
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Top Creditors table */}
+      <Card className="overflow-hidden">
+        <div className="px-7 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Top Creditors</p>
+          <p className="text-white font-bold text-sm mt-0.5">By outstanding balance — March 2025</p>
+        </div>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              {["Creditor", "Sector", "Balance", "Overdue", "Next Due", ""].map(h => (
+                <th key={h} className={`px-7 py-3 text-[9px] font-bold tracking-widest uppercase ${h === "Creditor" || h === "Sector" ? "text-left" : "text-right"}`}
+                  style={{ color: "rgba(255,255,255,0.2)" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {topCreditors.map((c, i) => (
+              <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.035)" }}>
+                <td className="px-7 py-3.5 font-semibold text-white">{c.name}</td>
+                <td className="px-7 py-3.5 text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>{c.sector}</td>
+                <td className="px-7 py-3.5 text-right tabular-nums font-bold text-white">£{c.balance}k</td>
+                <td className={`px-7 py-3.5 text-right tabular-nums font-semibold ${c.overdue > 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                  {c.overdue > 0 ? `£${c.overdue}k` : "—"}
+                </td>
+                <td className="px-7 py-3.5 text-right text-[11px]"
+                  style={{ color: c.nextDue === "Overdue" ? "#f87171" : "rgba(255,255,255,0.4)", fontWeight: c.nextDue === "Overdue" ? 700 : 400 }}>
+                  {c.nextDue}
+                </td>
+                <td className="px-7 py-3.5">
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", minWidth: 60 }}>
+                    <div className="h-full rounded-full" style={{ width: `${(c.balance / topCreditors[0].balance) * 100}%`, background: c.color, opacity: 0.8 }} />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+
+      {/* Payment optimisation tool */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="px-7 py-5 border-b flex items-center gap-3" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <SlidersHorizontal size={14} style={{ color: "rgba(255,255,255,0.4)" }} />
+          <div>
+            <p className="text-[10px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>Payment Optimisation Tool</p>
+            <p className="text-white font-bold text-sm mt-0.5">Model payment strategy to optimise cash flow</p>
+          </div>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-0 divide-x" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="p-7 space-y-8">
+            {[
+              { label: "Early payment — take discount", note: "2.5% discount on current balance paid early", min: 0, max: 80, val: earlyPayPct, set: setEarlyPayPct, color: "#22c55e", result: `+£${savedFromEarly}k saving from discounts`, suffix: "%" },
+              { label: "Negotiate extended terms", note: "Defer 31–90d payables by additional days", min: 0, max: 30, val: extendDays, set: setExtendDays, color: "#6366f1", result: `+£${(deferredCash / 1000).toFixed(2)}M deferred`, suffix: "d" },
+              { label: "Clear overdue payables", note: `Overdue balance: £${overdueBalance}k — protect supplier relationships`, min: 0, max: 100, val: clearOverduePct, set: setClearOverduePct, color: "#f97316", result: `£${clearedOverdue}k cleared`, suffix: "%" },
+            ].map((s, i) => (
+              <div key={i}>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="text-sm font-semibold text-white">{s.label}</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{s.note}</p>
+                  </div>
+                  <span className="text-lg font-black tabular-nums ml-4 shrink-0" style={{ color: s.color }}>{s.val}{s.suffix}</span>
+                </div>
+                <input type="range" min={s.min} max={s.max} value={s.val} onChange={e => s.set(+e.target.value)}
+                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                  style={{ accentColor: s.color, background: `linear-gradient(to right, ${s.color} ${(s.val - s.min) / (s.max - s.min) * 100}%, rgba(255,255,255,0.1) ${(s.val - s.min) / (s.max - s.min) * 100}%)` }} />
+                <div className="flex justify-between text-[9px] mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>
+                  <span>{s.min}{s.suffix}</span><span>{s.max}{s.suffix}</span>
+                </div>
+                <p className="mt-2 text-[11px] font-semibold" style={{ color: s.color }}>{s.result}</p>
+              </div>
+            ))}
+          </div>
+          <div className="p-7 flex flex-col justify-between">
+            <div>
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>Modelled outcome</p>
+              <div className="space-y-4 mb-8">
+                {[
+                  { label: "Current cash position", value: `£${(currentCash / 1000).toFixed(2)}M`, color: "rgba(255,255,255,0.4)" },
+                  { label: "Early payment savings",  value: `+£${savedFromEarly}k`,                color: "#22c55e" },
+                  { label: "Deferred payables",      value: `+£${(deferredCash / 1000).toFixed(2)}M`, color: "#6366f1" },
+                  { label: "Overdue cleared",        value: `–£${clearedOverdue}k`,                   color: "#f97316" },
+                ].map((r, i) => (
+                  <div key={i} className="flex items-center justify-between py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>{r.label}</span>
+                    <span className="text-sm font-bold tabular-nums" style={{ color: r.color }}>{r.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-2xl p-6 text-center"
+              style={{ background: netCashImpact >= 0 ? "rgba(99,102,241,0.08)" : "rgba(239,68,68,0.08)", border: `1px solid ${netCashImpact >= 0 ? "rgba(99,102,241,0.2)" : "rgba(239,68,68,0.2)"}` }}>
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.3)" }}>Net Cash Impact</p>
+              <p className={`text-[2.8rem] font-black tabular-nums leading-none ${netCashImpact >= 0 ? "text-indigo-400" : "text-rose-400"}`}>
+                {netCashImpact >= 0 ? "+" : "–"}£{(Math.abs(netCashImpact) / 1000).toFixed(2)}M
+              </p>
+              <p className="text-[10px] mt-3" style={{ color: "rgba(255,255,255,0.3)" }}>Deferred cash less early payment outflow</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
    SECTION: REPORTS
 ═══════════════════════════════════════════════════════════ */
 
@@ -1254,14 +2000,17 @@ function Reports() {
    ROOT
 ═══════════════════════════════════════════════════════════ */
 
-type Tab = "overview" | "revenue" | "people" | "debtors" | "reports";
+type Tab = "overview" | "revenue" | "bank" | "people" | "debtors" | "creditors" | "assets" | "reports";
 
 const TABS: { id: Tab; label: string; dot?: string }[] = [
-  { id: "overview", label: "Overview"  },
-  { id: "revenue",  label: "Revenue"   },
-  { id: "people",   label: "People"    },
-  { id: "debtors",  label: "Debtors",  dot: "#ef4444" },
-  { id: "reports",  label: "Reports"   },
+  { id: "overview",   label: "Overview"   },
+  { id: "revenue",    label: "Revenue"    },
+  { id: "bank",       label: "Bank"       },
+  { id: "people",     label: "People"     },
+  { id: "debtors",    label: "Debtors",   dot: "#ef4444" },
+  { id: "creditors",  label: "Creditors", dot: "#f97316" },
+  { id: "assets",     label: "Assets"     },
+  { id: "reports",    label: "Reports"    },
 ];
 
 export default function DashboardPage() {
@@ -1307,11 +2056,14 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-[1280px] mx-auto px-8 py-10">
-        {tab === "overview" && <Overview />}
-        {tab === "revenue"  && <Revenue />}
-        {tab === "people"   && <People />}
-        {tab === "debtors"  && <Debtors />}
-        {tab === "reports"  && <Reports />}
+        {tab === "overview"  && <Overview />}
+        {tab === "revenue"   && <Revenue />}
+        {tab === "bank"      && <Bank />}
+        {tab === "people"    && <People />}
+        {tab === "debtors"   && <Debtors />}
+        {tab === "creditors" && <Creditors />}
+        {tab === "assets"    && <Assets />}
+        {tab === "reports"   && <Reports />}
       </main>
     </div>
   );
