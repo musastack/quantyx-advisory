@@ -365,8 +365,10 @@ function Gauge({ value, target, label }: { value: number; target: number; label:
   const p = clamp(go ? value : 0), tp = clamp(target);
   const color = value >= target ? "#22c55e" : value >= target * 0.95 ? "#eab308" : "#ef4444";
   function arc(pct: number) { const a = Math.PI * (1 - pct); return { x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }; }
-  const L = arc(0), R = arc(1), F = arc(p), T = arc(tp);
-  const big = p > 0.5 ? 1 : 0;
+  // Cap just below 1 to avoid degenerate arc when fill = 100%
+  const pSafe = Math.min(p, 0.9999);
+  const L = arc(0), R = arc(1), F = arc(pSafe), T = arc(tp);
+  // For a semicircle gauge the fill arc is always < 180° — always use large-arc-flag = 0
   const ang = Math.PI * (1 - tp);
   const r1 = r - sw / 2 - 6, r2 = r + sw / 2 + 6;
   return (
@@ -374,7 +376,7 @@ function Gauge({ value, target, label }: { value: number; target: number; label:
       <svg width={cx * 2} height={cy + sw + 6} className="overflow-visible">
         <path d={`M${L.x.toFixed(1)},${L.y.toFixed(1)} A${r},${r} 0 0,1 ${R.x.toFixed(1)},${R.y.toFixed(1)}`}
           fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={sw} strokeLinecap="round" />
-        {p > 0 && <path d={`M${L.x.toFixed(1)},${L.y.toFixed(1)} A${r},${r} 0 ${big},1 ${F.x.toFixed(1)},${F.y.toFixed(1)}`}
+        {p > 0 && <path d={`M${L.x.toFixed(1)},${L.y.toFixed(1)} A${r},${r} 0 0,1 ${F.x.toFixed(1)},${F.y.toFixed(1)}`}
           fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round"
           style={{ transition: "stroke-dasharray 1.2s cubic-bezier(0.16,1,0.3,1) 0.2s" }} />}
         <line x1={(cx + r1 * Math.cos(ang)).toFixed(1)} y1={(cy - r1 * Math.sin(ang)).toFixed(1)}
@@ -2192,98 +2194,179 @@ function FPandA() {
                 </div>
               </div>
 
-              {/* Four insight cards */}
-              <div className="grid lg:grid-cols-4 gap-4">
+              {/* Three nominal detail cards + actions */}
+              <div className="grid lg:grid-cols-3 gap-4">
 
-                {/* Revenue drivers */}
+                {/* Revenue Drivers — all practice lines */}
                 <Card className="p-6">
-                  <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Revenue Drivers</p>
-                  <div className="space-y-3">
-                    {bestRev.map(n => (
-                      <div key={n.code} className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-[11px] font-semibold text-white">{n.name}</p>
-                          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Outperforming budget</p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-[13px] font-black tabular-nums" style={{ color: "#22c55e" }}>+£{n.var}k</p>
-                          <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{((n.var / n.budget) * 100).toFixed(1)}%</p>
-                        </div>
-                      </div>
-                    ))}
-                    <div className="h-px my-1" style={{ background: "rgba(255,255,255,0.06)" }} />
-                    {worstRev.map(n => (
-                      <div key={n.code} className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-[11px] font-semibold text-white">{n.name}</p>
-                          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Below budget — review pipeline</p>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-[13px] font-black tabular-nums" style={{ color: "#f87171" }}>£{n.var}k</p>
-                          <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{((n.var / n.budget) * 100).toFixed(1)}%</p>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>Revenue Drivers</p>
+                    <div className="text-right">
+                      <p className="text-[11px] font-black tabular-nums" style={{ color: revVar >= 0 ? "#22c55e" : "#f87171" }}>
+                        {revVar >= 0 ? "+" : ""}£{revVar}k net vs budget
+                      </p>
+                    </div>
                   </div>
-                </Card>
-
-                {/* Cost position */}
-                <Card className="p-6">
-                  <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Cost Position</p>
-                  <div className="space-y-3">
-                    {[
-                      { label: "Cost of Delivery", row: codRow },
-                      { label: "Staff & Benefits",  row: salRow },
-                      { label: "Overhead",           row: ovhRow },
-                    ].map(({ label, row }) => {
-                      const v = row.actuals - row.budget;
-                      const pct = ((v / row.budget) * 100).toFixed(1);
+                  <div className="space-y-2.5">
+                    {revLines.map(n => {
+                      const v = n.actuals - n.budget;
+                      const pct = ((v / n.budget) * 100).toFixed(1);
+                      const c = v >= 0 ? "#22c55e" : "#f87171";
                       return (
-                        <div key={label} className="flex items-center justify-between">
-                          <div>
-                            <p className="text-[11px] font-semibold text-white">{label}</p>
-                            <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>£{row.actuals.toLocaleString()}k actual</p>
+                        <div key={n.code}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-semibold text-white truncate pr-2">{n.name}</span>
+                            <div className="text-right shrink-0">
+                              <span className="text-[11px] font-black tabular-nums" style={{ color: c }}>{v >= 0 ? "+" : ""}£{v}k</span>
+                              <span className="text-[9px] ml-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>({v >= 0 ? "+" : ""}{pct}%)</span>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-[13px] font-black tabular-nums" style={{ color: v < 0 ? "#22c55e" : "#f87171" }}>
-                              {v < 0 ? "–" : "+"}£{Math.abs(v)}k
-                            </p>
-                            <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>{v < 0 ? "" : "+"}{pct}%</p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${Math.min((n.actuals / n.budget) * 100, 100)}%`, background: c, opacity: 0.7 }} />
+                            </div>
+                            <span className="text-[9px] tabular-nums shrink-0" style={{ color: "rgba(255,255,255,0.3)" }}>£{n.actuals.toLocaleString()}k</span>
                           </div>
                         </div>
                       );
                     })}
-                    <div className="h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
-                    <div className="flex items-center justify-between">
-                      <p className="text-[11px] font-bold text-white">Biggest saving</p>
-                      {biggestCostSaving && (
-                        <p className="text-[11px] font-bold tabular-nums" style={{ color: "#22c55e" }}>
-                          {biggestCostSaving.name.split(" ")[0]} –£{Math.abs(biggestCostSaving.var)}k
-                        </p>
-                      )}
-                    </div>
-                    {biggestCostOverrun && (
-                      <div className="flex items-center justify-between">
-                        <p className="text-[11px] font-bold text-white">Biggest overrun</p>
-                        <p className="text-[11px] font-bold tabular-nums" style={{ color: "#f87171" }}>
-                          {biggestCostOverrun.name.split(" ")[0]} +£{biggestCostOverrun.var}k
-                        </p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                    <div className="flex justify-between">
+                      <span className="text-[10px] font-bold text-white">Total Revenue</span>
+                      <div className="text-right">
+                        <span className="text-[11px] font-black text-white tabular-nums">£{revRow.actuals.toLocaleString()}k</span>
+                        <span className="text-[9px] ml-1.5" style={{ color: "rgba(255,255,255,0.3)" }}>bud £{revRow.budget.toLocaleString()}k</span>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </Card>
 
-                {/* YTD watch */}
+                {/* Cost of Sales — all CoD nominals */}
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>Cost of Sales (CoD)</p>
+                    <div className="text-right">
+                      {(() => { const v = codRow.actuals - codRow.budget; return (
+                        <p className="text-[11px] font-black tabular-nums" style={{ color: v < 0 ? "#22c55e" : "#f87171" }}>
+                          {v < 0 ? "–" : "+"}£{Math.abs(v)}k vs budget
+                        </p>
+                      ); })()}
+                    </div>
+                  </div>
+                  <div className="space-y-2.5 mb-4">
+                    {plNominals.filter(n => n.parentCode === "COD").map(n => {
+                      const v = n.actuals - n.budget;
+                      const c = v < 0 ? "#22c55e" : "#f87171";
+                      return (
+                        <div key={n.code}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] font-semibold text-white truncate pr-2">{n.name}</span>
+                            <div className="text-right shrink-0">
+                              <span className="text-[11px] font-black tabular-nums" style={{ color: c }}>{v < 0 ? "–" : "+"}£{Math.abs(v)}k</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${Math.min((n.actuals / n.budget) * 100, 110)}%`, background: c, opacity: 0.65 }} />
+                            </div>
+                            <span className="text-[9px] tabular-nums shrink-0" style={{ color: "rgba(255,255,255,0.3)" }}>£{n.actuals.toLocaleString()}k</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="pt-3 border-t space-y-2" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                    <div className="flex justify-between">
+                      <span className="text-[10px] font-bold text-white">CoD Total</span>
+                      <span className="text-[11px] font-black text-white tabular-nums">£{codRow.actuals.toLocaleString()}k</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>Gross Margin</span>
+                      {(() => {
+                        const gm = ((revRow.actuals - codRow.actuals) / revRow.actuals * 100).toFixed(1);
+                        const gmBud = ((revRow.budget - codRow.budget) / revRow.budget * 100).toFixed(1);
+                        return <span className="text-[11px] font-black tabular-nums" style={{ color: "#a5b4fc" }}>{gm}% <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 9, fontWeight: 400 }}>bud {gmBud}%</span></span>;
+                      })()}
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Staff & Admin — both categories */}
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.25)" }}>Staff & Admin</p>
+                    {(() => { const v = salRow.actuals + ovhRow.actuals - salRow.budget - ovhRow.budget; return (
+                      <p className="text-[11px] font-black tabular-nums" style={{ color: v < 0 ? "#22c55e" : "#f87171" }}>
+                        {v < 0 ? "–" : "+"}£{Math.abs(v)}k vs budget
+                      </p>
+                    ); })()}
+                  </div>
+
+                  <p className="text-[9px] font-bold tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.18)" }}>Staff & Benefits</p>
+                  <div className="space-y-2 mb-3">
+                    {plNominals.filter(n => n.parentCode === "SAL").map(n => {
+                      const v = n.actuals - n.budget;
+                      const c = v < 0 ? "#22c55e" : "#f87171";
+                      return (
+                        <div key={n.code} className="flex items-center justify-between">
+                          <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)" }}>{n.name}</span>
+                          <div className="text-right">
+                            <span className="text-[10px] font-bold tabular-nums text-white">£{n.actuals.toLocaleString()}k</span>
+                            <span className="text-[9px] ml-1.5" style={{ color: c }}>{v < 0 ? "–" : "+"}£{Math.abs(v)}k</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-[9px] font-bold tracking-widest uppercase mb-2 pt-2 border-t" style={{ color: "rgba(255,255,255,0.18)", borderColor: "rgba(255,255,255,0.06)" }}>Overhead / Admin</p>
+                  <div className="space-y-2 mb-3">
+                    {plNominals.filter(n => n.parentCode === "OVH").map(n => {
+                      const v = n.actuals - n.budget;
+                      const c = v < 0 ? "#22c55e" : "#f87171";
+                      return (
+                        <div key={n.code} className="flex items-center justify-between">
+                          <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.5)" }}>{n.name}</span>
+                          <div className="text-right">
+                            <span className="text-[10px] font-bold tabular-nums text-white">£{n.actuals.toLocaleString()}k</span>
+                            <span className="text-[9px] ml-1.5" style={{ color: c }}>{v < 0 ? "–" : "+"}£{Math.abs(v)}k</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="pt-2 border-t space-y-1" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                    {[
+                      { label: "Staff total", row: salRow },
+                      { label: "Admin total", row: ovhRow },
+                    ].map(({ label, row }) => {
+                      const v = row.actuals - row.budget;
+                      return (
+                        <div key={label} className="flex justify-between">
+                          <span className="text-[10px] font-bold text-white">{label}</span>
+                          <span className="text-[10px] font-black tabular-nums" style={{ color: v < 0 ? "#22c55e" : "#f87171" }}>
+                            £{row.actuals.toLocaleString()}k ({v < 0 ? "–" : "+"}£{Math.abs(v)}k)
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </div>
+
+              {/* YTD + Actions row */}
+              <div className="grid lg:grid-cols-2 gap-4">
                 <Card className="p-6">
                   <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>YTD Position</p>
                   <div className="space-y-4">
                     {[
                       { label: "YTD Revenue",    actual: revRow.ytdActuals, budget: revRow.ytdBudget, isRev: true  },
-                      { label: "YTD Costs",       actual: codRow.ytdActuals + salRow.ytdActuals + ovhRow.ytdActuals,
-                                                  budget: codRow.ytdBudget  + salRow.ytdBudget  + ovhRow.ytdBudget, isRev: false },
+                      { label: "YTD Cost of Sales", actual: codRow.ytdActuals, budget: codRow.ytdBudget, isRev: false },
+                      { label: "YTD Staff & Admin", actual: salRow.ytdActuals + ovhRow.ytdActuals, budget: salRow.ytdBudget + ovhRow.ytdBudget, isRev: false },
                     ].map(r => {
                       const v   = r.actual - r.budget;
-                      const pct = ((v / r.budget) * 100).toFixed(1);
                       const good = r.isRev ? v >= 0 : v <= 0;
                       return (
                         <div key={r.label}>
@@ -2294,55 +2377,51 @@ function FPandA() {
                             </p>
                           </div>
                           <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.07)" }}>
-                            <div className="h-full rounded-full" style={{ width: `${Math.min((r.actual / r.budget) * 100, 100)}%`, background: good ? "#22c55e" : "#ef4444", transition: "width 1s ease" }} />
+                            <div className="h-full rounded-full" style={{ width: `${Math.min((r.actual / r.budget) * 100, 100)}%`, background: good ? "#22c55e" : "#ef4444" }} />
                           </div>
                           <div className="flex justify-between mt-1">
-                            <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>£{r.actual.toLocaleString()}k</p>
+                            <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>£{r.actual.toLocaleString()}k actual</p>
                             <p className="text-[9px]" style={{ color: "rgba(255,255,255,0.3)" }}>Budget £{r.budget.toLocaleString()}k</p>
                           </div>
                         </div>
                       );
                     })}
-                    <div className="h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
-                    <div>
-                      <p className="text-[9px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.2)" }}>Run Rate Outlook</p>
-                      <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-                        At current pace, full-year revenue would be{" "}
-                        <span style={{ color: "#a5b4fc", fontWeight: 700 }}>
-                          £{((revRow.ytdActuals / 3) * 12 / 1000).toFixed(2)}M
-                        </span>{" "}
-                        vs £{((revRow.ytdBudget / 3) * 12 / 1000).toFixed(2)}M target.
-                      </p>
-                    </div>
+                  </div>
+                  <div className="mt-4 pt-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                    <p className="text-[9px] font-bold tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.2)" }}>Run Rate Outlook</p>
+                    <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.5)" }}>
+                      At current run rate, full-year revenue would be{" "}
+                      <span style={{ color: "#a5b4fc", fontWeight: 700 }}>£{((revRow.ytdActuals / 3) * 12 / 1000).toFixed(2)}M</span>{" "}
+                      vs £{((revRow.ytdBudget / 3) * 12 / 1000).toFixed(2)}M target.
+                    </p>
                   </div>
                 </Card>
 
-                {/* Actions for management */}
                 <Card className="p-6">
                   <p className="text-[9px] font-bold tracking-widest uppercase mb-4" style={{ color: "rgba(255,255,255,0.25)" }}>Management Actions</p>
                   <div className="space-y-3">
                     {[
                       ytdRevVar < -200 && {
                         color: "#ef4444",
-                        text: `YTD revenue £${Math.abs(ytdRevVar)}k behind budget. Accelerate billing and WIP conversion before Q2 close.`,
+                        text: `YTD revenue £${Math.abs(ytdRevVar)}k (${Math.abs(parseFloat(ytdRevPct))}%) behind budget. Accelerate billing and WIP conversion before Q2 close.`,
                       },
                       worstRev[0] && {
                         color: "#f97316",
-                        text: `${worstRev[0].name} trailing budget by £${Math.abs(worstRev[0].var)}k. Review pipeline coverage and deal timelines.`,
+                        text: `${worstRev[0].name} £${Math.abs(worstRev[0].var)}k below budget (${Math.abs((worstRev[0].var / worstRev[0].budget * 100)).toFixed(1)}%). Review deal pipeline and fee agreements.`,
                       },
                       biggestCostOverrun && biggestCostOverrun.var > 10 && {
                         color: "#eab308",
-                        text: `${biggestCostOverrun.name} £${biggestCostOverrun.var}k over budget. Confirm whether one-off or recurring before re-forecast.`,
+                        text: `${biggestCostOverrun.name} is £${biggestCostOverrun.var}k over budget. Confirm whether one-off or recurring ahead of re-forecast.`,
                       },
                       momRev > 0 && {
                         color: "#22c55e",
-                        text: `Revenue grew £${momRev}k MoM in March — strongest month in the period. Identify what drove this and replicate in Q2.`,
+                        text: `Revenue grew £${momRev}k MoM — strongest month in the tracked period. Identify key drivers and replicate in Q2.`,
                       },
-                      costVar < -50 && {
+                      costVar < -30 && {
                         color: "#22c55e",
-                        text: `Costs £${Math.abs(costVar)}k under budget this month. Confirm savings are structural, not deferred spend.`,
+                        text: `Total costs £${Math.abs(costVar)}k under budget this month. Confirm savings are structural, not deferred into Q2.`,
                       },
-                    ].filter(Boolean).slice(0, 4).map((action, i) => action && (
+                    ].filter(Boolean).slice(0, 5).map((action, i) => action && (
                       <div key={i} className="flex items-start gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: action.color }} />
                         <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>{action.text}</p>
