@@ -14,6 +14,7 @@ import {
 import MobileNav from "./MobileNav";
 import ThemeToggle from "./ThemeToggle";
 import ContactForm from "./ContactForm";
+import CalendlyEmbed from "./CalendlyEmbed";
 import { FloatingDashboard } from "./components/FloatingDashboard";
 import { ScrollReveal } from "./components/ScrollReveal";
 import { StatTicker } from "./components/StatTicker";
@@ -938,40 +939,56 @@ export default function Home() {
       ══════════════════════════════════════ */}
       <section id="contact" className="py-24 px-6 border-t border-slate-100 dark:border-white/[0.05] bg-slate-50 dark:bg-transparent">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
+
+          {/* Header */}
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-16">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-5">
+                Get in touch
+              </p>
+              <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-slate-900 dark:text-white">
+                Let&apos;s talk about<br />your reporting.
+              </h2>
+              <p className="text-slate-600 dark:text-white/45 text-base leading-relaxed">
+                Book a free 30-minute call. We&apos;ll ask about your current setup, understand what&apos;s not working, and tell you honestly whether we can help, and how.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Trust pills */}
+          <ScrollReveal delay={0.1}>
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-14">
+              {[
+                "No commitment required",
+                "Plain-English conversation, no jargon",
+                "Clear proposal within 3 working days",
+                "Responds within 1 working day",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-slate-600 dark:text-white/50">
+                  <CheckCircle size={13} className="text-indigo-500 dark:text-indigo-400 shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
+
+          {/* Two column — Calendly + form */}
+          <div className="grid md:grid-cols-[1.4fr_1fr] gap-10 items-start">
 
             <ScrollReveal direction="left">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-5">
-                  Get in touch
-                </p>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-slate-900 dark:text-white">
-                  Let&apos;s talk about<br />your reporting.
-                </h2>
-                <p className="text-slate-600 dark:text-white/45 text-base leading-relaxed mb-8">
-                  Book a free 30-minute call. We&apos;ll ask about your current setup, understand what&apos;s not working, and tell you honestly whether we can help, and how.
-                </p>
-                <div className="space-y-3 mb-8">
-                  {[
-                    "No commitment required",
-                    "Plain-English conversation, no jargon",
-                    "Clear proposal within 3 working days",
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-white/50">
-                      <CheckCircle size={14} className="text-indigo-500 dark:text-indigo-400 shrink-0" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <div className="p-4 rounded-xl border border-indigo-200 dark:border-indigo-500/25 bg-indigo-50 dark:bg-indigo-500/[0.06] text-sm text-indigo-700 dark:text-indigo-300">
-                  <p className="font-semibold mb-1">Response time</p>
-                  <p className="text-xs opacity-70">We respond to all enquiries within 1 working day.</p>
-                </div>
-              </div>
+              <CalendlyEmbed />
             </ScrollReveal>
 
             <ScrollReveal direction="right">
-              <ContactForm />
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-3">Prefer to write?</p>
+                  <p className="text-sm text-slate-500 dark:text-white/40 leading-relaxed">
+                    Fill in the form below and we&apos;ll come back to you within one working day to arrange a call.
+                  </p>
+                </div>
+                <ContactForm />
+              </div>
             </ScrollReveal>
 
           </div>
