@@ -80,7 +80,9 @@ export default function MobileNav() {
             View Demo
           </Link>
           <a
-            href="#contact"
+            href="https://calendly.com/mabdullah-quantyxadvisory/30min"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setOpen(false)}
             className="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-medium text-sm transition-colors"
           >

@@ -119,7 +119,9 @@ export default function Home() {
               View Demo
             </Link>
             <a
-              href="#contact"
+              href="https://calendly.com/mabdullah-quantyxadvisory/30min"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden sm:block text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-colors font-medium"
             >
               Book a Call
@@ -850,7 +852,9 @@ export default function Home() {
                     ))}
                   </ul>
                   <a
-                    href="#contact"
+                    href="https://calendly.com/mabdullah-quantyxadvisory/30min"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-colors ${
                       tier.highlight
                         ? "bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm"
@@ -1013,7 +1017,9 @@ export default function Home() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-white/30 mb-4">Get started</p>
               <a
-                href="#contact"
+                href="https://calendly.com/mabdullah-quantyxadvisory/30min"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors mb-4"
               >
                 Book a Call <ArrowRight size={13} />
